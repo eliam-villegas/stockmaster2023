@@ -1,6 +1,3 @@
-
-package com.mycompany.stockmaster_prueba;
-
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -13,12 +10,12 @@ import java.util.List;
 import java.util.Random;
 
 
-public class StockMaster_prueba {
+public class Main {
     static String driver = "org.postgresql.Driver";
     static String dbname = "sushi_dev";
     static String url = "jdbc:postgresql://10.4.3.195:5432/" + dbname;
     static String user = "sushi";
-    static String password = "Daniel#0401";
+    static String password = "";
 
     public static void main(String[] args) throws SQLException {
         
@@ -54,10 +51,10 @@ public class StockMaster_prueba {
         Random random = new Random();
         String[] names = {"Alice", "Bob", "Charlie", "David", "Emma", "Frank", "Grace", "Henry", "Ivy", "Jack"};
 
-        String query = "INSERT INTO empleado (rut_empleado, nombre, rol, contrasenia) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO empleado (rut_empleado, nombre, cargo, contrasenia) VALUES (?, ?, ?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             for (int i = 0; i < numEmpleados; i++) {
-                String rut = generateRandomRut();
+                String rut = generateUniqueRandomRutCliente(connection);
                 String name = names[random.nextInt(names.length)];
                 String role = "Role" + (random.nextInt(5));
                 int contra = 12345; 
@@ -79,12 +76,12 @@ public class StockMaster_prueba {
         // Método para crear e insertar clientes aleatorios
     public static void InsertRandomCliente(Connection connection, int numClients) throws SQLException {
         Random random = new Random();
-        String[] names = {"Juan", "Maria", "Pedro", "Luisa", "Carlos", "Sofia", "Andres", "Laura", "Roberto", "Daniela"};
+        String[] names = {"Samurai Sushi", "Sunshine", "Sushinito", "Asia Fusion Sushi", "Sushi and flowers", "Romo Sushi", "Okasama", "Jardin sushi", "Crunchy Rolls Sushi", "Sushi Lovers"};
 
         String query = "INSERT INTO cliente (rut_cliente, nombre) VALUES (?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             for (int i = 0; i < numClients; i++) {
-                String rut = generateRandomRut();
+                String rut = generateUniqueRandomRutCliente(connection);
                 String name = names[random.nextInt(names.length)];
 
                 statement.setString(1, rut);
@@ -96,6 +93,25 @@ public class StockMaster_prueba {
                 } else {
                     System.out.println("No se pudo agregar el cliente");
                 }
+            }
+        }
+    }
+    public static String generateUniqueRandomRutCliente(Connection connection) throws SQLException {
+        String rut;
+        boolean rutExists;
+        do {
+            rut = generateRandomRut(); // Generar un RUT aleatorio
+            rutExists = checkRutExistsProveedor(connection, rut); // Verificar si el RUT ya existe en la base de datos
+        } while (rutExists);
+        return rut;
+    }
+    
+    public static boolean checkRutExistsCliente(Connection connection, String rut) throws SQLException {
+        String query = "SELECT COUNT(*) AS count FROM cliente WHERE rut_cliente = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, rut);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next() && resultSet.getInt("count") > 0;
             }
         }
     }
@@ -125,7 +141,6 @@ public class StockMaster_prueba {
     
     // Método para insertar direcciones aleatorias
     public static void InsertRandomDireccionContacto(Connection connection, int numAddresses) throws SQLException {
-        Random random = new Random();
 
         String query = "INSERT INTO direcciones (direccion, rut_cliente) VALUES (?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -148,13 +163,14 @@ public class StockMaster_prueba {
     
      // Método para insertar proveedores aleatorios
     public static void InsertRandomProveedor(Connection connection, int numSuppliers) throws SQLException {
+        
         Random random = new Random();
         String[] supplierNames = {"Proveedor A", "Proveedor B", "Proveedor C", "Proveedor D", "Proveedor E"};
 
-        String query = "INSERT INTO proveedor (rut_proveedor, nombre_proveedor) VALUES (?, ?)";
+        String query = "INSERT INTO proveedor (rut_proveedor, nombre) VALUES (?, ?)";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             for (int i = 0; i < numSuppliers; i++) {
-                String rutSupplier = generateRandomRut();
+                String rutSupplier = generateUniqueRandomRutProveedor(connection);
                 String supplierName = supplierNames[random.nextInt(supplierNames.length)];
 
                 statement.setString(1, rutSupplier);
@@ -170,19 +186,30 @@ public class StockMaster_prueba {
         }
     }
     
+    public static String generateUniqueRandomRutProveedor(Connection connection) throws SQLException {
+        String rut;
+        boolean rutExists;
+        do {
+            rut = generateRandomRut(); // Generar un RUT aleatorio
+            rutExists = checkRutExistsProveedor(connection, rut); // Verificar si el RUT ya existe en la base de datos
+        } while (rutExists);
+        return rut;
+    }
+    
+    public static boolean checkRutExistsProveedor(Connection connection, String rut) throws SQLException {
+        String query = "SELECT COUNT(*) AS count FROM proveedor WHERE rut_proveedor = ?";
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            statement.setString(1, rut);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                return resultSet.next() && resultSet.getInt("count") > 0;
+            }
+        }
+    }
+
     public static String generateRandomRut() {
         StringBuilder rut = new StringBuilder();
         Random random = new Random();
         rut.append(10000000 + random.nextInt(90000000)); // RUT aleatorio de 8 dígitos
-
-         // Opción aleatoria para añadir guion al final del RUT
-        if (random.nextBoolean()) {
-            rut.append("-");
-         }
-
-        if (random.nextBoolean()) {
-            rut.append("K"); // Opción aleatoria para añadir "K" al final del RUT
-        }
 
         return rut.toString();
     }
@@ -361,7 +388,7 @@ public class StockMaster_prueba {
             Date date = Date.valueOf("2023-11-03"); // Fecha ficticia
             String receptor = getRandomReceptor();
             String employeeRut = getRandomRutFromEmpleado(connection);
-            String direccion = getRandomDireccion();
+            String direccion = null;
 
             statement.setInt(1, numDespacho);
             statement.setDate(2, date);
