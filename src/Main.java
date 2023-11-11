@@ -38,6 +38,8 @@ public class Main {
             InsertRandomOrden(conData, 10);
             InsertRandomProducto(conData,10);
             InsertRandomRegistroAbastecimientoProducto(conData,10);
+            InsertRandomRegistroVenta(conData);
+            InsertRandomRegistroDespacho(conData,10);
             System.out.println("Se Inserto");
             
         }catch(SQLException e) {
@@ -389,48 +391,50 @@ public class Main {
     
     
      // Método para insertar registros de venta aleatorios
-    public static void InsertRandomRegistroVenta(Connection connection) throws SQLException {
+     public static void insertRandomRegistroVenta(Connection connection, int cantidadRegistros) throws SQLException {
 
-    // Obtener los IDs de orden existentes
-    int[] orderIds = getOrderIdsFromIdOrden(connection);
-
-    String queryInsertVenta = "INSERT INTO registro_de_venta (id_venta, total, fecha_de_pago, id_orden, rut_cliente, rut_empleado) VALUES (?, ?, ?, ?, ?, ?)";
-    String queryUpdateOrden = "UPDATE Orden SET id_venta = ? WHERE id_orden = ?";
-  
-
-    try (PreparedStatement insertVentaStatement = connection.prepareStatement(queryInsertVenta);
-         PreparedStatement updateOrdenStatement = connection.prepareStatement(queryUpdateOrden)) {
-        
-        int saleId = generateUniqueSaleId(connection); // IDs de venta ficticios
-        for (int orderId : orderIds) {
-
-            double total = calculateTotalFromOrders(connection, orderIds); // Calcula el total a partir de las órdenes
-            Date date = Date.valueOf("2023-11-03"); // Fecha de pago ficticia
-            String employeeRut = getRandomRutFromEmpleado(connection);
-            String clientRut = getRandomRutFromCliente(connection);
-
-            insertVentaStatement.setInt(1, saleId);
-            insertVentaStatement.setDouble(2, total);
-            insertVentaStatement.setDate(3, date);
-            insertVentaStatement.setInt(4, orderId);
-            insertVentaStatement.setString(5, clientRut);
-            insertVentaStatement.setString(6, employeeRut);
-
-            int rowsInserted = insertVentaStatement.executeUpdate();
-            if (rowsInserted > 0) {
-                System.out.println("Registro de venta agregado: ID Venta: " + saleId + ", Total: " + total + ", Fecha de pago: " + date + ", ID Orden: " + orderId + ", RUT Cliente: " + clientRut + ", RUT Empleado: " + employeeRut);
-
-                // Asignar el registro de venta a la orden de compra
-                updateOrdenStatement.setInt(1, saleId);
-                updateOrdenStatement.setInt(2, orderId);
-                updateOrdenStatement.executeUpdate();
-                System.out.println("Registro de venta asignado a la orden de compra: ID Venta: " + saleId + ", ID Orden: " + orderId);
-            } else {
-                System.out.println("No se pudo agregar el registro de venta");
+        // Obtener los IDs de orden existentes
+        int[] orderIds = getOrderIdsFromIdOrden(connection);
+    
+        String queryInsertVenta = "INSERT INTO registro_de_venta (id_venta, total, fecha_de_pago, id_orden, rut_cliente, rut_empleado) VALUES (?, ?, ?, ?, ?, ?)";
+        String queryUpdateOrden = "UPDATE Orden SET id_venta = ? WHERE id_orden = ?";
+    
+        try (PreparedStatement insertVentaStatement = connection.prepareStatement(queryInsertVenta);
+             PreparedStatement updateOrdenStatement = connection.prepareStatement(queryUpdateOrden)) {
+    
+            for (int i = 0; i < cantidadRegistros; i++) {
+                int saleId = generateUniqueSaleId(connection); // IDs de venta ficticios
+                for (int orderId : orderIds) {
+    
+                    double total = calculateTotalFromOrders(connection, orderIds); // Calcula el total a partir de las órdenes
+                    Date date = Date.valueOf("2023-11-03"); // Fecha de pago ficticia
+                    String employeeRut = getRandomRutFromEmpleado(connection);
+                    String clientRut = getRandomRutFromCliente(connection);
+    
+                    insertVentaStatement.setInt(1, saleId);
+                    insertVentaStatement.setDouble(2, total);
+                    insertVentaStatement.setDate(3, date);
+                    insertVentaStatement.setInt(4, orderId);
+                    insertVentaStatement.setString(5, clientRut);
+                    insertVentaStatement.setString(6, employeeRut);
+    
+                    int rowsInserted = insertVentaStatement.executeUpdate();
+                    if (rowsInserted > 0) {
+                        System.out.println("Registro de venta agregado: ID Venta: " + saleId + ", Total: " + total + ", Fecha de pago: " + date + ", ID Orden: " + orderId + ", RUT Cliente: " + clientRut + ", RUT Empleado: " + employeeRut);
+    
+                        // Asignar el registro de venta a la orden de compra
+                        updateOrdenStatement.setInt(1, saleId);
+                        updateOrdenStatement.setInt(2, orderId);
+                        updateOrdenStatement.executeUpdate();
+                        System.out.println("Registro de venta asignado a la orden de compra: ID Venta: " + saleId + ", ID Orden: " + orderId);
+                    } else {
+                        System.out.println("No se pudo agregar el registro de venta");
+                    }
+                }
             }
         }
     }
-}
+
 
     public static void InsertRandomRegistroDespacho(Connection connection, int numRecords) throws SQLException {
 
@@ -543,6 +547,7 @@ public class Main {
         return "RUT_NO_ENCONTRADO"; // Si no se encuentra un RUT
     }
     
+    
     public static String getRandomRutFromCliente(Connection connection) throws SQLException {
         String query = "SELECT rut_cliente FROM cliente ORDER BY random() LIMIT 1";
         try (PreparedStatement statement = connection.prepareStatement(query);
@@ -553,6 +558,7 @@ public class Main {
         }
         return "RUT_NO_ENCONTRADO"; // Si no se encuentra un RUT
     }
+    
     
     public static String getRandomRutFromProveedor(Connection connection) throws SQLException {
         String query = "SELECT rut_proveedor FROM proveedor ORDER BY random() LIMIT 1";
@@ -565,6 +571,7 @@ public class Main {
         return "RUT_NO_ENCONTRADO"; // Si no se encuentra un RUT
     }
     
+    
     public static Integer getRandomNumCompraFromRegistro_abastecimiento(Connection connection) throws SQLException {
         String query = "SELECT num_compra FROM registro_abastecimiento ORDER BY random() LIMIT 1";
         try (PreparedStatement statement = connection.prepareStatement(query);
@@ -575,6 +582,8 @@ public class Main {
         }
         return -1; // Si no se encuentra un numero de compra
     }
+   
+    
     public static Integer getUniqueRandomIdOrden(Connection connection) throws SQLException {
         Random random = new Random();
         int maxAttempts = 100;  // Límite de intentos para evitar un bucle infinito
@@ -595,6 +604,7 @@ public class Main {
         throw new SQLException("No se pudo generar un ID único después de " + maxAttempts + " intentos.");
     }
     
+    
     public static boolean checkIdOrdenExistsInDatabase(Connection connection, int idOrden) throws SQLException {
         String query = "SELECT COUNT(*) AS count FROM orden_de_compra WHERE id_orden = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
@@ -605,6 +615,7 @@ public class Main {
         }
     }
      
+    
     public static int getRandomidProductoFromProducto(Connection connection) throws SQLException {
         int RandomId = -1;// -1 representa que no se a encontrado valores
         String query = "SELECT id_producto FROM producto ORDER BY random() LIMIT 1";
@@ -620,6 +631,7 @@ public class Main {
     return RandomId; 
     }
      
+    
     public static int getRandomidOrdenFromOrden(Connection connection) throws SQLException {
         String query = "SELECT id_orden FROM orden ORDER BY random() LIMIT 1";
         int RandomId = -1;
