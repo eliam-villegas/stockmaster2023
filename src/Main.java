@@ -1,6 +1,6 @@
 import javax.swing.SwingUtilities;
 
-public class main {
+public class Main {
     public static void main(String[] args) throws Exception {
         SwingUtilities.invokeLater(() -> {
             Login loginFrame = new Login();
