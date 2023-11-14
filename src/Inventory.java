@@ -188,38 +188,90 @@ public class Inventory extends JFrame{
         constraintsBotonMenu.gridy = 0;
         menu.add(botonInicio,constraintsBotonMenu);
 
-        JLabel botonAgregarProducto = new JLabel("Productos");
-        botonAgregarProducto.setOpaque(true);
-        botonAgregarProducto.setBackground(new Color(51,51,51));
-        botonAgregarProducto.setForeground(Color.white);
-        botonAgregarProducto.setHorizontalAlignment(SwingConstants.CENTER);
-        botonAgregarProducto.setFont(new Font("Arial", Font.BOLD, 12));
-        botonAgregarProducto.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        botonAgregarProducto.addMouseListener(new MouseAdapter() {
+        JLabel botonProducto = new JLabel("Productos");
+        botonProducto.setOpaque(true);
+        botonProducto.setBackground(new Color(51,51,51));
+        botonProducto.setForeground(Color.white);
+        botonProducto.setHorizontalAlignment(SwingConstants.CENTER);
+        botonProducto.setFont(new Font("Arial", Font.BOLD, 12));
+        botonProducto.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonProducto.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(main_tab,"opcion 2");
             }
             @Override
             public void mouseEntered(MouseEvent e) {
-                botonAgregarProducto.setBackground(Color.darkGray); // Cambia el color cuando el mouse entra
+                botonProducto.setBackground(Color.darkGray); // Cambia el color cuando el mouse entra
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                botonAgregarProducto.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
+                botonProducto.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
             }
         });
 
         constraintsBotonMenu.gridy = 1;
-        menu.add(botonAgregarProducto,constraintsBotonMenu);
+        menu.add(botonProducto,constraintsBotonMenu);
+
+        JLabel botonCompra = new JLabel("Compras");
+        botonCompra.setOpaque(true);
+        botonCompra.setBackground(new Color(51,51,51));
+        botonCompra.setForeground(Color.white);
+        botonCompra.setHorizontalAlignment(SwingConstants.CENTER);
+        botonCompra.setFont(new Font("Arial", Font.BOLD, 12));
+        botonCompra.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonCompra.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(main_tab,"opcion 3");
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                botonCompra.setBackground(Color.darkGray); // Cambia el color cuando el mouse entra
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                botonCompra.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
+            }
+        });
+
+        constraintsBotonMenu.gridy = 2;
+        menu.add(botonCompra,constraintsBotonMenu);
+
+        JLabel botonOrdenCompra = new JLabel("Ordenes de Compra");
+        botonOrdenCompra.setOpaque(true);
+        botonOrdenCompra.setBackground(new Color(51,51,51));
+        botonOrdenCompra.setForeground(Color.white);
+        botonOrdenCompra.setHorizontalAlignment(SwingConstants.CENTER);
+        botonOrdenCompra.setFont(new Font("Arial", Font.BOLD, 12));
+        botonOrdenCompra.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonOrdenCompra.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(main_tab,"opcion 3");
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                botonOrdenCompra.setBackground(Color.darkGray); // Cambia el color cuando el mouse entra
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                botonOrdenCompra.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
+            }
+        });
+
+        constraintsBotonMenu.gridy = 3;
+        menu.add(botonOrdenCompra,constraintsBotonMenu);
 
         JPanel espacio = new JPanel();
         espacio.setBackground(new Color(51,51,51));
 
         GridBagConstraints constraintsEspacio = new GridBagConstraints();
         constraintsEspacio.gridx = 0;
-        constraintsEspacio.gridy = 3;
+        constraintsEspacio.gridy = 4;
         constraintsEspacio.weightx = 1;
         constraintsEspacio.weighty = 10;
         constraintsEspacio.fill = GridBagConstraints.BOTH;
