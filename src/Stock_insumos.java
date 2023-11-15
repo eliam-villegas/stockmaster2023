@@ -6,6 +6,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -55,7 +59,7 @@ public class Stock_insumos extends JPanel{
         ((AbstractDocument) stockTextField.getDocument()).setDocumentFilter(new NumberFilter());
 
         JLabel unidadMedidaLabel = new JLabel("Unidad de medida:");
-        String[] unidadMedidaInsumo = {"Kilogramos", "Gramos", "Miligramos","Litros","Mililitros","Unidad"};
+        String[] unidadMedidaInsumo = {"Kilogramos", "Gramos", "Miligramos","Litros","Mililitros","Unidad","lote"};
         JComboBox<String> unidadMedidaInsumoLista = new JComboBox<>(unidadMedidaInsumo);
 
         JLabel precioUnitarioLabel = new JLabel("Precio c/u:");
@@ -63,7 +67,7 @@ public class Stock_insumos extends JPanel{
         ((AbstractDocument) precioUnitarioTextField.getDocument()).setDocumentFilter(new NumberFilter());
 
         JLabel tipoLabel = new JLabel("Tipo de Insumo:");
-        String[] tiposInsumo = {"Seco", "Congelado", "Plastico"};
+        String[] tiposInsumo = {"Perecible", "No perecible", "Seco", "Congelado", "Plastico"};
         JComboBox<String> tipoComboBox = new JComboBox<>(tiposInsumo);
 
         JButton boton_ingresar = new JButton("Ingresar");
@@ -167,14 +171,45 @@ public class Stock_insumos extends JPanel{
 
     private JScrollPane create_table(){
 
-        String[] columnas = {"Id", "Nombre", "Stock","Precio unitario","Tipo","Unidad de medida"};
+        String[] columnas = {"Id", "Nombre", "Stock", "Precio unitario", "Tipo", "Unidad de medida"};
         DefaultTableModel modelo = new DefaultTableModel(null, columnas);
-        Object[] fila = {"dato1", "dato2", "dato3","dato4","dato5","dato6"};
-        modelo.addRow(fila);
+
+        try {
+            // Conectar a la base de datos
+            Connection conn = DatabaseConnection.connect();
+
+            // Ejecutar la consulta SQL para obtener los datos
+            String query = "SELECT id_producto, nombre_producto, stock, precio_unitario, tipo, unidad_de_medida FROM producto";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+
+            // Procesar los resultados y añadirlos al modelo de la tabla
+            while (rs.next()) {
+                Object[] fila = {
+                    rs.getString("id_producto"),
+                    rs.getString("nombre_producto"),
+                    rs.getString("stock"),
+                    rs.getString("precio_unitario"),
+                    rs.getString("tipo"),
+                    rs.getString("unidad_de_medida")
+                };
+                modelo.addRow(fila);
+            }
+
+            // Cerrar recursos
+            rs.close();
+            stmt.close();
+            
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Manejar la excepción adecuadamente
+        }
 
         JTable tabla = new JTable(modelo);
-        JScrollPane tabla_productos = new JScrollPane(tabla);
-        return tabla_productos;
+        tabla.setDefaultEditor(Object.class, null);
+        JScrollPane tablaProductos = new JScrollPane(tabla);
+        return tablaProductos;
 
     }
 }
