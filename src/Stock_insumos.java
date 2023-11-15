@@ -97,15 +97,15 @@ public class Stock_insumos extends JPanel{
         cardPanel.add(container1,"opcion 2");
         cardPanel.add(container2,"opcion 3");
 
-        Searchbar searchbar = new Searchbar();
+        SearchbarProduct searchbarproducto = new SearchbarProduct();
 
         add(cardPanel,gridBagConstraints(0,0,3,1));
-        add(searchbar,gridBagConstraints(0, 1,3,1));
+        add(searchbarproducto,gridBagConstraints(0, 1,3,1));
         add(create_table(),gridBagConstraints(0, 2,3,1));
 
-        JPanel opcines = new JPanel(new GridBagLayout());
-        opcines.setBackground(Color.white);
-        opcines.setBorder(BorderFactory.createTitledBorder("Opciones"));
+        JPanel opciones = new JPanel(new GridBagLayout());
+        opciones.setBackground(Color.white);
+        opciones.setBorder(BorderFactory.createTitledBorder("Opciones"));
 
         JButton agregar = new JButton("Agregar");
         agregar.addActionListener(new ActionListener() {
@@ -138,13 +138,13 @@ public class Stock_insumos extends JPanel{
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
 
-        opcines.add(agregar,constraints);
+        opciones.add(agregar,constraints);
         constraints.gridx = 1;
-        opcines.add(actualizar,constraints);
+        opciones.add(actualizar,constraints);
         constraints.gridx = 2;
-        opcines.add(eliminar,constraints);
+        opciones.add(eliminar,constraints);
 
-        add(opcines,gridBagConstraints(0, 3, 3, 1));
+        add(opciones,gridBagConstraints(0, 3, 3, 1));
 
         boton_ingresar.addActionListener(new ActionListener() {
             @Override
@@ -210,6 +210,6 @@ public class Stock_insumos extends JPanel{
         tabla.setDefaultEditor(Object.class, null);
         JScrollPane tablaProductos = new JScrollPane(tabla);
         return tablaProductos;
-
     }
+    
 }
