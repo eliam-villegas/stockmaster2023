@@ -6,10 +6,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -22,12 +18,17 @@ import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
 
+
 public class Stock_insumos extends JPanel{
 
     private CardLayout cardLayout = new CardLayout();
-    
+    public DefaultTableModel modelo;
 
     public Stock_insumos(){
+        
+        String[] columnas = {"Id", "Nombre", "Stock","Precio unitario","Tipo","Unidad de medida"};
+        modelo = new DefaultTableModel(null, columnas);
+        
         setLayout(new GridBagLayout());
         setBackground(Color.white);
 
@@ -59,7 +60,7 @@ public class Stock_insumos extends JPanel{
         ((AbstractDocument) stockTextField.getDocument()).setDocumentFilter(new NumberFilter());
 
         JLabel unidadMedidaLabel = new JLabel("Unidad de medida:");
-        String[] unidadMedidaInsumo = {"Kilogramos", "Gramos", "Miligramos","Litros","Mililitros","Unidad","lote"};
+        String[] unidadMedidaInsumo = {"Kilogramos", "Gramos", "Miligramos","Litros","Mililitros","Unidad"};
         JComboBox<String> unidadMedidaInsumoLista = new JComboBox<>(unidadMedidaInsumo);
 
         JLabel precioUnitarioLabel = new JLabel("Precio c/u:");
@@ -67,7 +68,7 @@ public class Stock_insumos extends JPanel{
         ((AbstractDocument) precioUnitarioTextField.getDocument()).setDocumentFilter(new NumberFilter());
 
         JLabel tipoLabel = new JLabel("Tipo de Insumo:");
-        String[] tiposInsumo = {"Perecible", "No perecible", "Seco", "Congelado", "Plastico"};
+        String[] tiposInsumo = {"Seco", "Congelado", "Plastico"};
         JComboBox<String> tipoComboBox = new JComboBox<>(tiposInsumo);
 
         JButton boton_ingresar = new JButton("Ingresar");
@@ -97,15 +98,15 @@ public class Stock_insumos extends JPanel{
         cardPanel.add(container1,"opcion 2");
         cardPanel.add(container2,"opcion 3");
 
-        SearchbarProduct searchbarproducto = new SearchbarProduct();
+        Searchbar searchbar = new Searchbar(modelo);
 
         add(cardPanel,gridBagConstraints(0,0,3,1));
-        add(searchbarproducto,gridBagConstraints(0, 1,3,1));
+        add(searchbar,gridBagConstraints(0, 1,3,1));
         add(create_table(),gridBagConstraints(0, 2,3,1));
 
-        JPanel opciones = new JPanel(new GridBagLayout());
-        opciones.setBackground(Color.white);
-        opciones.setBorder(BorderFactory.createTitledBorder("Opciones"));
+        JPanel opcines = new JPanel(new GridBagLayout());
+        opcines.setBackground(Color.white);
+        opcines.setBorder(BorderFactory.createTitledBorder("Opciones"));
 
         JButton agregar = new JButton("Agregar");
         agregar.addActionListener(new ActionListener() {
@@ -138,17 +139,23 @@ public class Stock_insumos extends JPanel{
         constraints.gridwidth = 1;
         constraints.gridheight = 1;
 
-        opciones.add(agregar,constraints);
+        opcines.add(agregar,constraints);
         constraints.gridx = 1;
-        opciones.add(actualizar,constraints);
+        opcines.add(actualizar,constraints);
         constraints.gridx = 2;
-        opciones.add(eliminar,constraints);
+        opcines.add(eliminar,constraints);
 
-        add(opciones,gridBagConstraints(0, 3, 3, 1));
+        add(opcines,gridBagConstraints(0, 3, 3, 1));
 
         boton_ingresar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                
+                var dbc = new DatabaseConnection();
+                
+                dbc.BotonIngresar(idTextField.getText(), nombreTextField.getText(), stockTextField.getText(),precioUnitarioTextField.getText(),tipoComboBox.getSelectedItem().toString(), unidadMedidaInsumoLista.getSelectedItem().toString());
+                Searchbar.Buscar("", modelo);
+                
                 //aqui hace coneccion con la BD para ingresar los datos a la tabla.
             }
         });
@@ -170,46 +177,11 @@ public class Stock_insumos extends JPanel{
     }
 
     private JScrollPane create_table(){
-
-        String[] columnas = {"Id", "Nombre", "Stock", "Precio unitario", "Tipo", "Unidad de medida"};
-        DefaultTableModel modelo = new DefaultTableModel(null, columnas);
-
-        try {
-            // Conectar a la base de datos
-            Connection conn = DatabaseConnection.connect();
-
-            // Ejecutar la consulta SQL para obtener los datos
-            String query = "SELECT id_producto, nombre_producto, stock, precio_unitario, tipo, unidad_de_medida FROM producto";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-
-            // Procesar los resultados y añadirlos al modelo de la tabla
-            while (rs.next()) {
-                Object[] fila = {
-                    rs.getString("id_producto"),
-                    rs.getString("nombre_producto"),
-                    rs.getString("stock"),
-                    rs.getString("precio_unitario"),
-                    rs.getString("tipo"),
-                    rs.getString("unidad_de_medida")
-                };
-                modelo.addRow(fila);
-            }
-
-            // Cerrar recursos
-            rs.close();
-            stmt.close();
-            
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Manejar la excepción adecuadamente
-        }
-
         JTable tabla = new JTable(modelo);
-        tabla.setDefaultEditor(Object.class, null);
-        JScrollPane tablaProductos = new JScrollPane(tabla);
-        return tablaProductos;
+        JScrollPane tabla_productos = new JScrollPane(tabla);
+        return tabla_productos;
     }
+    
+    
     
 }
