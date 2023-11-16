@@ -29,17 +29,19 @@ public class Main {
         
         try(Connection conData = DriverManager.getConnection(url, user, password)){
         
-            //InsertRandomEmpleado(conData, 10); 
-            //InsertRandomCliente(conData,10);
-            //InsertRandomContactosCliente(conData,10);
-            //InsertRandomDireccionContacto(conData,10);
-            //InsertRandomProveedor(conData,10);
-            //InsertRandomAbastecimiento(conData,10);
-            //InsertRandomOrden(conData,10);
-            //InsertRandomProducto(conData,10);
+            InsertRandomEmpleado(conData, 5); 
+            InsertRandomCliente(conData,25);
+            InsertRandomContactosCliente(conData,3);
+            InsertRandomDireccionContacto(conData,2);
+            InsertRandomProveedor(conData,15);
+            InsertRandomAbastecimiento(conData,50);
+            InsertRandomOrden(conData,70);
+            InsertRandomProducto(conData,40);
             //InsertRandomRegistroAbastecimientoProducto(conData,10);
-            InsertRandomRegistroVenta(conData,10);
-            InsertRandomRegistroDespacho(conData,10);
+            //InsertRandomRegistroVenta(conData,10);
+            //InsertRandomRegistroDespacho(conData,10);
+            //InsertRandomRegistroVentaDespacho(conData,10);
+            //InsertRandomRegistroVentaProducto(conData,10);
             System.out.println("Se Inserto");
             
         }catch(SQLException e) {
@@ -48,7 +50,13 @@ public class Main {
     
     }
 
-     private static void InsertRandomRegistroVenta(Connection conData, int i) {
+    private static void InsertRandomRegistroVentaProducto(Connection conData, int i) {
+    }
+
+    private static void InsertRandomRegistroVentaDespacho(Connection conData, int i) {
+    }
+
+    private static void InsertRandomRegistroVenta(Connection conData, int i) {
 
     }
 
@@ -396,9 +404,6 @@ public class Main {
     
         
      // Método para insertar registros de venta aleatorios
-    
-
-
     public static void InsertRandomRegistroDespacho(Connection connection, int numRecords) throws SQLException {
 
     String query = "INSERT INTO registro_despacho (num_despacho, fecha, receptor, rut_empleado, direccion) VALUES (?, ?, ?, ?, ?)";
