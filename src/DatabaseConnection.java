@@ -5,6 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
+import java.text.SimpleDateFormat;
+import java.sql.Date;
 
 public class DatabaseConnection {
     static String driver = "org.postgresql.Driver";
@@ -35,7 +38,7 @@ public class DatabaseConnection {
             return null;  
         }
         
-        String consulta = "select * from producto where nombre_producto like ?";
+        String consulta = "SELECT * FROM producto WHERE nombre_producto ILIKE ?";
         
             try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
                 preparedStatement.setString(1, "%"+textFieldContent+"%");
@@ -104,6 +107,137 @@ public class DatabaseConnection {
             }finally{
                 closeConnection(conn);
             }
+    }
+    
+    public void AgregarCliente(String nombre,String rut,String direccion,String contacto){
+        Connection conn = null;
+        try{
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+        
+        String consulta = "INSERT INTO cliente (nombre, rut_cliente) VALUES (?,?)";
+        
+            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+                preparedStatement.setString(1,nombre);
+                preparedStatement.setString(2,rut);
+                
+                
+                preparedStatement.executeQuery();
+
+            }
+            catch (SQLException e) {
+                // Manejo de la excepción y mostrar tu propio mensaje al usuario
+                if(e.getSQLState().equals("23505")){
+                    JOptionPane.showMessageDialog(null, "rut ya existe", "Error", JOptionPane.INFORMATION_MESSAGE);   
+                }
+            }finally{
+                closeConnection(conn);
+            }
+    }
+    
+    public void AgregarProveedor(String nombre,String rut,String telefono){
+        Connection conn = null;
+        try{
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+        
+        String consulta = "INSERT INTO proveedor (nombre, rut_proveedor,telefono) VALUES (?,?,?)";
+        
+            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+                preparedStatement.setString(1,nombre);
+                preparedStatement.setString(2,rut);
+                preparedStatement.setString(3,telefono);
+                
+                preparedStatement.executeQuery();
+
+            }
+            catch (SQLException e) {
+                // Manejo de la excepción y mostrar tu propio mensaje al usuario
+                if(e.getSQLState().equals("23505")){
+                    JOptionPane.showMessageDialog(null, "rut ya existe", "Error", JOptionPane.INFORMATION_MESSAGE);   
+                }
+            }finally{
+                closeConnection(conn);
+            }
+    }
+    
+    public List<Object[]> BuscarOrdenDeCompra(String nombre_cliente,Date fechaInicial,Date fechaFinal,String numOrden){
+        Connection conn = null;
+        try{
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+        
+        
+        String sql = "SELECT orden_de_compra.id_orden,orden_de_compra.fecha_de_compra,empleado.nombre as nombre_empleado,cliente.nombre as nombre_cliente " +
+                    "FROM orden_de_compra " +
+                    "JOIN empleado ON empleado.rut_empleado = orden_de_compra.rut_empleado " +
+                    "JOIN cliente ON cliente.rut_cliente = orden_de_compra.rut_cliente " +
+                    "WHERE 1=1";
+            
+        if (nombre_cliente != null && !nombre_cliente.isEmpty()) {
+            sql += " AND cliente.nombre ILIKE ?";
+        }
+            
+        if (fechaInicial != null && fechaFinal != null) {
+                sql += " AND orden_de_compra.fecha <= ? AND orden_compra.fecha >= ?";
+        }
+            
+        if (numOrden != null && !numOrden.isEmpty()) {
+            sql += " AND orden_de_compra.id_orden = ?";
+        }
+
+        // Preparar la declaración SQL
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                // Establecer los parámetros según los filtros proporcionados
+            int parametroIndex = 1;
+
+            if (nombre_cliente != null && !nombre_cliente.isEmpty()) {
+                preparedStatement.setString(parametroIndex++, "%" + nombre_cliente + "%");
+            }
+
+            if (fechaInicial != null && fechaFinal != null) {
+                preparedStatement.setDate(parametroIndex++, fechaInicial);
+                preparedStatement.setDate(parametroIndex++, fechaFinal);
+            }
+
+            if (numOrden != null && !numOrden.isEmpty()) {
+                preparedStatement.setInt(parametroIndex++, Integer.parseInt(numOrden));
+            }
+
+                // Ejecutar la consulta
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                List<Object[]> rows = new ArrayList<>();
+                
+                while (resultSet.next()) {
+                    int valorColumna1 = resultSet.getInt("id_orden");
+                    Date valorColumna2 = resultSet.getDate("fecha_de_compra");
+                    String valorColumna3 = resultSet.getString("nombre_empleado");
+                    String valorColumna4 = resultSet.getString("nombre_cliente");
+                      
+                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4};
+                    rows.add(row);
+                    System.out.println(row);
+                    }                 
+                
+                return rows;
+            }        
+        }catch (SQLException e){
+            System.out.println(e);
+        }finally{
+                closeConnection(conn);
+        }
+        
+        
+        return null;
     }
     
     

@@ -178,6 +178,8 @@ public class Stock_insumos extends JPanel{
 
     private JScrollPane create_table(){
         JTable tabla = new JTable(modelo);
+        //tabla.setEnabled(false);
+        tabla.setDefaultEditor(Object.class, null);
         JScrollPane tabla_productos = new JScrollPane(tabla);
         return tabla_productos;
     }
