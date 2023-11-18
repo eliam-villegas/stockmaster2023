@@ -468,9 +468,11 @@ public class Main {
                 int prices = 100 + random.nextInt(999);
     
                 // Verificar si el número de compra existe en la tabla registro_abastecimiento
-                while (!checkNumCompraExistsInDatabase(connection, purchaseNumber)) {
-                    System.out.println("El número de compra " + purchaseNumber + " no existe. Generando uno nuevo.");
-                    purchaseNumber = getRandomNumCompraFromRegistro_abastecimiento(connection);
+                // Verificar si la combinación de ID de producto y número de compra ya existe
+                while (checkDuplicate(connection, productId, purchaseNumber)) {
+                    System.out.println("La combinación de ID de producto " + productId + " y número de compra " + purchaseNumber + " ya existe. Saltando inserción.");
+                    purchaseNumber++; // Incrementar el número de compra para evitar duplicados
+                    continue;  // Saltar a la próxima iteración del bucle
                 }
     
                 // Insertar el registro en la tabla registro_abastecimiento_contiene_producto
