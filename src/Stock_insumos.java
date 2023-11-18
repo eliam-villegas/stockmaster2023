@@ -153,7 +153,7 @@ public class Stock_insumos extends JPanel{
                 
                 var dbc = new DatabaseConnection();
                 
-                dbc.BotonIngresar(idTextField.getText(), nombreTextField.getText(), stockTextField.getText(),precioUnitarioTextField.getText(),tipoComboBox.getSelectedItem().toString(), unidadMedidaInsumoLista.getSelectedItem().toString());
+                dbc.AgregarProducto(idTextField.getText(), nombreTextField.getText(), stockTextField.getText(),precioUnitarioTextField.getText(),tipoComboBox.getSelectedItem().toString(), unidadMedidaInsumoLista.getSelectedItem().toString());
                 Searchbar.Buscar("", modelo);
                 
                 //aqui hace coneccion con la BD para ingresar los datos a la tabla.

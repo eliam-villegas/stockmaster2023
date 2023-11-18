@@ -16,11 +16,30 @@ public class DatabaseConnection {
     static String user = "sushi_dev";
     static String password = "5k4xFg6";
 
+    static enum VENTAS_POR{
+        empleado{
+            @Override
+            public String toString() {
+                return "empleado.rut_empleado";
+            }
+        },
+        cliente{
+            @Override
+            public String toString() {
+                return "cliente.rut_cliente";
+            }            
+        }
+    }
+    
+    static enum ORDER_BY{
+        ASC,
+        DESC
+    }
+    
     private Connection Getconnection() throws SQLException {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
-            System.out.println("Conexión exitosa a la base de datos!");
         } catch (SQLException e) {
             // En lugar de imprimir el mensaje de error, lanzamos la excepción
             System.out.println(e);
@@ -29,13 +48,13 @@ public class DatabaseConnection {
         return conn;
     }
     
-    public List<Object[]> BotonBuscarQuery(String textFieldContent){
+    public List<Object[]> BuscarProducto(String textFieldContent){
         Connection conn = null;
         try{
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return null;  
+            return new ArrayList<>();  
         }
         
         String consulta = "SELECT * FROM producto WHERE nombre_producto ILIKE ?";
@@ -65,19 +84,13 @@ public class DatabaseConnection {
                 // ...
             } catch (SQLException e) {
                 System.out.println(e);
-                closeConnection(conn);
-                // Manejar la excepción según tus necesidades
+                return new ArrayList<>();  
             }finally{
                 closeConnection(conn);
-            }
-        
-        
-        return null;
-        
-        
+            }  
     }
     
-    public void BotonIngresar(String id,String nombre,String stock,String precio,String tipo,String unidad){
+    public void AgregarProducto(String id,String nombre,String stock,String precio,String tipo,String unidad){
         Connection conn = null;
         try{
             conn = Getconnection();
@@ -138,6 +151,10 @@ public class DatabaseConnection {
             }
     }
     
+    public List<Object[]> BuscarCliente(String nombre){
+        return null;
+    }
+    
     public void AgregarProveedor(String nombre,String rut,String telefono){
         Connection conn = null;
         try{
@@ -167,13 +184,21 @@ public class DatabaseConnection {
             }
     }
     
-    public List<Object[]> BuscarOrdenDeCompra(String nombre_cliente,Date fechaInicial,Date fechaFinal,String numOrden){
+    public List<Object[]> BuscarProveedor(String nombre){
+        return null;
+    }
+    
+    public void agregarOrdenDeConpra(){
+        
+    }
+    
+    public List<Object[]> BuscarOrdenDeCompra(String nombre_cliente,String nombre_vendedor,Date fechaInicial,Date fechaFinal,String numOrden){
         Connection conn = null;
         try{
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return null;
+            return new ArrayList<>();  
         }
         
         
@@ -186,9 +211,13 @@ public class DatabaseConnection {
         if (nombre_cliente != null && !nombre_cliente.isEmpty()) {
             sql += " AND cliente.nombre ILIKE ?";
         }
+
+        if (nombre_vendedor != null && !nombre_vendedor.isEmpty()) {
+            sql += " AND empleado.nombre ILIKE ?";
+        }
             
         if (fechaInicial != null && fechaFinal != null) {
-                sql += " AND orden_de_compra.fecha <= ? AND orden_compra.fecha >= ?";
+                sql += " AND orden_de_compra.fecha_de_compra <= ? AND orden_compra.fecha_de_compra >= ?";
         }
             
         if (numOrden != null && !numOrden.isEmpty()) {
@@ -203,6 +232,10 @@ public class DatabaseConnection {
             if (nombre_cliente != null && !nombre_cliente.isEmpty()) {
                 preparedStatement.setString(parametroIndex++, "%" + nombre_cliente + "%");
             }
+            
+            if (nombre_vendedor != null && !nombre_vendedor.isEmpty()) {
+                preparedStatement.setString(parametroIndex++, "%" + nombre_vendedor + "%");
+            }            
 
             if (fechaInicial != null && fechaFinal != null) {
                 preparedStatement.setDate(parametroIndex++, fechaInicial);
@@ -225,27 +258,290 @@ public class DatabaseConnection {
                       
                     Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4};
                     rows.add(row);
-                    System.out.println(row);
+                    System.out.println(row[0]);
                     }                 
                 
                 return rows;
             }        
         }catch (SQLException e){
             System.out.println(e);
+            return new ArrayList<>();  
+        }finally{
+            closeConnection(conn);
+        }
+    }
+    
+    public List<Object[]> ObtenenOrdenDeCompraDetalles(String numOrden){
+        Connection conn = null;
+        try{
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();  
+        }
+        
+        
+        String sql = "SELECT orden_de_compra.id_orden,orden_de_compra.fecha_de_compra,empleado.nombre as nombre_empleado,cliente.nombre as nombre_cliente, producto.nombre_producto, orden_compra_contiene_producto.cantidad,orden_compra_contiene_producto.precio, orden_de_compra.subtotal " +
+                    "FROM orden_de_compra " +
+                    "JOIN orden_compra_contiene_producto ON orden_de_compra.id_orden = orden_compra_contiene_producto.id_orden " +
+                    "JOIN producto ON orden_compra_contiene_producto.id_producto = producto.id_producto " +
+                    "JOIN empleado ON empleado.rut_empleado = orden_de_compra.rut_empleado " +
+                    "JOIN cliente ON cliente.rut_cliente = orden_de_compra.rut_cliente " +
+                    "WHERE orden_de_compra.id_orden = ?";
+
+        // Preparar la declaración SQL
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                // Establecer los parámetros según los filtros proporcionados
+            preparedStatement.setInt(1,Integer.parseInt(numOrden));
+
+
+            // Ejecutar la consulta
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                List<Object[]> rows = new ArrayList<>();
+                
+                while (resultSet.next()) {
+                    int valorColumna1 = resultSet.getInt("id_orden");
+                    Date valorColumna2 = resultSet.getDate("fecha_de_compra");
+                    String valorColumna3 = resultSet.getString("nombre_empleado");
+                    String valorColumna4 = resultSet.getString("nombre_cliente");
+                    
+                    String valorColumna5 = resultSet.getString("nombre_producto");
+                    int valorColumna6 = resultSet.getInt("cantidad");
+                    int valorColumna7 = resultSet.getInt("precio");
+                    int valorColumna8 = resultSet.getInt("subtotal");
+                    
+                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4,valorColumna5,valorColumna6,valorColumna7,valorColumna8};
+                    rows.add(row);
+                    System.out.println(row[4]);
+                    }                 
+                
+                return rows;
+            }        
+        }catch (SQLException e){
+            System.out.println(e);
+            return new ArrayList<>();  
+        }finally{
+            closeConnection(conn);
+        }
+
+    }    
+    
+    public void agregarRegistroAbastecimiento(){
+        
+    }
+    
+    public List<Object[]> BuscarRegistroAbastecimiento(String nombre_proveedor,String nombre_empleado,Date fechaInicial,Date fechaFinal,String numCompra){
+        Connection conn = null;
+        try{
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();  
+        }
+        
+        
+        String sql = "SELECT registro_abastecimiento.num_compra,registro_abastecimiento.fecha_de_compra,empleado.nombre as nombre_empleado,proveedor.nombre as nombre_proveedor, registro_abastecimiento.total " +
+                    "FROM registro_abastecimiento " +
+                    "JOIN empleado ON empleado.rut_empleado = registro_abastecimiento.rut_empleado " +
+                    "JOIN proveedor ON proveedor.rut_proveedor = registro_abastecimiento.rut_proveedor " +
+                    "WHERE 1=1";
+            
+        if (nombre_proveedor != null && !nombre_proveedor.isEmpty()) {
+            sql += " AND proveedor.nombre ILIKE ?";
+        }
+
+        if (nombre_empleado != null && !nombre_empleado.isEmpty()) {
+            sql += " AND empleado.nombre ILIKE ?";
+        }
+            
+        if (fechaInicial != null && fechaFinal != null) {
+                sql += " AND registro_abastecimiento.fecha_de_compra <= ? AND registro_abastecimiento.fecha_de_compra >= ?";
+        }
+            
+        if (numCompra != null && !numCompra.isEmpty()) {
+            sql += " AND registro_abastecimiento.num_compra = ?";
+        }
+
+        // Preparar la declaración SQL
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                // Establecer los parámetros según los filtros proporcionados
+            int parametroIndex = 1;
+
+            if (nombre_proveedor != null && !nombre_proveedor.isEmpty()) {
+                preparedStatement.setString(parametroIndex++, "%" + nombre_proveedor + "%");
+            }
+            
+            if (nombre_empleado != null && !nombre_empleado.isEmpty()) {
+                preparedStatement.setString(parametroIndex++, "%" + nombre_empleado + "%");
+            }            
+
+            if (fechaInicial != null && fechaFinal != null) {
+                preparedStatement.setDate(parametroIndex++, fechaInicial);
+                preparedStatement.setDate(parametroIndex++, fechaFinal);
+            }
+
+            if (numCompra != null && !numCompra.isEmpty()) {
+                preparedStatement.setInt(parametroIndex++, Integer.parseInt(numCompra));
+            }
+
+                // Ejecutar la consulta
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                List<Object[]> rows = new ArrayList<>();
+                
+                while (resultSet.next()) {
+                    int valorColumna1 = resultSet.getInt("num_compra");
+                    Date valorColumna2 = resultSet.getDate("fecha_de_compra");
+                    String valorColumna3 = resultSet.getString("nombre_empleado");
+                    String valorColumna4 = resultSet.getString("nombre_proveedor");
+                    int valorColumna5 = resultSet.getInt("total");
+                      
+                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4,valorColumna5};
+                    rows.add(row);
+                    System.out.println(row[0]);
+                    }                 
+                
+                return rows;
+            }        
+        }catch (SQLException e){
+            System.out.println(e);
+            return new ArrayList<>();  
         }finally{
                 closeConnection(conn);
         }
         
-        
-        return null;
     }
     
+    public List<Object[]> ObtenenRegistroAbastecimientoDetalles(String numCompra){
+        Connection conn = null;
+        try{
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();  
+        }
+        
+        
+        String sql = "SELECT registro_abastecimiento.num_compra,registro_abastecimiento.fecha_de_compra,empleado.nombre as nombre_empleado,proveedor.nombre as nombre_proveedor, registro_abastecimiento.total, producto.nombre_producto, registro_abastecimiento_contiene_producto.cantidad, registro_abastecimiento_contiene_producto.precio " +
+                    "FROM registro_abastecimiento " +
+                    "JOIN registro_abastecimiento_contiene_producto ON registro_abastecimiento.num_compra = registro_abastecimiento_contiene_producto.num_compra " +
+                    "JOIN producto ON registro_abastecimiento_contiene_producto.id_producto = producto.id_producto " +
+                    "JOIN empleado ON empleado.rut_empleado = registro_abastecimiento.rut_empleado " +
+                    "JOIN proveedor ON proveedor.rut_proveedor = registro_abastecimiento.rut_proveedor " +
+                    "WHERE registro_abastecimiento.num_compra = ?";
+
+        // Preparar la declaración SQL
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+                // Establecer los parámetros según los filtros proporcionados
+            preparedStatement.setInt(1,Integer.parseInt(numCompra));
+
+
+            // Ejecutar la consulta
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                List<Object[]> rows = new ArrayList<>();
+                
+                while (resultSet.next()) {
+                    int valorColumna1 = resultSet.getInt("num_compra");
+                    Date valorColumna2 = resultSet.getDate("fecha_de_compra");
+                    String valorColumna3 = resultSet.getString("nombre_empleado");
+                    String valorColumna4 = resultSet.getString("nombre_proveedor");
+                    
+                    String valorColumna5 = resultSet.getString("nombre_producto");
+                    int valorColumna6 = resultSet.getInt("cantidad");
+                    int valorColumna7 = resultSet.getInt("precio");
+                    int valorColumna8 = resultSet.getInt("total");
+                    
+                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4,valorColumna5,valorColumna6,valorColumna7,valorColumna8};
+                    rows.add(row);
+                    System.out.println(row[4]);
+                    }                 
+                
+                return rows;
+            }        
+        }catch (SQLException e){
+            System.out.println(e);
+            return new ArrayList<>();  
+        }finally{
+            closeConnection(conn);
+        }
+    }
+    
+    public List<Object[]> ObtenerVentasPor(VENTAS_POR por,String nombre, Date fechaInicial, Date fechaFinal ,ORDER_BY order_by){
+        Connection conn = null;
+        try{
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();  
+        }
+        
+        String selectString;
+        if(por.equals(VENTAS_POR.cliente)){
+            selectString = "cliente.nombre";
+        }else{
+            selectString = "empleado.nombre";
+        }
+        
+        String whereClause = "";
+        
+        if (nombre != null && !nombre.isEmpty()) {
+            whereClause += " AND "+selectString+" ILIKE ?";
+        }
+            
+        if (fechaInicial != null && fechaFinal != null) {
+                whereClause += " AND registro_abastecimiento.fecha_de_compra <= ? AND registro_abastecimiento.fecha_de_compra >= ?";
+        }       
+        
+        
+        String sql = "select "+ por.toString() +" as rut"+","+ selectString +" as nombre"+ "," +" sum(orden_de_compra.subtotal) as total "
+                + "from orden_de_compra "
+                + "join cliente on orden_de_compra.rut_cliente = cliente.rut_cliente "
+                + "join empleado on orden_de_compra.rut_empleado = empleado.rut_empleado "
+                + "where 1=1" + whereClause + " "
+                + "group by " +por.toString()+ " order by total " + order_by.toString();
+
+        // Preparar la declaración SQL
+        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            // Establecer los parámetros según los filtros proporcionados
+            int parametroIndex = 1;
+                
+            if (nombre != null && !nombre.isEmpty()) {
+                preparedStatement.setString(parametroIndex++, "%" + nombre + "%");
+            }            
+
+            if (fechaInicial != null && fechaFinal != null) {
+                preparedStatement.setDate(parametroIndex++, fechaInicial);
+                preparedStatement.setDate(parametroIndex++, fechaFinal);
+            }
+                
+                
+            // Ejecutar la consulta
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                List<Object[]> rows = new ArrayList<>();
+                
+                while (resultSet.next()) {
+                    String valorColumna1 = resultSet.getString("rut");
+                    String valorColumna2 = resultSet.getString("nombre");
+                    int valorColumna3 = resultSet.getInt("total");
+                    
+                    Object[] row = {valorColumna1,valorColumna2,valorColumna3};
+                    rows.add(row);
+                    System.out.println(row[0] + "," +row[1]+ "," +row[2]);
+                    }                 
+                
+                return rows;
+            }        
+        }catch (SQLException e){
+            System.out.println(e);
+            return new ArrayList<>();  
+        }finally{
+            closeConnection(conn);
+        }     
+    }
     
     private void closeConnection(Connection conn) {
         if (conn != null) {
             try {
                 conn.close();
-                System.out.println("Conexión cerrada exitosamente");
             } catch (SQLException e) {
                 System.out.println("Error al cerrar la conexión: " + e.getMessage());
             }

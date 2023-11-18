@@ -37,7 +37,7 @@ public class Searchbar extends JPanel{
     public static void Buscar(String texto, DefaultTableModel modelo){
         modelo.setRowCount(0);
         var dbc = new DatabaseConnection();
-        var rows = dbc.BotonBuscarQuery(texto);   
+        var rows = dbc.BuscarProducto(texto);   
         for(Object[] row : rows){
             modelo.addRow(row);
         }
