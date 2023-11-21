@@ -11,9 +11,6 @@ public class Main {
             conn = DatabaseConnection.connect();
             // Hacer operaciones con la conexión
             SwingUtilities.invokeLater(() -> {
-            //Login loginFrame = new Login();
-            //loginFrame.setVisible(true);
-            //loginFrame.setResizable(false);
             Login loginFrame = new Login();
             loginFrame.setVisible(true);
             loginFrame.setResizable(false);
