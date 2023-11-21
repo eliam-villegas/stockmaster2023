@@ -4,13 +4,18 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.*;
 
 public class Login extends JFrame{
     private int mousex,mousey;
     private JTextField userField;
     private JPasswordField passwordField;
 
-    public Login(){
+    String rutEmpleado;
+    String contrasenia;
+
+
+    public Login() throws SQLException, ClassNotFoundException {
         //setSize(200,100);
         setTitle("Inicio de Sesión");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -122,7 +127,7 @@ public class Login extends JFrame{
         titlebar.add(icon_image,constraintsIcon);
     }
 
-    private void login_content(JPanel login_background){
+    private void login_content(JPanel login_background) throws SQLException, ClassNotFoundException {
 
         JPanel content = new JPanel(new GridBagLayout());
         content.setBackground(Color.white);
@@ -141,7 +146,10 @@ public class Login extends JFrame{
 
     }
 
-    private void content_elements(JPanel content){
+    private void content_elements(JPanel content) throws ClassNotFoundException, SQLException {
+
+        Connection conData;
+        conData = DatabaseConnection.connect();
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.insets = new Insets(5, 5, 5, 5);
@@ -162,18 +170,31 @@ public class Login extends JFrame{
         loginButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                String user = userField.getText();
-                String password = new String(passwordField.getPassword());
 
-                if ("usuario".equals(user) && "123".equals(password)) {
-                    JOptionPane.showMessageDialog(Login.this, "Inicio de sesión exitoso");
-                    dispose();
-                    Inventory inventory = new Inventory();
-                    inventory.setVisible(true);
+                rutEmpleado = userField.getText();
+                contrasenia = new String(passwordField.getPassword());
+                try {
+                    PreparedStatement statement = conData.prepareStatement("SELECT rut_empleado, contrasenia FROM empleado WHERE rut_empleado = ? AND contrasenia = ?");
+                    statement.setString(1, rutEmpleado);
+                    statement.setString(2, contrasenia);
+                    ResultSet resultSet = statement.executeQuery();
 
-                } else {
-                    JOptionPane.showMessageDialog(Login.this, "Inicio de sesión fallido. Verifica tus credenciales.");
+                    if (resultSet.next()) {
+                        JOptionPane.showMessageDialog(Login.this, "Inicio de sesión exitoso");
+                        dispose();
+                        Inventory inventory = new Inventory();
+                        inventory.setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(Login.this, "Inicio de sesión fallido. Verifica tus credenciales.");
+                    }
+
+                    resultSet.close();
+                    statement.close();
+
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
                 }
+
             }
         });
         
