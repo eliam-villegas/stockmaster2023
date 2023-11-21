@@ -14,6 +14,9 @@ public class Main {
             //Login loginFrame = new Login();
             //loginFrame.setVisible(true);
             //loginFrame.setResizable(false);
+            Login loginFrame = new Login();
+            loginFrame.setVisible(true);
+            loginFrame.setResizable(false);
             Inventory InvFrame = new Inventory();
             InvFrame.setVisible(true);
             });
