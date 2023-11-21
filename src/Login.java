@@ -127,7 +127,7 @@ public class Login extends JFrame{
         titlebar.add(icon_image,constraintsIcon);
     }
 
-    private void login_content(JPanel login_background) throws SQLException, ClassNotFoundException {
+    private void login_content(JPanel login_background) throws SQLException {
 
         JPanel content = new JPanel(new GridBagLayout());
         content.setBackground(Color.white);
