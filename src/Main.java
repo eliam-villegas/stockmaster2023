@@ -1,13 +1,11 @@
-import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.swing.SwingUtilities;
 
 public class Main {
     
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
-        Login loginFrame = null;
+        Login loginFrame;
             try {
                 loginFrame = new Login();
             } catch (SQLException e) {

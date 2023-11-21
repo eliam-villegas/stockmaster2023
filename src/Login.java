@@ -146,7 +146,7 @@ public class Login extends JFrame{
 
     }
 
-    private void content_elements(JPanel content) throws ClassNotFoundException, SQLException {
+    private void content_elements(JPanel content) throws SQLException {
 
         Connection conData;
         conData = DatabaseConnection.connect();
