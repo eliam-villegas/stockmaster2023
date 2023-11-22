@@ -10,9 +10,9 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class SearchbarProduct extends JPanel{
+public class SearchbarClient extends JPanel{
 
-    public SearchbarProduct(){
+    public SearchbarClient(){
         setLayout(new BorderLayout());
 
         JTextField campoBusqueda = new JTextField(30);
@@ -37,17 +37,17 @@ public class SearchbarProduct extends JPanel{
         // Realizar la consulta a la base de datos
         try {
             Connection conn = null;
-            conn = DatabaseConnection.connect();
+            conn = DatabaseConnection.Getconnection();
             Statement statement = conn.createStatement();
-            String query = "SELECT * FROM producto WHERE nombre_producto LIKE '%" + consulta + "%'";
+            String query = "SELECT * FROM cliente WHERE nombre LIKE '%" + consulta + "%'";
             ResultSet resultSet = statement.executeQuery(query);
 
             // Procesar los resultados de la consulta
             while (resultSet.next()) {
                 // Obtener los datos de la consulta
-                String resultado = resultSet.getString("nombre_producto");
+                String resultado = resultSet.getString("nombre");
                 // Hacer algo con el resultado (mostrarlo en una tabla, en un JOptionPane, etc.)
-                
+
                 System.out.println(resultado);
             }
 
@@ -60,4 +60,3 @@ public class SearchbarProduct extends JPanel{
     }
 }
     
-

@@ -7,12 +7,12 @@ import java.awt.event.MouseEvent;
 public class Inventory extends JFrame{
 
     private int mousex,mousey;
-    
+
     private JPanel main_tab;
     private JPanel dashBoard_tab;
 
     private CardLayout cardLayout = new CardLayout();
-    
+
     public Inventory(){
         setSize(1200, 800);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,7 +32,7 @@ public class Inventory extends JFrame{
 
         JPanel titlebar = new JPanel(new GridBagLayout());
         titlebar.setBackground(new Color(70,130,180));
-        
+
         GridBagConstraints constraintsTitleBar = new GridBagConstraints();
         constraintsTitleBar.gridx = 0;
         constraintsTitleBar.gridy = 0;
@@ -266,12 +266,140 @@ public class Inventory extends JFrame{
         constraintsBotonMenu.gridy = 3;
         menu.add(botonOrdenCompra,constraintsBotonMenu);
 
+        JLabel botonVentas = new JLabel("Registro de Ventas");
+        botonVentas.setOpaque(true);
+        botonVentas.setBackground(new Color(51,51,51));
+        botonVentas.setForeground(Color.white);
+        botonVentas.setHorizontalAlignment(SwingConstants.CENTER);
+        botonVentas.setFont(new Font("Arial", Font.BOLD, 12));
+        botonVentas.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonVentas.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(main_tab,"opcion 4");
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                botonVentas.setBackground(Color.darkGray); // Cambia el color cuando el mouse entra
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                botonVentas.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
+            }
+        });
+
+        constraintsBotonMenu.gridy = 4;
+        menu.add(botonVentas,constraintsBotonMenu);
+
+        JLabel botonproveedor = new JLabel("Proveedores");
+        botonproveedor.setOpaque(true);
+        botonproveedor.setBackground(new Color(51,51,51));
+        botonproveedor.setForeground(Color.white);
+        botonproveedor.setHorizontalAlignment(SwingConstants.CENTER);
+        botonproveedor.setFont(new Font("Arial", Font.BOLD, 12));
+        botonproveedor.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonproveedor.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(main_tab,"opcion 5");
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                botonproveedor.setBackground(Color.darkGray); // Cambia el color cuando el mouse entra
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                botonproveedor.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
+            }
+        });
+
+        constraintsBotonMenu.gridy = 5;
+        menu.add(botonproveedor,constraintsBotonMenu);
+
+        JLabel botoncliente = new JLabel("Clientes");
+        botoncliente.setOpaque(true);
+        botoncliente.setBackground(new Color(51,51,51));
+        botoncliente.setForeground(Color.white);
+        botoncliente.setHorizontalAlignment(SwingConstants.CENTER);
+        botoncliente.setFont(new Font("Arial", Font.BOLD, 12));
+        botoncliente.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botoncliente.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(main_tab,"opcion 6");
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                botoncliente.setBackground(Color.darkGray); // Cambia el color cuando el mouse entra
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                botoncliente.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
+            }
+        });
+
+        JLabel botonempleados = new JLabel("Empleados");
+        botonempleados.setOpaque(true);
+        botonempleados.setBackground(new Color(51,51,51));
+        botonempleados.setForeground(Color.white);
+        botonempleados.setHorizontalAlignment(SwingConstants.CENTER);
+        botonempleados.setFont(new Font("Arial", Font.BOLD, 12));
+        botonempleados.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonempleados.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(main_tab,"opcion 7");
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                botonempleados.setBackground(Color.darkGray); // Cambia el color cuando el mouse entra
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                botonempleados.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
+            }
+        });
+
+        constraintsBotonMenu.gridy = 7;
+        menu.add(botonempleados,constraintsBotonMenu);
+
+        JLabel botonreportes = new JLabel("Reportes");
+        botonreportes.setOpaque(true);
+        botonreportes.setBackground(new Color(51,51,51));
+        botonreportes.setForeground(Color.white);
+        botonreportes.setHorizontalAlignment(SwingConstants.CENTER);
+        botonreportes.setFont(new Font("Arial", Font.BOLD, 12));
+        botonreportes.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botonreportes.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(main_tab,"opcion 8");
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                botoncliente.setBackground(Color.darkGray); // Cambia el color cuando el mouse entra
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                botoncliente.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
+            }
+        });
+
+        constraintsBotonMenu.gridy = 8;
+        menu.add(botoncliente,constraintsBotonMenu);
+
+
         JPanel espacio = new JPanel();
         espacio.setBackground(new Color(51,51,51));
 
         GridBagConstraints constraintsEspacio = new GridBagConstraints();
         constraintsEspacio.gridx = 0;
-        constraintsEspacio.gridy = 4;
+        constraintsEspacio.gridy = 9;
         constraintsEspacio.weightx = 1;
         constraintsEspacio.weighty = 10;
         constraintsEspacio.fill = GridBagConstraints.BOTH;
@@ -308,5 +436,9 @@ public class Inventory extends JFrame{
     private void insertAddTab(JPanel main_tab,GridBagConstraints constraintsTab){
         Stock_insumos stock_tab = new Stock_insumos();
         main_tab.add(stock_tab,"opcion 2");
+
+        Clientes client_tab = new Clientes();
+        main_tab.add(client_tab,"opcion 6");
+
     }
 }
