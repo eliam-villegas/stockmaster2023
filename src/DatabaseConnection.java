@@ -36,7 +36,7 @@ public class DatabaseConnection {
         DESC
     }
     
-    private Connection Getconnection() throws SQLException {
+    static Connection Getconnection() throws SQLException {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
