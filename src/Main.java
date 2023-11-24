@@ -1,11 +1,14 @@
-import java.sql.SQLException;
+//import java.sql.SQLException;
 
 
 public class Main {
 
     public static void main(String[] args) {
 
-        Login loginFrame;
+        Inventory inventory = new Inventory();
+        inventory.setVisible(true);
+
+        /*Login loginFrame;
         try {
             loginFrame = new Login();
         } catch (SQLException e) {
@@ -14,7 +17,7 @@ public class Main {
             throw new RuntimeException(e);
         }
         loginFrame.setVisible(true);
-        loginFrame.setResizable(false);
+        loginFrame.setResizable(false);*/
 
 
     }

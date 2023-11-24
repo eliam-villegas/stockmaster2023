@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
-import java.text.SimpleDateFormat;
 import java.sql.Date;
 
 public class DatabaseConnection {
@@ -88,6 +87,38 @@ public class DatabaseConnection {
             }finally{
                 closeConnection(conn);
             }  
+    }
+
+    public void ModificarProducto(String id,String nombre,String stock,String precio,String tipo,String unidad){
+        Connection conn = null;
+        try{
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String consulta = "UPDATE producto SET nombre_producto = ?, stock = ?, precio_unitario = ?, tipo = ?, unidad_de_medida = ? WHERE id_producto = ?";
+
+        try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+                
+                preparedStatement.setString(1,nombre);
+                preparedStatement.setInt(2,Integer.parseInt(stock));
+                preparedStatement.setInt(3,Integer.parseInt(precio));
+                preparedStatement.setString(4,tipo);
+                preparedStatement.setString(5,unidad);
+                preparedStatement.setInt(6,Integer.parseInt(id));
+                
+                
+                preparedStatement.executeQuery();
+
+            } catch (SQLException e) {
+                System.out.println(e);
+                closeConnection(conn);
+                // Manejar la excepción según tus necesidades
+            }finally{
+                closeConnection(conn);
+            }
     }
     
     public void AgregarProducto(String id,String nombre,String stock,String precio,String tipo,String unidad){

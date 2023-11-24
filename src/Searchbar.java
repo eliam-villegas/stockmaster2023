@@ -6,10 +6,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
-import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 public class Searchbar extends JPanel{
