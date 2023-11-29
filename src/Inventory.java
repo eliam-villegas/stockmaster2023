@@ -402,11 +402,27 @@ public class Inventory extends JFrame{
     }
 
     private void insertMainTab(JPanel main_tab,GridBagConstraints constraintsTab){
+        //Espacio en blanco que se muestra en el boton DashBoard
         dashBoard_tab = new JPanel();
         dashBoard_tab.setBackground(Color.white);
         main_tab.add(dashBoard_tab,"opcion 1");
 
         cardLayout.show(main_tab,"opcion 1");
+
+        JLabel peo = new JLabel("cacapeopene");
+        dashBoard_tab.add(peo);
+
+        // Crear una instancia de la clase Graficos y agregarla a un JPanel
+        Graficos graficos = new Graficos();
+
+        // Crear un JPanel para contener el gráfico
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(graficos, BorderLayout.CENTER);
+
+        // Agregar el JPanel al JFrame principal
+        dashBoard_tab.add(panel);
+
+        dashBoard_tab.setVisible(true);
 
     }
 
