@@ -21,6 +21,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
 
 
@@ -28,6 +29,8 @@ public class Stock_insumos extends JPanel{
 
     private CardLayout cardLayout = new CardLayout();
     public DefaultTableModel modelo;
+    public JScrollPane tabla;
+    public JTable tabla_real;
 
     private JButton boton_agregar;
     private JButton boton_modificar = new JButton("Modificar");
@@ -55,9 +58,11 @@ public class Stock_insumos extends JPanel{
         container2.setBackground(Color.white);
         container2.setBorder(BorderFactory.createTitledBorder("Eliminar"));
 
+        tabla = create_table();
+        tabla_real = getTableFromScrollPane(tabla);
         Searchbar searchbar = new Searchbar(modelo);
-
-        JScrollPane tabla = create_table();
+        TableColumn cantidadColumn = tabla_real.getColumn("Stock");
+        cantidadColumn.setCellRenderer(new ColorRenderer());
 
         crear_panel_agregar(cardPanel);
         crear_panel_modificar(cardPanel,tabla);
@@ -170,13 +175,18 @@ public class Stock_insumos extends JPanel{
         boton_ingresar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                var dbc = new DatabaseConnection();
-                
-                dbc.AgregarProducto(idTextField.getText(), nombreTextField.getText(), stockTextField.getText(),precioUnitarioTextField.getText(),tipoComboBox.getSelectedItem().toString(), unidadMedidaInsumoLista.getSelectedItem().toString());
-                Searchbar.Buscar("", modelo);
-                
                 //aqui hace coneccion con la BD para ingresar los datos a la tabla.
+                try {
+                    var dbc2 = new DatabaseConnection();
+                    
+                    dbc2.AgregarProducto(idTextField.getText(), nombreTextField.getText(), stockTextField.getText(),precioUnitarioTextField.getText(),tipoComboBox.getSelectedItem().toString(), unidadMedidaInsumoLista.getSelectedItem().toString());
+                    TableColumn cantidadColumn = tabla_real.getColumn("Stock");
+                    cantidadColumn.setCellRenderer(new ColorRenderer());
+                    Searchbar.Buscar("", modelo);
+            
+                } catch (NumberFormatException x) {
+                    JOptionPane.showMessageDialog(Stock_insumos.this, "Atributos de ingreso vacios o no validos.","Error",JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 
@@ -195,14 +205,12 @@ public class Stock_insumos extends JPanel{
         panel_modificar.setName("panel_modificar");
 
         JLabel idLabel = new JLabel("ID producto:");
-        //idLabel.setHorizontalAlignment(SwingConstants.CENTER);
         idLabel.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField idTextField = new JTextField(20);
         idTextField.setEditable(false);
         ((AbstractDocument) idTextField.getDocument()).setDocumentFilter(new NumberFilter());
 
         JLabel nombreLabel = new JLabel("Nombre:");
-        //nombreLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nombreLabel.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField nombreTextField = new JTextField(20);
 
@@ -288,7 +296,6 @@ public class Stock_insumos extends JPanel{
                     dbc.ModificarProducto(idTextField.getText(), nombreTextField.getText(), stockTextField.getText(), precioUnitarioTextField.getText(), tipoComboBox.getSelectedItem().toString(), unidadMedidaInsumoLista.getSelectedItem().toString());
                     Searchbar.Buscar("", modelo);
                 }
-
             }
         });
     }

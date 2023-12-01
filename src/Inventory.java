@@ -38,7 +38,7 @@ public class Inventory extends JFrame{
         constraintsTitleBar.gridx = 0;
         constraintsTitleBar.gridy = 0;
         constraintsTitleBar.weightx = 1;
-        constraintsTitleBar.weighty = 25;
+        constraintsTitleBar.weighty = 2;
         constraintsTitleBar.fill = GridBagConstraints.BOTH;
         constraintsTitleBar.anchor = GridBagConstraints.NORTHWEST;
         background.add(titlebar,constraintsTitleBar);
@@ -213,7 +213,7 @@ public class Inventory extends JFrame{
         botonCompra.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                cardLayout.show(main_tab,"opcion 3");
+                cardLayout.show(main_tab,"opcion 10");
             }
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -414,8 +414,14 @@ public class Inventory extends JFrame{
         Stock_insumos stock_tab = new Stock_insumos();
         main_tab.add(stock_tab,"opcion 2");
 
+        Orden_de_compra orden_compra_tab = new Orden_de_compra();
+        main_tab.add(orden_compra_tab,"opcion 3");
+
         Clientes client_tab = new Clientes();
         main_tab.add(client_tab,"opcion 6");
+
+        Registro_venta ventas_tab = new Registro_venta();
+        main_tab.add(ventas_tab,"opcion 4");
 
     }
 
