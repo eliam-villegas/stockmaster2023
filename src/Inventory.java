@@ -401,30 +401,27 @@ public class Inventory extends JFrame{
         content.add(main_tab,constraints(1, 0, 10, 60, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
     }
 
-    private void insertMainTab(JPanel main_tab,GridBagConstraints constraintsTab){
-        //Espacio en blanco que se muestra en el boton DashBoard
+    private void insertMainTab(JPanel main_tab, GridBagConstraints constraintsTab) {
+        // Espacio en blanco que se muestra en el boton DashBoard
         dashBoard_tab = new JPanel();
         dashBoard_tab.setBackground(Color.white);
-        main_tab.add(dashBoard_tab,"opcion 1");
+        main_tab.add(dashBoard_tab, "opcion 1");
 
-        cardLayout.show(main_tab,"opcion 1");
+        cardLayout.show(main_tab, "opcion 1");
 
-        JLabel peo = new JLabel("cacapeopene");
-        dashBoard_tab.add(peo);
+        JPanel panel = Graficos.createVentasPorClienteChart();
+        JPanel panel2 = Graficos.graficoTorta();
+        JPanel panel3 = Graficos.tablaStock();
+        JPanel panel4 = Graficos.createChartPanel();
 
-        // Crear una instancia de la clase Graficos y agregarla a un JPanel
-        Graficos graficos = new Graficos();
+        dashBoard_tab.setLayout(new GridLayout(2, 2)); // Dos columnas
 
-        // Crear un JPanel para contener el gráfico
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.add(graficos, BorderLayout.CENTER);
-
-        // Agregar el JPanel al JFrame principal
         dashBoard_tab.add(panel);
-
-        dashBoard_tab.setVisible(true);
-
+        dashBoard_tab.add(panel2);
+        dashBoard_tab.add(panel3);
+        dashBoard_tab.add(panel4);
     }
+
 
     private void insertAddTab(JPanel main_tab,GridBagConstraints constraintsTab){
         Stock_insumos stock_tab = new Stock_insumos();
