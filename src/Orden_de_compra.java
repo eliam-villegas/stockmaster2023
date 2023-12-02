@@ -21,15 +21,21 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
-//import java.time.LocalDate;
 
 public class Orden_de_compra extends JPanel{
 
+    String rut_clientes;
+    String nombre_clientes;
+
+    private LocalDate fechaActual;
+
     private DefaultTableModel modelo;
+    private JTextField nombre_cliente_text;
+    private JTextField id_cliente_text;
+
     private CardLayout cardLayout = new CardLayout();
     private JTable tabla;
     JTable tabla_productos;
-   //private LocalDate fechaActual;
 
     public Orden_de_compra(){
 
@@ -84,6 +90,8 @@ public class Orden_de_compra extends JPanel{
 
         orden_de_compra.add(vista_clientes,gridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
 
+        panel_crear_orden(card_panel);
+
         mostrar_orden.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -97,6 +105,8 @@ public class Orden_de_compra extends JPanel{
                 tabla = getTableFromScrollPane(tabla_clientes);
                 int filaSeleccionada = tabla.getSelectedRow();
                 if(filaSeleccionada != -1){
+                    id_cliente_text.setText(modelo_cliente.getValueAt(tabla.getSelectedRow(),0).toString());
+                    nombre_cliente_text.setText(modelo_cliente.getValueAt(tabla.getSelectedRow(),1).toString());
                     cardLayout.show(card_panel, "opcion 2");
                 }
                 else{
@@ -108,118 +118,9 @@ public class Orden_de_compra extends JPanel{
         card_panel.add(orden_de_compra,"opcion 1");
         cardLayout.show(card_panel, "opcion 1");
 
-        panel_crear_orden(card_panel);
-
         add(card_panel,gridBagConstraints(0, 0, 1, 1, 1, 12, GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
 
     }
-
-    /*private void panel_crear_orden(JPanel card_Panel){
-
-        JPanel panel_orden = new JPanel(new GridBagLayout());
-        panel_orden.setBackground(Color.white);
-        panel_orden.setBorder(BorderFactory.createTitledBorder(""));
-
-        JPanel panel_seleccionar_cliente = new JPanel(new GridBagLayout());
-        panel_seleccionar_cliente.setBorder(BorderFactory.createTitledBorder("Seleccione un Cliente"));
-
-        JPanel panel_seleccionar_empleado = new JPanel(new GridBagLayout());
-        panel_seleccionar_empleado.setBorder(BorderFactory.createTitledBorder("Seleccione un Encargado"));
-
-        var dbc = new DatabaseConnection();
-
-        String[] columnas = {"Rut","Cliente"};
-        DefaultTableModel modelo_cliente = new DefaultTableModel(null, columnas);
-        JScrollPane tabla_orden_cliente = create_table(modelo_cliente);
-
-        var rows = dbc.ObtenerClientes_con_orden();
-        for(Object[] row : rows){
-            modelo_cliente.addRow(row);
-        }
-        if(modelo_cliente.getRowCount() == 0){
-            JOptionPane.showMessageDialog(null, "No se han encontrado clientes asociados", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
-        }
-        panel_seleccionar_cliente.add(tabla_orden_cliente,gridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
-
-        String[] columnas_empleado = {"Rut","Empleado"};
-        DefaultTableModel modelo_empleado = new DefaultTableModel(null, columnas_empleado);
-        JScrollPane tabla_orden_empleado = create_table(modelo_empleado);
-
-        var rows2 = dbc.ObtenerEmpleados_para_orden();
-        for(Object[] row : rows2){
-            modelo_empleado.addRow(row);
-        }
-        if(modelo_cliente.getRowCount() == 0){
-            JOptionPane.showMessageDialog(null, "No se han encontrado Empleados", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
-        }
-        panel_seleccionar_empleado.add(tabla_orden_empleado,gridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
-
-        JPanel crear_ord_cont_produc = new JPanel(new GridBagLayout());
-        crear_ord_cont_produc.setBorder(BorderFactory.createTitledBorder("Generar datos de orden"));
-
-        JLabel id_orden = new JLabel("Id orden:");
-        JTextField id_orden_text = new JTextField(10);
-        ((AbstractDocument) id_orden_text.getDocument()).setDocumentFilter(new NumberFilter());
-        crear_ord_cont_produc.add(id_orden,gridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        crear_ord_cont_produc.add(id_orden_text,gridBagConstraints(1, 1, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-
-        JLabel id_cliente = new JLabel("Rut cliente:");
-        JTextField id_cliente_text = new JTextField(10);
-        id_cliente_text.setEditable(false);
-        crear_ord_cont_produc.add(id_cliente,gridBagConstraints(2, 0, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        crear_ord_cont_produc.add(id_cliente_text,gridBagConstraints(3, 0, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-
-        JLabel nombre_cliente = new JLabel("Nombre cliente:");
-        JTextField nombre_cliente_text = new JTextField(10);
-        nombre_cliente_text.setEditable(false);
-        crear_ord_cont_produc.add(nombre_cliente,gridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        crear_ord_cont_produc.add(nombre_cliente_text,gridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-
-        JLabel fecha = new JLabel("Fecha:");
-        JTextField fecha_text = new JTextField(10);
-        fecha_text.setEditable(false);
-        //fechaActual = LocalDate.now();
-        crear_ord_cont_produc.add(fecha,gridBagConstraints(2, 1, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        crear_ord_cont_produc.add(fecha_text,gridBagConstraints(3, 1, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-
-        JLabel seleccionar_producto = new JLabel("Seleccione productos:");
-        crear_ord_cont_produc.add(seleccionar_producto,gridBagConstraints(0, 2, 1, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
-
-        String[] columnas_ord_cont_produ = {"Id","Producto","Precio","Stock"};
-        DefaultTableModel modelo_ord_cont_produc = new DefaultTableModel(null ,columnas_ord_cont_produ);
-        JScrollPane tabla_ord_cont_produc = create_table(modelo_ord_cont_produc);
-        crear_ord_cont_produc.add(tabla_ord_cont_produc,gridBagConstraints(0, 3, 4, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
-
-        JLabel cantidad = new JLabel("Cantidad:");
-        JTextField cantidad_text = new JTextField(10);
-        ((AbstractDocument) cantidad_text.getDocument()).setDocumentFilter(new NumberFilter());
-        crear_ord_cont_produc.add(cantidad,gridBagConstraints(0, 4, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        crear_ord_cont_produc.add(cantidad_text,gridBagConstraints(1, 4, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-
-        JLabel precio = new JLabel("precio:");
-        JTextField precio_text = new JTextField(10);
-        precio_text.setEditable(false);
-        crear_ord_cont_produc.add(precio,gridBagConstraints(2, 4, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        crear_ord_cont_produc.add(precio_text,gridBagConstraints(3, 4, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-
-        JLabel subtotal = new JLabel("Subtotal:");
-        JTextField subtotal_text = new JTextField(10);
-        subtotal_text.setEditable(false);
-        crear_ord_cont_produc.add(subtotal,gridBagConstraints(0, 5, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        crear_ord_cont_produc.add(subtotal_text,gridBagConstraints(1, 5, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-
-        JLabel empleado_a_cargo = new JLabel("Encargado:");
-        JTextField empleado_a_cargo_text = new JTextField(10);
-        crear_ord_cont_produc.add(empleado_a_cargo,gridBagConstraints(2, 5, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        crear_ord_cont_produc.add(empleado_a_cargo_text,gridBagConstraints(3, 5, 1, 1, 1, 1, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-
-        panel_orden.add(panel_seleccionar_cliente,gridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.WEST));
-        panel_orden.add(panel_seleccionar_empleado,gridBagConstraints(0, 1, 1, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.WEST));
-        panel_orden.add(crear_ord_cont_produc,gridBagConstraints(1, 0, 1, 2, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.WEST));
-
-        card_Panel.add(panel_orden,"opcion 2");
-
-    }*/
 
     private void panel_crear_orden(JPanel card_Panel){
 
@@ -231,13 +132,13 @@ public class Orden_de_compra extends JPanel{
 
         //informacion del cliente
         JLabel id_cliente = new JLabel("Rut cliente:");
-        JTextField id_cliente_text = new JTextField(5);
+        id_cliente_text = new JTextField();
         id_cliente_text.setEditable(false);
         panel_crear_orden.add(id_cliente,gridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
         panel_crear_orden.add(id_cliente_text,gridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
 
         JLabel nombre_cliente = new JLabel("Nombre cliente:");
-        JTextField nombre_cliente_text = new JTextField(5);
+        nombre_cliente_text = new JTextField();
         nombre_cliente_text.setEditable(false);
         panel_crear_orden.add(nombre_cliente,gridBagConstraints(2, 0, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
         panel_crear_orden.add(nombre_cliente_text,gridBagConstraints(3, 0, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
@@ -254,7 +155,7 @@ public class Orden_de_compra extends JPanel{
         JLabel fecha = new JLabel("Fecha de la orden:");
         JTextField fecha_text = new JTextField(5);
         fecha_text.setEditable(false);
-        LocalDate fechaActual = LocalDate.now();
+        fechaActual = LocalDate.now();
         fecha_text.setText(fechaActual.toString());
         panel_crear_orden.add(fecha,gridBagConstraints(2, 1, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
         panel_crear_orden.add(fecha_text,gridBagConstraints(3, 1, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
@@ -312,17 +213,6 @@ public class Orden_de_compra extends JPanel{
         panel_crear_orden.add(encargado,gridBagConstraints(0, 7, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
         panel_crear_orden.add(rut_encargado,gridBagConstraints(1, 7, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
 
-        /*var rows = dbc.ObtenerEmpleados_para_orden();
-        String[] columna_encargados = {"Rut","Encargado"};
-        DefaultTableModel modelo_encargados = new DefaultTableModel(null,columna_encargados);
-        JScrollPane tabla_encargados = create_table(modelo_encargados);
-        for(Object[] row : rows){modelo_encargados.addRow(row);}
-        if(modelo_encargados.getRowCount() == 0){
-            JOptionPane.showMessageDialog(null, "No se han encontrado clientes asociados", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
-        }
-        panel_crear_orden.add(tabla_encargados,gridBagConstraints(0, 6, 2, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
-        */
-
         //botones de crear y cancelar
         JButton generar_orden = new JButton("Generar Orden");
         JButton cancelar = new JButton("Cancelar");
@@ -378,8 +268,38 @@ public class Orden_de_compra extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                id_orden_text.setEditable(true);
-                id_orden_text.setText("");
+                //guardar cambios
+                JTable tabla_product_ord = getTableFromScrollPane(productos_ordenados);
+                if(tabla_product_ord.getRowCount() != 0 && id_orden_text.getText().isEmpty() == false && rut_encargado.getText().isEmpty() == false){
+                    if(dbc.VerificarRutEmpleadoExiste(rut_encargado.getText()) == true){
+                        JOptionPane.showMessageDialog(null, "ta weno.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+
+                        fechaActual = LocalDate.now();
+
+                        dbc.AgregarOrdenDeCompra(id_orden_text.getText(),fechaActual, precio_total_text.getText(), rut_encargado.getText(), id_cliente_text.getText());
+                        dbc.AgregarProducto_a_orden_de_compra(modelo_product_ord);
+                        SearchbarCompras.Buscar("",modelo);
+
+                        id_orden_text.setEditable(true);
+                        id_orden_text.setText("");
+
+                        precio_total_text.setText("0");
+                        cantidad_text.setText("1");
+
+                        rut_encargado.setText("");
+
+                        modelo_product_ord.setRowCount(0);
+
+                        cardLayout.show(card_Panel, "opcion 1");
+
+                    }
+                    else{
+                        JOptionPane.showMessageDialog(null, "El empleado no existe.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                }
+                else{
+                    JOptionPane.showMessageDialog(null, "Por favor rellene todos los campos.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         });
 
@@ -388,6 +308,14 @@ public class Orden_de_compra extends JPanel{
             public void actionPerformed(ActionEvent e) {
                 id_orden_text.setEditable(true);
                 id_orden_text.setText("");
+
+                precio_total_text.setText("0");
+
+                rut_encargado.setText("");
+                cantidad_text.setText("1");
+
+                modelo_product_ord.setRowCount(0);
+
                 cardLayout.show(card_Panel, "opcion 1");
             }
         });

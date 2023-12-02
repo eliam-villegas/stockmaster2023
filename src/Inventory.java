@@ -420,6 +420,9 @@ public class Inventory extends JFrame{
         Clientes client_tab = new Clientes();
         main_tab.add(client_tab,"opcion 6");
 
+        Empleados empleados_tab = new Empleados();
+        main_tab.add(empleados_tab,"opcion 7");
+
         Registro_venta ventas_tab = new Registro_venta();
         main_tab.add(ventas_tab,"opcion 4");
 
