@@ -8,12 +8,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
-public class SearchbarCompras extends JPanel{
-
-    public SearchbarCompras(DefaultTableModel modelo){
-        
+public class SearchbarEmpleado extends JPanel{
+    public SearchbarEmpleado(DefaultTableModel modelo){
         setLayout(new BorderLayout());
-        Buscar("",modelo);
 
         JTextField campoBusqueda = new JTextField(30);
         add(campoBusqueda, BorderLayout.CENTER);
@@ -26,16 +23,17 @@ public class SearchbarCompras extends JPanel{
         botonBuscar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               //Buscar(campoBusqueda.getText(),modelo);  
+                String consulta = campoBusqueda.getText();
+                Buscar_empleado(consulta, modelo);
+                // Aquí puedes realizar la lógica de búsqueda con la consulta ingresada
             }
         });
-        
     }
 
-    public static void Buscar(String texto, DefaultTableModel modelo){
+    public static void Buscar_empleado(String filtro,DefaultTableModel modelo){
         modelo.setRowCount(0);
         var dbc = new DatabaseConnection();
-        var rows = dbc.BuscarOrdenDeCompra(texto);
+        var rows = dbc.BuscarEmpleado(filtro);
         for(Object[] row : rows){
             modelo.addRow(row);
         }
