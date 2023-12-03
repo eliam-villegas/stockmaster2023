@@ -58,7 +58,8 @@ public class Registro_venta extends JPanel{
         JButton generar_registro = new JButton("Generar Registro");
         panel.add(generar_registro,gridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST));
 
-
+         JButton generar_reporte = new JButton("Generar Reporte");
+        panel.add(generar_reporte,gridBagConstraints(2, 0, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST));
     }
 
     private void contenido_vista_ventas(JPanel panel){
