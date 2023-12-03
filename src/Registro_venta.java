@@ -2,6 +2,9 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -10,6 +13,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+
+import com.itextpdf.text.DocumentException;
 
 public class Registro_venta extends JPanel{
 
@@ -60,6 +65,20 @@ public class Registro_venta extends JPanel{
 
          JButton generar_reporte = new JButton("Generar Reporte");
         panel.add(generar_reporte,gridBagConstraints(2, 0, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST));
+        generar_reporte.addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
+
+                try {
+                    Reportes report = new Reportes();
+                    report.reportVenta();
+                } catch (FileNotFoundException | DocumentException  e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } 
+            }
+
+        });
     }
 
     private void contenido_vista_ventas(JPanel panel){
