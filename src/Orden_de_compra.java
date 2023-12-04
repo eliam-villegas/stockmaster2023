@@ -278,7 +278,7 @@ public class Orden_de_compra extends JPanel{
 
                         dbc.AgregarOrdenDeCompra(id_orden_text.getText(),fechaActual, precio_total_text.getText(), rut_encargado.getText(), id_cliente_text.getText());
                         dbc.AgregarProducto_a_orden_de_compra(modelo_product_ord);
-                        SearchbarCompras.Buscar("",modelo);
+                        SearchbarCompras.Buscar(null,null,null,null,"",modelo);
 
                         id_orden_text.setEditable(true);
                         id_orden_text.setText("");

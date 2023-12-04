@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.util.Date;
 
-import java.sql.Date;
 
 public class DatabaseConnection {
     static String driver = "org.postgresql.Driver";
@@ -315,8 +315,7 @@ public class DatabaseConnection {
         return null;
     }
 
-    //arreglar esta consulta (me mande un cagaso)...
-    public List<Object[]> BuscarOrdenDeCompra(String nombre_cliente){//,String nombre_vendedor,Date fechaInicial,Date fechaFinal,String numOrden){
+    public List<Object[]> BuscarOrdenDeCompra(String nombre_cliente,String nombre_vendedor,Date fechaInicial,Date fechaFinal,String numOrden){
         Connection conn = null;
         try{
             conn = Getconnection();
@@ -330,9 +329,9 @@ public class DatabaseConnection {
                     "FROM orden_de_compra " +
                     "JOIN empleado ON empleado.rut_empleado = orden_de_compra.rut_empleado " +
                     "JOIN cliente ON cliente.rut_cliente = orden_de_compra.rut_cliente " +
-                    "WHERE 1=1 AND cliente.nombre ILIKE ?";
+                    "WHERE 1=1";
             
-        /*if (nombre_cliente != null && !nombre_cliente.isEmpty()) {
+        if (nombre_cliente != null && !nombre_cliente.isEmpty()) {
             sql += " AND cliente.nombre ILIKE ?";
         }
 
@@ -341,20 +340,19 @@ public class DatabaseConnection {
         }
             
         if (fechaInicial != null && fechaFinal != null) {
-                sql += " AND orden_de_compra.fecha_de_compra <= ? AND orden_compra.fecha_de_compra >= ?";
+                sql += " AND orden_de_compra.fecha_de_compra <= ? AND orden_de_compra.fecha_de_compra >= ?";
         }
             
         if (numOrden != null && !numOrden.isEmpty()) {
             sql += " AND orden_de_compra.id_orden = ?";
-        }*/
+        }
 
         // Preparar la declaración SQL
         try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
                 // Establecer los parámetros según los filtros proporcionados
             int parametroIndex = 1;
-            preparedStatement.setString(parametroIndex++, "%" + nombre_cliente + "%");
 
-            /*if (nombre_cliente != null && !nombre_cliente.isEmpty()) {
+            if (nombre_cliente != null && !nombre_cliente.isEmpty()) {
                 preparedStatement.setString(parametroIndex++, "%" + nombre_cliente + "%");
             }
             
@@ -363,13 +361,13 @@ public class DatabaseConnection {
             }            
 
             if (fechaInicial != null && fechaFinal != null) {
-                preparedStatement.setDate(parametroIndex++, fechaInicial);
-                preparedStatement.setDate(parametroIndex++, fechaFinal);
+                preparedStatement.setDate(parametroIndex++,new java.sql.Date(fechaFinal.getTime()));
+                preparedStatement.setDate(parametroIndex++,new java.sql.Date(fechaInicial.getTime()));
             }
 
             if (numOrden != null && !numOrden.isEmpty()) {
                 preparedStatement.setInt(parametroIndex++, Integer.parseInt(numOrden));
-            }*/
+            }
 
                 // Ejecutar la consulta
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -530,7 +528,7 @@ public class DatabaseConnection {
         
     }
     
-    public List<Object[]> BuscarRegistroAbastecimiento(String nombre_proveedor,String nombre_empleado,Date fechaInicial,Date fechaFinal,String numCompra){
+    public List<Object[]> BuscarRegistroAbastecimiento(String nombre_proveedor,String nombre_empleado,java.util.Date fechaInicial,java.util.Date fechaFinal,String numCompra){
         Connection conn = null;
         try{
             conn = Getconnection();
@@ -576,8 +574,8 @@ public class DatabaseConnection {
             }            
 
             if (fechaInicial != null && fechaFinal != null) {
-                preparedStatement.setDate(parametroIndex++, fechaInicial);
-                preparedStatement.setDate(parametroIndex++, fechaFinal);
+                preparedStatement.setDate(parametroIndex++, new java.sql.Date(fechaFinal.getTime()));
+                preparedStatement.setDate(parametroIndex++, new java.sql.Date(fechaInicial.getTime()));
             }
 
             if (numCompra != null && !numCompra.isEmpty()) {
@@ -590,7 +588,7 @@ public class DatabaseConnection {
                 
                 while (resultSet.next()) {
                     int valorColumna1 = resultSet.getInt("num_compra");
-                    Date valorColumna2 = resultSet.getDate("fecha_de_compra");
+                    java.util.Date valorColumna2 = resultSet.getDate("fecha_de_compra");
                     String valorColumna3 = resultSet.getString("nombre_empleado");
                     String valorColumna4 = resultSet.getString("nombre_proveedor");
                     int valorColumna5 = resultSet.getInt("total");
@@ -709,8 +707,8 @@ public class DatabaseConnection {
             }            
 
             if (fechaInicial != null && fechaFinal != null) {
-                preparedStatement.setDate(parametroIndex++, fechaInicial);
-                preparedStatement.setDate(parametroIndex++, fechaFinal);
+                preparedStatement.setDate(parametroIndex++,  new java.sql.Date(fechaFinal.getTime()));
+                preparedStatement.setDate(parametroIndex++,  new java.sql.Date(fechaInicial.getTime()));
             }
                 
                 
