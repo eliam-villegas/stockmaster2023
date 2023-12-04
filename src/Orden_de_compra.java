@@ -66,7 +66,36 @@ public class Orden_de_compra extends JPanel{
 
         orden_de_compra.add(ordenes_de_compra,gridBagConstraints(1, 0, 1, 1, 10, 3,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
 
+        
+        
+        
+        //boton crear orden
+        JButton crear_orden = new JButton("Crear Orden");
+        orden_de_compra.add(crear_orden,gridBagConstraints(1, 2, 1, 1, 0, 0, GridBagConstraints.BOTH,GridBagConstraints.WEST));
+        
+        
+        crear_orden.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cardLayout.show(card_panel, "opcion 2");
+            }
+        });
+        
+        
+        panel_seleccionar_cliente(card_panel);
+        
+        panel_crear_orden(card_panel);
 
+        card_panel.add(orden_de_compra,"opcion 1");
+        cardLayout.show(card_panel, "opcion 1");
+
+        add(card_panel,gridBagConstraints(0, 0, 1, 1, 1, 12, GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
+
+    }
+
+    
+    private void panel_seleccionar_cliente(JPanel card_panel){
+        
         //panel con los clientes asociados a las ordenes de compra
         JPanel vista_clientes = new JPanel(new GridBagLayout());
         vista_clientes.setBackground(Color.white);
@@ -82,24 +111,22 @@ public class Orden_de_compra extends JPanel{
         vista_clientes.add(searchbar_clientes,gridBagConstraints(0, 0, 4, 1, 0, 0,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
         vista_clientes.add(tabla_clientes,gridBagConstraints(0, 1, 4, 1, 1, 1,GridBagConstraints.BOTH,GridBagConstraints.CENTER));
 
-        JButton mostrar_orden = new JButton("Mostrar Ordenes");
+        JButton mostrar_orden = new JButton("Volver");
         vista_clientes.add(mostrar_orden,gridBagConstraints(0, 2, 1, 1, 0, 0, GridBagConstraints.BOTH,GridBagConstraints.WEST));
-
-        JButton crear_orden = new JButton("Crear Orden");
-        vista_clientes.add(crear_orden,gridBagConstraints(1, 2, 1, 1, 0, 0, GridBagConstraints.BOTH,GridBagConstraints.WEST));
-
-        orden_de_compra.add(vista_clientes,gridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
-
-        panel_crear_orden(card_panel);
 
         mostrar_orden.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //
+                    cardLayout.show(card_panel, "opcion 1");
             }
         });
+        
+        //boton siguiente
+        JButton siguiente = new JButton("Siguiente");
+        vista_clientes.add(siguiente,gridBagConstraints(1, 2, 1, 1, 0, 0, GridBagConstraints.BOTH,GridBagConstraints.WEST));
 
-        crear_orden.addActionListener(new ActionListener() {
+        
+        siguiente.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 tabla = getTableFromScrollPane(tabla_clientes);
@@ -107,21 +134,21 @@ public class Orden_de_compra extends JPanel{
                 if(filaSeleccionada != -1){
                     id_cliente_text.setText(modelo_cliente.getValueAt(tabla.getSelectedRow(),0).toString());
                     nombre_cliente_text.setText(modelo_cliente.getValueAt(tabla.getSelectedRow(),1).toString());
-                    cardLayout.show(card_panel, "opcion 2");
+                    cardLayout.show(card_panel, "opcion 3");
                 }
                 else{
                     JOptionPane.showMessageDialog(Orden_de_compra.this, "No hay ningun cliente seleccionado.", "Información", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });
-
-        card_panel.add(orden_de_compra,"opcion 1");
-        cardLayout.show(card_panel, "opcion 1");
-
-        add(card_panel,gridBagConstraints(0, 0, 1, 1, 1, 12, GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
-
+        
+        
+        
+        
+        
+        card_panel.add(vista_clientes,"opcion 2");
     }
-
+    
     private void panel_crear_orden(JPanel card_Panel){
 
         var dbc = new DatabaseConnection();
@@ -196,7 +223,7 @@ public class Orden_de_compra extends JPanel{
         panel_crear_orden.add(cantidad_text,gridBagConstraints(3, 4, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
        // panel_crear_orden.add(precio_text,gridBagConstraints(3, 4, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
 
-        JButton guardar = new JButton("Guardar");
+        JButton guardar = new JButton("Agregar");
         panel_crear_orden.add(guardar,gridBagConstraints(0, 4, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
 
         JLabel precio_total = new JLabel("Total:");
@@ -215,14 +242,14 @@ public class Orden_de_compra extends JPanel{
 
         //botones de crear y cancelar
         JButton generar_orden = new JButton("Generar Orden");
-        JButton cancelar = new JButton("Cancelar");
+        JButton cancelar = new JButton("Volver");
 
         panel_crear_orden.add(generar_orden,gridBagConstraints(0, 8 ,1, 1, 0, 5, GridBagConstraints.NONE, GridBagConstraints.SOUTHWEST));
-         panel_crear_orden.add(cancelar,gridBagConstraints(2, 8, 1, 1, 0, 5, GridBagConstraints.NONE, GridBagConstraints.SOUTHWEST));
+        panel_crear_orden.add(cancelar,gridBagConstraints(2, 8, 1, 1, 0, 5, GridBagConstraints.NONE, GridBagConstraints.SOUTHWEST));
 
 
         //se añade el panel final con el contenido a las opciones de paneles a mostrar
-        card_Panel.add(panel_crear_orden,"opcion 2");
+        card_Panel.add(panel_crear_orden,"opcion 3");
 
         guardar.addActionListener(new ActionListener() {
             @Override
@@ -316,7 +343,7 @@ public class Orden_de_compra extends JPanel{
 
                 modelo_product_ord.setRowCount(0);
 
-                cardLayout.show(card_Panel, "opcion 1");
+                cardLayout.show(card_Panel, "opcion 2");
             }
         });
         cantidad_text.addFocusListener(new FocusListener() {
