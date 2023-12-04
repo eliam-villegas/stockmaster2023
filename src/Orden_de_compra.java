@@ -62,8 +62,11 @@ public class Orden_de_compra extends JPanel{
         ordenes_de_compra.add(tabla_ordenes,gridBagConstraints(0, 1, 4, 1, 1, 3,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
 
         JButton detalles_orden = new JButton("Detalles de orden");
+        JTextField id_orden = new JTextField();
         ordenes_de_compra.add(detalles_orden,gridBagConstraints(0, 2, 1, 1, 0, 0,GridBagConstraints.BOTH,GridBagConstraints.WEST));
-
+        ordenes_de_compra.add(id_orden,gridBagConstraints(1, 2, 3, 3, 0, 0,GridBagConstraints.BOTH,GridBagConstraints.WEST));
+        
+        
         orden_de_compra.add(ordenes_de_compra,gridBagConstraints(1, 0, 1, 1, 10, 3,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
 
 
