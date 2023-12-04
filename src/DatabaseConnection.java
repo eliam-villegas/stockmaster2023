@@ -1,3 +1,4 @@
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,34 +11,46 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.util.Date;
 
-
 public class DatabaseConnection {
+
     static String driver = "org.postgresql.Driver";
     static String dbname = "sushi";
     static String url = "jdbc:postgresql://10.4.3.195:5432/" + dbname;
     static String user = "sushi_dev";
     static String password = "5k4xFg6";
 
-    static enum VENTAS_POR{
-        empleado{
+    static enum VENTAS_POR {
+        empleado {
             @Override
             public String toString() {
                 return "empleado.rut_empleado";
             }
         },
-        cliente{
+        cliente {
             @Override
             public String toString() {
                 return "cliente.rut_cliente";
-            }            
+            }
         }
     }
-    
-    static enum ORDER_BY{
+
+    static enum ORDER_BY {
         ASC,
         DESC
     }
-    
+
+    static enum CANT_STOCK {
+        Alto,
+        Bajo,
+        Nada,
+        SIN_FILTRO {
+            @Override
+            public String toString() {
+                return "";
+            }
+        }
+    }
+
     static Connection Getconnection() throws SQLException {
         Connection conn = null;
         try {
@@ -49,145 +62,186 @@ public class DatabaseConnection {
         }
         return conn;
     }
-    
-    public List<Object[]> BuscarProducto(String textFieldContent){
+
+    public List<Object[]> ObtenerTiposProductos() {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            return new ArrayList<>();
         }
-        
+
+        String consulta = "SELECT DISTINCT tipo FROM producto";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object[]> rows = new ArrayList<>();
+
+            while (resultSet.next()) {
+                String valorColumna1 = resultSet.getString("tipo");
+                Object[] row = {valorColumna1};
+                rows.add(row);
+            }
+
+            return rows;
+        } catch (SQLException e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
+    public List<Object[]> BuscarProducto(String textFieldContent, String tipo, CANT_STOCK stock) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();
+        }
+
         String consulta = "SELECT * FROM producto WHERE nombre_producto ILIKE ?";
+
         
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                preparedStatement.setString(1, "%"+textFieldContent+"%");
-                ResultSet resultSet = preparedStatement.executeQuery();
-                List<Object[]> rows = new ArrayList<>();
-                
-                while (resultSet.next()) {
-                    String valorColumna1 = resultSet.getString("id_producto");
-                    String valorColumna2 = resultSet.getString("nombre_producto");
-                    String valorColumna3 = resultSet.getString("stock");
-                    String valorColumna4 = resultSet.getString("precio_unitario");
-                    String valorColumna5 = resultSet.getString("tipo");
-                    String valorColumna6 = resultSet.getString("unidad_de_medida");
-                      
-                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4,valorColumna5,valorColumna6};
-                    rows.add(row);
-                    }                 
-                
-                return rows;
-                
-                
-                
-                // Ejecutar la consulta y procesar el resultado si es necesario
-                // ...
-            } catch (SQLException e) {
-                System.out.println(e);
-                return new ArrayList<>();  
-            }finally{
-                closeConnection(conn);
-            }  
+        
+        
+        if (tipo != null && !tipo.isEmpty()) {
+            consulta+= " and producto.tipo = " +"'" +tipo +"'";
+        }
+
+        if (stock != null) {
+            if (stock.equals(CANT_STOCK.Alto)) {
+                consulta+= " and stock >= 30";
+            } else if (stock.equals(CANT_STOCK.Bajo)) {
+                consulta+= " and stock < 30";
+            } else if (stock.equals(CANT_STOCK.Nada)){
+                consulta+= " and stock = 0";
+            }
+        }
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            preparedStatement.setString(1,"%" + textFieldContent + "%" );
+            
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object[]> rows = new ArrayList<>();
+
+            while (resultSet.next()) {
+                String valorColumna1 = resultSet.getString("id_producto");
+                String valorColumna2 = resultSet.getString("nombre_producto");
+                String valorColumna3 = resultSet.getString("stock");
+                String valorColumna4 = resultSet.getString("precio_unitario");
+                String valorColumna5 = resultSet.getString("tipo");
+                String valorColumna6 = resultSet.getString("unidad_de_medida");
+
+                Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4, valorColumna5, valorColumna6};
+                rows.add(row);
+            }
+
+            return rows;
+
+            // Ejecutar la consulta y procesar el resultado si es necesario
+            // ...
+        } catch (SQLException e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        } finally {
+            closeConnection(conn);
+        }
     }
 
-    public List<Object[]> buscarProducto_por_tipo(String filtro){
+    public List<Object[]> buscarProducto_por_tipo(String filtro) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            return new ArrayList<>();
         }
-        
+
         String consulta = "SELECT * FROM producto WHERE tipo ILIKE ?";
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                preparedStatement.setString(1, "%"+filtro+"%");
-                ResultSet resultSet = preparedStatement.executeQuery();
-                List<Object[]> rows = new ArrayList<>();
-                
-                while (resultSet.next()) {
-                    String valorColumna1 = resultSet.getString("id_producto");
-                    String valorColumna2 = resultSet.getString("nombre_producto");
-                    String valorColumna3 = resultSet.getString("stock");
-                    String valorColumna4 = resultSet.getString("precio_unitario");
-                    String valorColumna5 = resultSet.getString("tipo");
-                    String valorColumna6 = resultSet.getString("unidad_de_medida");
-                      
-                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4,valorColumna5,valorColumna6};
-                    rows.add(row);
-                    }                 
-                
-                return rows;
-                
-                
-                
-                // Ejecutar la consulta y procesar el resultado si es necesario
-                // ...
-            } catch (SQLException e) {
-                System.out.println(e);
-                return new ArrayList<>();  
-            }finally{
-                closeConnection(conn);
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            preparedStatement.setString(1, "%" + filtro + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object[]> rows = new ArrayList<>();
+
+            while (resultSet.next()) {
+                String valorColumna1 = resultSet.getString("id_producto");
+                String valorColumna2 = resultSet.getString("nombre_producto");
+                String valorColumna3 = resultSet.getString("stock");
+                String valorColumna4 = resultSet.getString("precio_unitario");
+                String valorColumna5 = resultSet.getString("tipo");
+                String valorColumna6 = resultSet.getString("unidad_de_medida");
+
+                Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4, valorColumna5, valorColumna6};
+                rows.add(row);
             }
+
+            return rows;
+
+            // Ejecutar la consulta y procesar el resultado si es necesario
+            // ...
+        } catch (SQLException e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        } finally {
+            closeConnection(conn);
+        }
     }
 
-    public List<Object[]> buscarProducto_por_stock(String filtro){
+    public List<Object[]> buscarProducto_por_stock(String filtro) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            return new ArrayList<>();
         }
 
-        String consulta =  "SELECT * FROM producto WHERE 1=1";
+        String consulta = "SELECT * FROM producto WHERE 1=1";
 
-        if(filtro.equals("Sobre stock")){
-             consulta += " AND stock >= 30";
+        if (filtro.equals("Sobre stock")) {
+            consulta += " AND stock >= 30";
+        } else if (filtro.equals("Bajo stock")) {
+            consulta += " AND stock < 30 AND stock >= 1";
+        } else {
+            consulta += " AND stock = 0";
         }
-        else if(filtro.equals("Bajo stock")){
-             consulta += " AND stock < 30 AND stock >= 1";
-        }
-        else{
-             consulta += " AND stock = 0";
-        }
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                ResultSet resultSet = preparedStatement.executeQuery();
-                List<Object[]> rows = new ArrayList<>();
-                
-                while (resultSet.next()) {
-                    String valorColumna1 = resultSet.getString("id_producto");
-                    String valorColumna2 = resultSet.getString("nombre_producto");
-                    String valorColumna3 = resultSet.getString("stock");
-                    String valorColumna4 = resultSet.getString("precio_unitario");
-                    String valorColumna5 = resultSet.getString("tipo");
-                    String valorColumna6 = resultSet.getString("unidad_de_medida");
-                      
-                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4,valorColumna5,valorColumna6};
-                    rows.add(row);
-                    }                 
-                
-                return rows;
-                
-                
-                
-                // Ejecutar la consulta y procesar el resultado si es necesario
-                // ...
-            } catch (SQLException e) {
-                System.out.println(e);
-                return new ArrayList<>();  
-            }finally{
-                closeConnection(conn);
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object[]> rows = new ArrayList<>();
+
+            while (resultSet.next()) {
+                String valorColumna1 = resultSet.getString("id_producto");
+                String valorColumna2 = resultSet.getString("nombre_producto");
+                String valorColumna3 = resultSet.getString("stock");
+                String valorColumna4 = resultSet.getString("precio_unitario");
+                String valorColumna5 = resultSet.getString("tipo");
+                String valorColumna6 = resultSet.getString("unidad_de_medida");
+
+                Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4, valorColumna5, valorColumna6};
+                rows.add(row);
             }
+
+            return rows;
+
+            // Ejecutar la consulta y procesar el resultado si es necesario
+            // ...
+        } catch (SQLException e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        } finally {
+            closeConnection(conn);
+        }
     }
 
-    public void ModificarProducto(String id,String nombre,String stock,String precio,String tipo,String unidad){
+    public void ModificarProducto(String id, String nombre, String stock, String precio, String tipo, String unidad) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -196,141 +250,135 @@ public class DatabaseConnection {
 
         String consulta = "UPDATE producto SET nombre_producto = ?, stock = ?, precio_unitario = ?, tipo = ?, unidad_de_medida = ? WHERE id_producto = ?";
 
-        try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                
-                preparedStatement.setString(1,nombre);
-                preparedStatement.setInt(2,Integer.parseInt(stock));
-                preparedStatement.setInt(3,Integer.parseInt(precio));
-                preparedStatement.setString(4,tipo);
-                preparedStatement.setString(5,unidad);
-                preparedStatement.setInt(6,Integer.parseInt(id));
-                
-                
-                preparedStatement.executeQuery();
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
 
-            } catch (SQLException e) {
-                System.out.println(e);
-                closeConnection(conn);
-                // Manejar la excepción según tus necesidades
-            }finally{
-                closeConnection(conn);
-            }
+            preparedStatement.setString(1, nombre);
+            preparedStatement.setInt(2, Integer.parseInt(stock));
+            preparedStatement.setInt(3, Integer.parseInt(precio));
+            preparedStatement.setString(4, tipo);
+            preparedStatement.setString(5, unidad);
+            preparedStatement.setInt(6, Integer.parseInt(id));
+
+            preparedStatement.executeQuery();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
     }
-    
-    public void AgregarProducto(String id,String nombre,String stock,String precio,String tipo,String unidad){
+
+    public void AgregarProducto(String id, String nombre, String stock, String precio, String tipo, String unidad) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return;
         }
-        
+
         String consulta = "INSERT INTO producto (id_producto, nombre_producto, stock,precio_unitario,tipo,unidad_de_medida) VALUES (?, ?, ?,?,?,?)";
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                
-                preparedStatement.setInt(1,Integer.parseInt(id));
-                preparedStatement.setString(2,nombre);
-                preparedStatement.setInt(3,Integer.parseInt(stock));
-                preparedStatement.setInt(4,Integer.parseInt(precio));
-                preparedStatement.setString(5,tipo);
-                preparedStatement.setString(6,unidad);
-                
-                
-                preparedStatement.executeQuery();
 
-            } catch (SQLException e) {
-                System.out.println(e);
-                closeConnection(conn);
-                // Manejar la excepción según tus necesidades
-            }finally{
-                closeConnection(conn);
-            }
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            preparedStatement.setInt(1, Integer.parseInt(id));
+            preparedStatement.setString(2, nombre);
+            preparedStatement.setInt(3, Integer.parseInt(stock));
+            preparedStatement.setInt(4, Integer.parseInt(precio));
+            preparedStatement.setString(5, tipo);
+            preparedStatement.setString(6, unidad);
+
+            preparedStatement.executeQuery();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
     }
-    
-    public void AgregarCliente(String nombre,String rut,String direccion,String contacto){
+
+    public void AgregarCliente(String nombre, String rut, String direccion, String contacto) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return;
         }
-        
+
         String consulta = "INSERT INTO cliente (nombre, rut_cliente) VALUES (?,?)";
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                preparedStatement.setString(1,nombre);
-                preparedStatement.setString(2,rut);
-                
-                
-                preparedStatement.executeQuery();
 
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            preparedStatement.setString(1, nombre);
+            preparedStatement.setString(2, rut);
+
+            preparedStatement.executeQuery();
+
+        } catch (SQLException e) {
+            // Manejo de la excepción y mostrar tu propio mensaje al usuario
+            if (e.getSQLState().equals("23505")) {
+                JOptionPane.showMessageDialog(null, "rut ya existe", "Error", JOptionPane.INFORMATION_MESSAGE);
             }
-            catch (SQLException e) {
-                // Manejo de la excepción y mostrar tu propio mensaje al usuario
-                if(e.getSQLState().equals("23505")){
-                    JOptionPane.showMessageDialog(null, "rut ya existe", "Error", JOptionPane.INFORMATION_MESSAGE);   
-                }
-            }finally{
-                closeConnection(conn);
-            }
+        } finally {
+            closeConnection(conn);
+        }
     }
-    
-    public List<Object[]> BuscarCliente(String nombre){
+
+    public List<Object[]> BuscarCliente(String nombre) {
         return null;
     }
-    
-    public void AgregarProveedor(String nombre,String rut,String telefono){
+
+    public void AgregarProveedor(String nombre, String rut, String telefono) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return;
         }
-        
-        String consulta = "INSERT INTO proveedor (nombre, rut_proveedor,telefono) VALUES (?,?,?)";
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                preparedStatement.setString(1,nombre);
-                preparedStatement.setString(2,rut);
-                preparedStatement.setString(3,telefono);
-                
-                preparedStatement.executeQuery();
 
+        String consulta = "INSERT INTO proveedor (nombre, rut_proveedor,telefono) VALUES (?,?,?)";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            preparedStatement.setString(1, nombre);
+            preparedStatement.setString(2, rut);
+            preparedStatement.setString(3, telefono);
+
+            preparedStatement.executeQuery();
+
+        } catch (SQLException e) {
+            // Manejo de la excepción y mostrar tu propio mensaje al usuario
+            if (e.getSQLState().equals("23505")) {
+                JOptionPane.showMessageDialog(null, "rut ya existe", "Error", JOptionPane.INFORMATION_MESSAGE);
             }
-            catch (SQLException e) {
-                // Manejo de la excepción y mostrar tu propio mensaje al usuario
-                if(e.getSQLState().equals("23505")){
-                    JOptionPane.showMessageDialog(null, "rut ya existe", "Error", JOptionPane.INFORMATION_MESSAGE);   
-                }
-            }finally{
-                closeConnection(conn);
-            }
+        } finally {
+            closeConnection(conn);
+        }
     }
-    
-    public List<Object[]> BuscarProveedor(String nombre){
+
+    public List<Object[]> BuscarProveedor(String nombre) {
         return null;
     }
 
-    public List<Object[]> BuscarOrdenDeCompra(String nombre_cliente,String nombre_vendedor,Date fechaInicial,Date fechaFinal,String numOrden){
+    public List<Object[]> BuscarOrdenDeCompra(String nombre_cliente, String nombre_vendedor, Date fechaInicial, Date fechaFinal, String numOrden) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            return new ArrayList<>();
         }
-        
-        
-        String sql = "SELECT orden_de_compra.id_orden,orden_de_compra.fecha_de_compra,empleado.nombre as nombre_empleado,cliente.nombre as nombre_cliente " +
-                    "FROM orden_de_compra " +
-                    "JOIN empleado ON empleado.rut_empleado = orden_de_compra.rut_empleado " +
-                    "JOIN cliente ON cliente.rut_cliente = orden_de_compra.rut_cliente " +
-                    "WHERE 1=1";
-            
+
+        String sql = "SELECT orden_de_compra.id_orden,orden_de_compra.fecha_de_compra,empleado.nombre as nombre_empleado,cliente.nombre as nombre_cliente "
+                + "FROM orden_de_compra "
+                + "JOIN empleado ON empleado.rut_empleado = orden_de_compra.rut_empleado "
+                + "JOIN cliente ON cliente.rut_cliente = orden_de_compra.rut_cliente "
+                + "WHERE 1=1";
+
         if (nombre_cliente != null && !nombre_cliente.isEmpty()) {
             sql += " AND cliente.nombre ILIKE ?";
         }
@@ -338,212 +386,206 @@ public class DatabaseConnection {
         if (nombre_vendedor != null && !nombre_vendedor.isEmpty()) {
             sql += " AND empleado.nombre ILIKE ?";
         }
-            
+
         if (fechaInicial != null && fechaFinal != null) {
-                sql += " AND orden_de_compra.fecha_de_compra <= ? AND orden_de_compra.fecha_de_compra >= ?";
+            sql += " AND orden_de_compra.fecha_de_compra <= ? AND orden_de_compra.fecha_de_compra >= ?";
         }
-            
+
         if (numOrden != null && !numOrden.isEmpty()) {
             sql += " AND orden_de_compra.id_orden = ?";
         }
 
         // Preparar la declaración SQL
-        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-                // Establecer los parámetros según los filtros proporcionados
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            // Establecer los parámetros según los filtros proporcionados
             int parametroIndex = 1;
 
             if (nombre_cliente != null && !nombre_cliente.isEmpty()) {
                 preparedStatement.setString(parametroIndex++, "%" + nombre_cliente + "%");
             }
-            
+
             if (nombre_vendedor != null && !nombre_vendedor.isEmpty()) {
                 preparedStatement.setString(parametroIndex++, "%" + nombre_vendedor + "%");
-            }            
+            }
 
             if (fechaInicial != null && fechaFinal != null) {
-                preparedStatement.setDate(parametroIndex++,new java.sql.Date(fechaFinal.getTime()));
-                preparedStatement.setDate(parametroIndex++,new java.sql.Date(fechaInicial.getTime()));
+                preparedStatement.setDate(parametroIndex++, new java.sql.Date(fechaFinal.getTime()));
+                preparedStatement.setDate(parametroIndex++, new java.sql.Date(fechaInicial.getTime()));
             }
 
             if (numOrden != null && !numOrden.isEmpty()) {
                 preparedStatement.setInt(parametroIndex++, Integer.parseInt(numOrden));
             }
 
-                // Ejecutar la consulta
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            // Ejecutar la consulta
+            try ( ResultSet resultSet = preparedStatement.executeQuery()) {
                 List<Object[]> rows = new ArrayList<>();
-                
+
                 while (resultSet.next()) {
                     int valorColumna1 = resultSet.getInt("id_orden");
                     Date valorColumna2 = resultSet.getDate("fecha_de_compra");
                     String valorColumna3 = resultSet.getString("nombre_empleado");
                     String valorColumna4 = resultSet.getString("nombre_cliente");
-                      
-                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4};
+
+                    Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4};
                     rows.add(row);
                     //System.out.println(row[0]);
-                    }                 
-                
+                }
+
                 return rows;
-            }        
-        }catch (SQLException e){
+            }
+        } catch (SQLException e) {
             System.out.println(e);
-            return new ArrayList<>();  
-        }finally{
+            return new ArrayList<>();
+        } finally {
             closeConnection(conn);
         }
     }
-    
-    public List<Object[]> ObtenenOrdenDeCompraDetalles(String numOrden){
+
+    public List<Object[]> ObtenenOrdenDeCompraDetalles(String numOrden) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            return new ArrayList<>();
         }
-        
-        
-        String sql = "SELECT orden_de_compra.id_orden,orden_de_compra.fecha_de_compra,empleado.nombre as nombre_empleado,cliente.nombre as nombre_cliente, producto.nombre_producto, orden_compra_contiene_producto.cantidad,orden_compra_contiene_producto.precio, orden_de_compra.subtotal " +
-                    "FROM orden_de_compra " +
-                    "JOIN orden_compra_contiene_producto ON orden_de_compra.id_orden = orden_compra_contiene_producto.id_orden " +
-                    "JOIN producto ON orden_compra_contiene_producto.id_producto = producto.id_producto " +
-                    "JOIN empleado ON empleado.rut_empleado = orden_de_compra.rut_empleado " +
-                    "JOIN cliente ON cliente.rut_cliente = orden_de_compra.rut_cliente " +
-                    "WHERE orden_de_compra.id_orden = ?";
+
+        String sql = "SELECT orden_de_compra.id_orden,orden_de_compra.fecha_de_compra,empleado.nombre as nombre_empleado,cliente.nombre as nombre_cliente, producto.nombre_producto, orden_compra_contiene_producto.cantidad,orden_compra_contiene_producto.precio, orden_de_compra.subtotal "
+                + "FROM orden_de_compra "
+                + "JOIN orden_compra_contiene_producto ON orden_de_compra.id_orden = orden_compra_contiene_producto.id_orden "
+                + "JOIN producto ON orden_compra_contiene_producto.id_producto = producto.id_producto "
+                + "JOIN empleado ON empleado.rut_empleado = orden_de_compra.rut_empleado "
+                + "JOIN cliente ON cliente.rut_cliente = orden_de_compra.rut_cliente "
+                + "WHERE orden_de_compra.id_orden = ?";
 
         // Preparar la declaración SQL
-        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-                // Establecer los parámetros según los filtros proporcionados
-            preparedStatement.setInt(1,Integer.parseInt(numOrden));
-
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            // Establecer los parámetros según los filtros proporcionados
+            preparedStatement.setInt(1, Integer.parseInt(numOrden));
 
             // Ejecutar la consulta
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            try ( ResultSet resultSet = preparedStatement.executeQuery()) {
                 List<Object[]> rows = new ArrayList<>();
-                
+
                 while (resultSet.next()) {
                     int valorColumna1 = resultSet.getInt("id_orden");
                     Date valorColumna2 = resultSet.getDate("fecha_de_compra");
                     String valorColumna3 = resultSet.getString("nombre_empleado");
                     String valorColumna4 = resultSet.getString("nombre_cliente");
-                    
+
                     String valorColumna5 = resultSet.getString("nombre_producto");
                     int valorColumna6 = resultSet.getInt("cantidad");
                     int valorColumna7 = resultSet.getInt("precio");
                     int valorColumna8 = resultSet.getInt("subtotal");
-                    
-                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4,valorColumna5,valorColumna6,valorColumna7,valorColumna8};
+
+                    Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4, valorColumna5, valorColumna6, valorColumna7, valorColumna8};
                     rows.add(row);
                     System.out.println(row[4]);
-                    }                 
-                
+                }
+
                 return rows;
-            }        
-        }catch (SQLException e){
+            }
+        } catch (SQLException e) {
             System.out.println(e);
-            return new ArrayList<>();  
-        }finally{
+            return new ArrayList<>();
+        } finally {
             closeConnection(conn);
         }
 
-    }    
+    }
 
-    public List<Object[]> ObtenerClientes_para_orden(){
+    public List<Object[]> ObtenerClientes_para_orden() {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            return new ArrayList<>();
         }
 
         /*String consulta = "SELECT DISTINCT c.rut_cliente, c.nombre "+
                           "FROM cliente c "+
                           "JOIN orden_de_compra o ON c.rut_cliente = o.rut_cliente";*/
-
         String consulta = "SELECT rut_cliente,nombre FROM cliente";
 
-        try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Object[]> rows = new ArrayList<>();
-                
+
             while (resultSet.next()) {
                 int valorColumna1 = resultSet.getInt("rut_cliente");
                 String valorColumna2 = resultSet.getString("nombre");
-                      
-                 Object[] row = {valorColumna1,valorColumna2};
+
+                Object[] row = {valorColumna1, valorColumna2};
                 rows.add(row);
-                }                 
-                
-            return rows;   
-               
-        }catch (SQLException e){
-            System.out.println(e);
-            return new ArrayList<>();  
-        }finally{
-                closeConnection(conn);
-        }
-    }
-    
-    public List<Object[]> BuscarClientes_para_orden(String textFieldContent){
-        Connection conn = null;
-        try{
-            conn = Getconnection();
+            }
+
+            return rows;
+
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            System.out.println(e);
+            return new ArrayList<>();
+        } finally {
+            closeConnection(conn);
         }
-        
-        String consulta = "SELECT rut_cliente,nombre FROM cliente WHERE nombre ILIKE ?";
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                preparedStatement.setString(1, "%"+textFieldContent+"%");
-                ResultSet resultSet = preparedStatement.executeQuery();
-                List<Object[]> rows = new ArrayList<>();
-                
-                while (resultSet.next()) {
-                    int valorColumna1 = resultSet.getInt("rut_cliente");
-                    String valorColumna2 = resultSet.getString("nombre");
-                      
-                    Object[] row = {valorColumna1,valorColumna2};
-                    rows.add(row);
-                    }                 
-                
-                return rows;
-                
-                
-                
-                // Ejecutar la consulta y procesar el resultado si es necesario
-                // ...
-            } catch (SQLException e) {
-                System.out.println(e);
-                return new ArrayList<>();  
-            }finally{
-                closeConnection(conn);
-            }  
     }
 
-    public void agregarRegistroAbastecimiento(){
-        
-    }
-    
-    public List<Object[]> BuscarRegistroAbastecimiento(String nombre_proveedor,String nombre_empleado,java.util.Date fechaInicial,java.util.Date fechaFinal,String numCompra){
+    public List<Object[]> BuscarClientes_para_orden(String textFieldContent) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            return new ArrayList<>();
         }
-        
-        
-        String sql = "SELECT registro_abastecimiento.num_compra,registro_abastecimiento.fecha_de_compra,empleado.nombre as nombre_empleado,proveedor.nombre as nombre_proveedor, registro_abastecimiento.total " +
-                    "FROM registro_abastecimiento " +
-                    "JOIN empleado ON empleado.rut_empleado = registro_abastecimiento.rut_empleado " +
-                    "JOIN proveedor ON proveedor.rut_proveedor = registro_abastecimiento.rut_proveedor " +
-                    "WHERE 1=1";
-            
+
+        String consulta = "SELECT rut_cliente,nombre FROM cliente WHERE nombre ILIKE ?";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            preparedStatement.setString(1, "%" + textFieldContent + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object[]> rows = new ArrayList<>();
+
+            while (resultSet.next()) {
+                int valorColumna1 = resultSet.getInt("rut_cliente");
+                String valorColumna2 = resultSet.getString("nombre");
+
+                Object[] row = {valorColumna1, valorColumna2};
+                rows.add(row);
+            }
+
+            return rows;
+
+            // Ejecutar la consulta y procesar el resultado si es necesario
+            // ...
+        } catch (SQLException e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
+    public void agregarRegistroAbastecimiento() {
+
+    }
+
+    public List<Object[]> BuscarRegistroAbastecimiento(String nombre_proveedor, String nombre_empleado, java.util.Date fechaInicial, java.util.Date fechaFinal, String numCompra) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();
+        }
+
+        String sql = "SELECT registro_abastecimiento.num_compra,registro_abastecimiento.fecha_de_compra,empleado.nombre as nombre_empleado,proveedor.nombre as nombre_proveedor, registro_abastecimiento.total "
+                + "FROM registro_abastecimiento "
+                + "JOIN empleado ON empleado.rut_empleado = registro_abastecimiento.rut_empleado "
+                + "JOIN proveedor ON proveedor.rut_proveedor = registro_abastecimiento.rut_proveedor "
+                + "WHERE 1=1";
+
         if (nombre_proveedor != null && !nombre_proveedor.isEmpty()) {
             sql += " AND proveedor.nombre ILIKE ?";
         }
@@ -551,27 +593,27 @@ public class DatabaseConnection {
         if (nombre_empleado != null && !nombre_empleado.isEmpty()) {
             sql += " AND empleado.nombre ILIKE ?";
         }
-            
+
         if (fechaInicial != null && fechaFinal != null) {
-                sql += " AND registro_abastecimiento.fecha_de_compra <= ? AND registro_abastecimiento.fecha_de_compra >= ?";
+            sql += " AND registro_abastecimiento.fecha_de_compra <= ? AND registro_abastecimiento.fecha_de_compra >= ?";
         }
-            
+
         if (numCompra != null && !numCompra.isEmpty()) {
             sql += " AND registro_abastecimiento.num_compra = ?";
         }
 
         // Preparar la declaración SQL
-        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-                // Establecer los parámetros según los filtros proporcionados
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            // Establecer los parámetros según los filtros proporcionados
             int parametroIndex = 1;
 
             if (nombre_proveedor != null && !nombre_proveedor.isEmpty()) {
                 preparedStatement.setString(parametroIndex++, "%" + nombre_proveedor + "%");
             }
-            
+
             if (nombre_empleado != null && !nombre_empleado.isEmpty()) {
                 preparedStatement.setString(parametroIndex++, "%" + nombre_empleado + "%");
-            }            
+            }
 
             if (fechaInicial != null && fechaFinal != null) {
                 preparedStatement.setDate(parametroIndex++, new java.sql.Date(fechaFinal.getTime()));
@@ -582,368 +624,373 @@ public class DatabaseConnection {
                 preparedStatement.setInt(parametroIndex++, Integer.parseInt(numCompra));
             }
 
-                // Ejecutar la consulta
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            // Ejecutar la consulta
+            try ( ResultSet resultSet = preparedStatement.executeQuery()) {
                 List<Object[]> rows = new ArrayList<>();
-                
+
                 while (resultSet.next()) {
                     int valorColumna1 = resultSet.getInt("num_compra");
                     java.util.Date valorColumna2 = resultSet.getDate("fecha_de_compra");
                     String valorColumna3 = resultSet.getString("nombre_empleado");
                     String valorColumna4 = resultSet.getString("nombre_proveedor");
                     int valorColumna5 = resultSet.getInt("total");
-                      
-                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4,valorColumna5};
+
+                    Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4, valorColumna5};
                     rows.add(row);
                     System.out.println(row[0]);
-                    }                 
-                
+                }
+
                 return rows;
-            }        
-        }catch (SQLException e){
+            }
+        } catch (SQLException e) {
             System.out.println(e);
-            return new ArrayList<>();  
-        }finally{
-                closeConnection(conn);
+            return new ArrayList<>();
+        } finally {
+            closeConnection(conn);
         }
-        
+
     }
-    
-    public List<Object[]> ObtenenRegistroAbastecimientoDetalles(String numCompra){
+
+    public List<Object[]> ObtenenRegistroAbastecimientoDetalles(String numCompra) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            return new ArrayList<>();
         }
-        
-        
-        String sql = "SELECT registro_abastecimiento.num_compra,registro_abastecimiento.fecha_de_compra,empleado.nombre as nombre_empleado,proveedor.nombre as nombre_proveedor, registro_abastecimiento.total, producto.nombre_producto, registro_abastecimiento_contiene_producto.cantidad, registro_abastecimiento_contiene_producto.precio " +
-                    "FROM registro_abastecimiento " +
-                    "JOIN registro_abastecimiento_contiene_producto ON registro_abastecimiento.num_compra = registro_abastecimiento_contiene_producto.num_compra " +
-                    "JOIN producto ON registro_abastecimiento_contiene_producto.id_producto = producto.id_producto " +
-                    "JOIN empleado ON empleado.rut_empleado = registro_abastecimiento.rut_empleado " +
-                    "JOIN proveedor ON proveedor.rut_proveedor = registro_abastecimiento.rut_proveedor " +
-                    "WHERE registro_abastecimiento.num_compra = ?";
+
+        String sql = "SELECT registro_abastecimiento.num_compra,registro_abastecimiento.fecha_de_compra,empleado.nombre as nombre_empleado,proveedor.nombre as nombre_proveedor, registro_abastecimiento.total, producto.nombre_producto, registro_abastecimiento_contiene_producto.cantidad, registro_abastecimiento_contiene_producto.precio "
+                + "FROM registro_abastecimiento "
+                + "JOIN registro_abastecimiento_contiene_producto ON registro_abastecimiento.num_compra = registro_abastecimiento_contiene_producto.num_compra "
+                + "JOIN producto ON registro_abastecimiento_contiene_producto.id_producto = producto.id_producto "
+                + "JOIN empleado ON empleado.rut_empleado = registro_abastecimiento.rut_empleado "
+                + "JOIN proveedor ON proveedor.rut_proveedor = registro_abastecimiento.rut_proveedor "
+                + "WHERE registro_abastecimiento.num_compra = ?";
 
         // Preparar la declaración SQL
-        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
-                // Establecer los parámetros según los filtros proporcionados
-            preparedStatement.setInt(1,Integer.parseInt(numCompra));
-
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            // Establecer los parámetros según los filtros proporcionados
+            preparedStatement.setInt(1, Integer.parseInt(numCompra));
 
             // Ejecutar la consulta
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            try ( ResultSet resultSet = preparedStatement.executeQuery()) {
                 List<Object[]> rows = new ArrayList<>();
-                
+
                 while (resultSet.next()) {
                     int valorColumna1 = resultSet.getInt("num_compra");
                     Date valorColumna2 = resultSet.getDate("fecha_de_compra");
                     String valorColumna3 = resultSet.getString("nombre_empleado");
                     String valorColumna4 = resultSet.getString("nombre_proveedor");
-                    
+
                     String valorColumna5 = resultSet.getString("nombre_producto");
                     int valorColumna6 = resultSet.getInt("cantidad");
                     int valorColumna7 = resultSet.getInt("precio");
                     int valorColumna8 = resultSet.getInt("total");
-                    
-                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4,valorColumna5,valorColumna6,valorColumna7,valorColumna8};
+
+                    Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4, valorColumna5, valorColumna6, valorColumna7, valorColumna8};
                     rows.add(row);
                     System.out.println(row[4]);
-                    }                 
-                
+                }
+
                 return rows;
-            }        
-        }catch (SQLException e){
+            }
+        } catch (SQLException e) {
             System.out.println(e);
-            return new ArrayList<>();  
-        }finally{
+            return new ArrayList<>();
+        } finally {
             closeConnection(conn);
         }
     }
-    
-    public List<Object[]> ObtenerVentasPor(VENTAS_POR por,String nombre, Date fechaInicial, Date fechaFinal ,ORDER_BY order_by){
+
+    public List<Object[]> ObtenerVentasPor(VENTAS_POR por, String nombre, Date fechaInicial, Date fechaFinal, ORDER_BY order_by) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            return new ArrayList<>();
         }
-        
+
         String selectString;
-        if(por.equals(VENTAS_POR.cliente)){
+        if (por.equals(VENTAS_POR.cliente)) {
             selectString = "cliente.nombre";
-        }else{
+        } else {
             selectString = "empleado.nombre";
         }
-        
+
         String whereClause = "";
-        
+
         if (nombre != null && !nombre.isEmpty()) {
-            whereClause += " AND "+selectString+" ILIKE ?";
+            whereClause += " AND " + selectString + " ILIKE ?";
         }
-            
+
         if (fechaInicial != null && fechaFinal != null) {
-                whereClause += " AND registro_abastecimiento.fecha_de_compra <= ? AND registro_abastecimiento.fecha_de_compra >= ?";
-        }       
-        
-        
-        String sql = "select "+ por.toString() +" as rut"+","+ selectString +" as nombre"+ "," +" sum(orden_de_compra.subtotal) as total "
+            whereClause += " AND registro_abastecimiento.fecha_de_compra <= ? AND registro_abastecimiento.fecha_de_compra >= ?";
+        }
+
+        String sql = "select " + por.toString() + " as rut" + "," + selectString + " as nombre" + "," + " sum(orden_de_compra.subtotal) as total "
                 + "from orden_de_compra "
                 + "join cliente on orden_de_compra.rut_cliente = cliente.rut_cliente "
                 + "join empleado on orden_de_compra.rut_empleado = empleado.rut_empleado "
                 + "where 1=1" + whereClause + " "
-                + "group by " +por.toString()+ " order by total " + order_by.toString();
+                + "group by " + por.toString() + " order by total " + order_by.toString();
 
         // Preparar la declaración SQL
-        try (PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
             // Establecer los parámetros según los filtros proporcionados
             int parametroIndex = 1;
-                
+
             if (nombre != null && !nombre.isEmpty()) {
                 preparedStatement.setString(parametroIndex++, "%" + nombre + "%");
-            }            
+            }
 
             if (fechaInicial != null && fechaFinal != null) {
-                preparedStatement.setDate(parametroIndex++,  new java.sql.Date(fechaFinal.getTime()));
-                preparedStatement.setDate(parametroIndex++,  new java.sql.Date(fechaInicial.getTime()));
+                preparedStatement.setDate(parametroIndex++, new java.sql.Date(fechaFinal.getTime()));
+                preparedStatement.setDate(parametroIndex++, new java.sql.Date(fechaInicial.getTime()));
             }
-                
-                
+
             // Ejecutar la consulta
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            try ( ResultSet resultSet = preparedStatement.executeQuery()) {
                 List<Object[]> rows = new ArrayList<>();
-                
+
                 while (resultSet.next()) {
                     String valorColumna1 = resultSet.getString("rut");
                     String valorColumna2 = resultSet.getString("nombre");
                     int valorColumna3 = resultSet.getInt("total");
-                    
-                    Object[] row = {valorColumna1,valorColumna2,valorColumna3};
+
+                    Object[] row = {valorColumna1, valorColumna2, valorColumna3};
                     rows.add(row);
-                    System.out.println(row[0] + "," +row[1]+ "," +row[2]);
-                    }                 
-                
+                    System.out.println(row[0] + "," + row[1] + "," + row[2]);
+                }
+
                 return rows;
-            }        
-        }catch (SQLException e){
+            }
+        } catch (SQLException e) {
             System.out.println(e);
-            return new ArrayList<>();  
-        }finally{
+            return new ArrayList<>();
+        } finally {
             closeConnection(conn);
-        }     
+        }
     }
-    
-    public List<Object[]> ObtenerEmpleados_para_orden(){
+
+    public List<Object[]> ObtenerEmpleados_para_orden() {
 
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            return new ArrayList<>();
         }
 
         String consulta = "SELECT rut_empleado,nombre FROM empleado";
 
-        try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Object[]> rows = new ArrayList<>();
-                
+
             while (resultSet.next()) {
                 int valorColumna1 = resultSet.getInt("rut_empleado");
                 String valorColumna2 = resultSet.getString("nombre");
-                      
-                 Object[] row = {valorColumna1,valorColumna2};
+
+                Object[] row = {valorColumna1, valorColumna2};
                 rows.add(row);
-                }                 
-                
-            return rows;   
-               
-        }catch (SQLException e){
+            }
+
+            return rows;
+
+        } catch (SQLException e) {
             System.out.println(e);
-            return new ArrayList<>();  
-        }finally{
-                closeConnection(conn);
+            return new ArrayList<>();
+        } finally {
+            closeConnection(conn);
         }
     }
-    
-    public boolean VerificarIDUnico_orden_de_compra(int id){
+
+    public boolean VerificarIDUnico_orden_de_compra(int id) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return false;  
+            return false;
         }
-        
+
         String consulta = "SELECT id_orden FROM orden_de_compra WHERE id_orden = ?";
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                preparedStatement.setInt(1, id);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                List<Object[]> rows = new ArrayList<>();
-                
-                while (resultSet.next()) {
-                    int valorColumna1 = resultSet.getInt("id_orden");
-                      
-                    Object[] row = {valorColumna1};
-                    rows.add(row);
-                }
-                    
-                if(rows.isEmpty()){return true;}
-                else{return false;}
 
-            } catch (SQLException e) {
-                System.out.println(e);
-                return false;  
-            }finally{
-                closeConnection(conn);
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object[]> rows = new ArrayList<>();
+
+            while (resultSet.next()) {
+                int valorColumna1 = resultSet.getInt("id_orden");
+
+                Object[] row = {valorColumna1};
+                rows.add(row);
             }
+
+            if (rows.isEmpty()) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        } finally {
+            closeConnection(conn);
+        }
     }
 
-    public List<Object[]> ObtenerProducto_para_orden(){
+    public List<Object[]> ObtenerProducto_para_orden() {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            return new ArrayList<>();
         }
-        
+
         String consulta = "SELECT id_producto,nombre_producto,precio_unitario,stock FROM producto";
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                ResultSet resultSet = preparedStatement.executeQuery();
-                List<Object[]> rows = new ArrayList<>();
-                
-                while (resultSet.next()) {
-                    String valorColumna1 = resultSet.getString("id_producto");
-                    String valorColumna2 = resultSet.getString("nombre_producto");
-                    String valorColumna4 = resultSet.getString("precio_unitario");
-                    String valorColumna3 = resultSet.getString("stock");
-                      
-                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4};
-                    rows.add(row);
-                    }                 
-                
-                return rows;
-                
-                // Ejecutar la consulta y procesar el resultado si es necesario
-                // ...
-            } catch (SQLException e) {
-                System.out.println(e);
-                return new ArrayList<>();  
-            }finally{
-                closeConnection(conn);
-            }  
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object[]> rows = new ArrayList<>();
+
+            while (resultSet.next()) {
+                String valorColumna1 = resultSet.getString("id_producto");
+                String valorColumna2 = resultSet.getString("nombre_producto");
+                String valorColumna4 = resultSet.getString("precio_unitario");
+                String valorColumna3 = resultSet.getString("stock");
+
+                Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4};
+                rows.add(row);
+            }
+
+            return rows;
+
+            // Ejecutar la consulta y procesar el resultado si es necesario
+            // ...
+        } catch (SQLException e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        } finally {
+            closeConnection(conn);
+        }
     }
 
-    public boolean VerificarStockProducto(int cantidad,int id){
+    public boolean VerificarStockProducto(int cantidad, int id) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return false;  
+            return false;
         }
-        
+
         String consulta = "SELECT stock from producto WHERE stock >= ? AND id_producto = ?";
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                preparedStatement.setInt(1, cantidad);
-                preparedStatement.setInt(2, id);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                List<Object[]> rows = new ArrayList<>();
-                
-                while (resultSet.next()) {
-                    int valorColumna1 = resultSet.getInt("stock");
-                      
-                    Object[] row = {valorColumna1};
-                    rows.add(row);
-                }
-                    
-                if(rows.isEmpty()){return true;}
-                else{return false;}
 
-            } catch (SQLException e) {
-                System.out.println(e);
-                return false;  
-            }finally{
-                closeConnection(conn);
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            preparedStatement.setInt(1, cantidad);
+            preparedStatement.setInt(2, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object[]> rows = new ArrayList<>();
+
+            while (resultSet.next()) {
+                int valorColumna1 = resultSet.getInt("stock");
+
+                Object[] row = {valorColumna1};
+                rows.add(row);
             }
+
+            if (rows.isEmpty()) {
+                return true;
+            } else {
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        } finally {
+            closeConnection(conn);
+        }
     }
-    
-    public boolean VerificarRutEmpleadoExiste(String rut){
+
+    public boolean VerificarRutEmpleadoExiste(String rut) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return false;  
+            return false;
         }
-        
-        String consulta = "SELECT rut_empleado FROM empleado WHERE rut_empleado = ?";
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                preparedStatement.setString(1, rut);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                List<Object[]> rows = new ArrayList<>();
-                
-                while (resultSet.next()) {
-                    int valorColumna1 = resultSet.getInt("rut_empleado");
-                      
-                    Object[] row = {valorColumna1};
-                    rows.add(row);
-                }
-                    
-                if(rows.isEmpty()){return false;}
-                else{return true;}
 
-            } catch (SQLException e) {
-                System.out.println(e);
-                return false;  
-            }finally{
-                closeConnection(conn);
+        String consulta = "SELECT rut_empleado FROM empleado WHERE rut_empleado = ?";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            preparedStatement.setString(1, rut);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object[]> rows = new ArrayList<>();
+
+            while (resultSet.next()) {
+                int valorColumna1 = resultSet.getInt("rut_empleado");
+
+                Object[] row = {valorColumna1};
+                rows.add(row);
             }
+
+            if (rows.isEmpty()) {
+                return false;
+            } else {
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            return false;
+        } finally {
+            closeConnection(conn);
+        }
     }
-    
-    public void AgregarProducto_a_orden_de_compra(DefaultTableModel modelo_tabla){
+
+    public void AgregarProducto_a_orden_de_compra(DefaultTableModel modelo_tabla) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return;
         }
-        
+
         String consulta = "INSERT INTO orden_compra_contiene_producto (id_orden, id_producto, cantidad,precio) VALUES (?, ?, ?,?)";
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
 
-                for(int row = 0; row < modelo_tabla.getRowCount(); row++){
-                    preparedStatement.setInt(1,Integer.parseInt(modelo_tabla.getValueAt(row, 0).toString()));
-                    preparedStatement.setInt(2,Integer.parseInt(modelo_tabla.getValueAt(row, 1).toString()));
-                    preparedStatement.setInt(3,Integer.parseInt(modelo_tabla.getValueAt(row, 2).toString()));
-                    preparedStatement.setInt(4,Integer.parseInt(modelo_tabla.getValueAt(row, 3).toString()));
-                }             
-                
-                preparedStatement.executeQuery();
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
 
-            } catch (SQLException e) {
-                System.out.println(e);
-                closeConnection(conn);
-                // Manejar la excepción según tus necesidades
-            }finally{
-                closeConnection(conn);
+            for (int row = 0; row < modelo_tabla.getRowCount(); row++) {
+                preparedStatement.setInt(1, Integer.parseInt(modelo_tabla.getValueAt(row, 0).toString()));
+                preparedStatement.setInt(2, Integer.parseInt(modelo_tabla.getValueAt(row, 1).toString()));
+                preparedStatement.setInt(3, Integer.parseInt(modelo_tabla.getValueAt(row, 2).toString()));
+                preparedStatement.setInt(4, Integer.parseInt(modelo_tabla.getValueAt(row, 3).toString()));
             }
+
+            preparedStatement.executeQuery();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
     }
 
-    public void AgregarOrdenDeCompra(String id_orden,LocalDate fecha_actual, String subtotal,String rut_empleado,String rut_cliente){
+    public void AgregarOrdenDeCompra(String id_orden, LocalDate fecha_actual, String subtotal, String rut_empleado, String rut_cliente) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -951,67 +998,66 @@ public class DatabaseConnection {
         }
 
         java.sql.Date fechaSQL = java.sql.Date.valueOf(fecha_actual);
-        
-        String consulta = "INSERT INTO orden_de_compra (id_orden, fecha_de_compra, subtotal,rut_empleado,rut_cliente) VALUES (?, ?, ?,?,?)";
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                
-                preparedStatement.setInt(1,Integer.parseInt(id_orden));
-                preparedStatement.setDate(2,fechaSQL);
-                preparedStatement.setInt(3,Integer.parseInt(subtotal));
-                preparedStatement.setInt(4,Integer.parseInt(rut_empleado));
-                preparedStatement.setString(5,rut_cliente);
-                
-                
-                preparedStatement.executeQuery();
 
-            } catch (SQLException e) {
-                System.out.println(e);
-                closeConnection(conn);
-                // Manejar la excepción según tus necesidades
-            }finally{
-                closeConnection(conn);
-            }
+        String consulta = "INSERT INTO orden_de_compra (id_orden, fecha_de_compra, subtotal,rut_empleado,rut_cliente) VALUES (?, ?, ?,?,?)";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            preparedStatement.setInt(1, Integer.parseInt(id_orden));
+            preparedStatement.setDate(2, fechaSQL);
+            preparedStatement.setInt(3, Integer.parseInt(subtotal));
+            preparedStatement.setInt(4, Integer.parseInt(rut_empleado));
+            preparedStatement.setString(5, rut_cliente);
+
+            preparedStatement.executeQuery();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
     }
-    
-    public List<Object[]> BuscarEmpleado(String filtro){
+
+    public List<Object[]> BuscarEmpleado(String filtro) {
         Connection conn = null;
-        try{
+        try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return new ArrayList<>();  
+            return new ArrayList<>();
         }
-        
+
         String consulta = "SELECT * FROM empleado WHERE nombre ILIKE ?";
-        
-            try (PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-                preparedStatement.setString(1, "%"+filtro+"%");
-                ResultSet resultSet = preparedStatement.executeQuery();
-                List<Object[]> rows = new ArrayList<>();
-                
-                while (resultSet.next()) {
-                    int valorColumna1 = resultSet.getInt("rut_empleado");
-                    String valorColumna2 = resultSet.getString("nombre");
-                    String valorColumna3 = resultSet.getString("cargo");
-                    String valorColumna4 = resultSet.getString("contrasenia");
-                      
-                    Object[] row = {valorColumna1,valorColumna2,valorColumna3,valorColumna4};
-                    rows.add(row);
-                    }                 
-                
-                return rows;
-                
-                // Ejecutar la consulta y procesar el resultado si es necesario
-                // ...
-            } catch (SQLException e) {
-                System.out.println(e);
-                return new ArrayList<>();  
-            }finally{
-                closeConnection(conn);
-            }  
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            preparedStatement.setString(1, "%" + filtro + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object[]> rows = new ArrayList<>();
+
+            while (resultSet.next()) {
+                int valorColumna1 = resultSet.getInt("rut_empleado");
+                String valorColumna2 = resultSet.getString("nombre");
+                String valorColumna3 = resultSet.getString("cargo");
+                String valorColumna4 = resultSet.getString("contrasenia");
+
+                Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4};
+                rows.add(row);
+            }
+
+            return rows;
+
+            // Ejecutar la consulta y procesar el resultado si es necesario
+            // ...
+        } catch (SQLException e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        } finally {
+            closeConnection(conn);
+        }
     }
-    
+
     private void closeConnection(Connection conn) {
         if (conn != null) {
             try {
@@ -1021,9 +1067,5 @@ public class DatabaseConnection {
             }
         }
     }
-    
-    
-    
-    
-    
+
 }

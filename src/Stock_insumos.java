@@ -182,7 +182,7 @@ public class Stock_insumos extends JPanel{
                     dbc2.AgregarProducto(idTextField.getText(), nombreTextField.getText(), stockTextField.getText(),precioUnitarioTextField.getText(),tipoComboBox.getSelectedItem().toString(), unidadMedidaInsumoLista.getSelectedItem().toString());
                     TableColumn cantidadColumn = tabla_real.getColumn("Stock");
                     cantidadColumn.setCellRenderer(new ColorRenderer());
-                    Searchbar.Buscar("", modelo);
+                    Searchbar.Buscar("",null,null, modelo);
             
                 } catch (NumberFormatException x) {
                     JOptionPane.showMessageDialog(Stock_insumos.this, "Atributos de ingreso vacios o no validos.","Error",JOptionPane.ERROR_MESSAGE);
@@ -294,7 +294,7 @@ public class Stock_insumos extends JPanel{
                 }
                 else{
                     dbc.ModificarProducto(idTextField.getText(), nombreTextField.getText(), stockTextField.getText(), precioUnitarioTextField.getText(), tipoComboBox.getSelectedItem().toString(), unidadMedidaInsumoLista.getSelectedItem().toString());
-                    Searchbar.Buscar("", modelo);
+                    Searchbar.Buscar("",null,null, modelo);
                 }
             }
         });
