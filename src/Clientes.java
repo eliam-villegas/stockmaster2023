@@ -24,6 +24,7 @@ import javax.swing.text.AbstractDocument;
 public class Clientes extends JPanel{
 
     private CardLayout cardLayout = new CardLayout();
+        private DefaultTableModel modelo;
 
 
     public Clientes(){
@@ -72,12 +73,15 @@ public class Clientes extends JPanel{
         cardPanel.add(container1,"opcion 2");
         cardPanel.add(container2,"opcion 3");
 
-        SearchbarClient searchbar = new SearchbarClient();
+        
 
         add(cardPanel,gridBagConstraints(0,0,3,1));
-        add(searchbar,gridBagConstraints(0, 1,3,1));
+        
         add(create_table(),gridBagConstraints(0, 2,3,1));
 
+        SearchbarClient searchbar = new SearchbarClient(modelo);
+        add(searchbar,gridBagConstraints(0, 1,3,1));
+        
         JPanel opciones = new JPanel(new GridBagLayout());
         opciones.setBackground(Color.white);
         opciones.setBorder(BorderFactory.createTitledBorder("Opciones"));
@@ -146,41 +150,10 @@ public class Clientes extends JPanel{
 
     private JScrollPane create_table() {
         String[] columnas = {"Rut", "Nombre Cliente", "Número Contacto", "Dirección"};
-        DefaultTableModel modelo = new DefaultTableModel(null, columnas);
-
-        try {
-            // Conectar a la base de datos
-            Connection conn = DatabaseConnection.Getconnection();
-
-            // Ejecutar la consulta SQL para obtener los datos de clientes y sus contactos y direcciones
-            String query = "SELECT cliente.rut_cliente as rut, cliente.nombre AS nombre_cliente, " +
-                    "contacto.telefono AS numero_contacto, direcciones.direccion AS direccion_cliente " +
-                    "FROM cliente " +
-                    "LEFT JOIN contacto ON contacto.rut_cliente = cliente.rut_cliente " +
-                    "LEFT JOIN direcciones ON direcciones.rut_cliente = cliente.rut_cliente";
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery(query);
-
-            // Procesar los resultados y añadirlos al modelo de la tabla
-            while (rs.next()) {
-                Object[] fila = {
-                        rs.getString("rut"),
-                        rs.getString("nombre_cliente"),
-                        rs.getString("numero_contacto"),
-                        rs.getString("direccion_cliente")
-                };
-                modelo.addRow(fila);
-            }
-
-            // Cerrar recursos
-            rs.close();
-            stmt.close();
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Manejar la excepción adecuadamente
-        }
-
+        modelo = new DefaultTableModel(null, columnas);
+        
+        SearchbarClient.Buscar("", modelo);
+        
         JTable tabla = new JTable(modelo);
         tabla.setDefaultEditor(Object.class, null);
         JScrollPane tablaClientes = new JScrollPane(tabla);

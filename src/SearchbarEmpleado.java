@@ -24,13 +24,13 @@ public class SearchbarEmpleado extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e) {
                 String consulta = campoBusqueda.getText();
-                Buscar_empleado(consulta, modelo);
+                Buscar(consulta, modelo);
                 // Aquí puedes realizar la lógica de búsqueda con la consulta ingresada
             }
         });
     }
 
-    public static void Buscar_empleado(String filtro,DefaultTableModel modelo){
+    public static void Buscar(String filtro,DefaultTableModel modelo){
         modelo.setRowCount(0);
         var dbc = new DatabaseConnection();
         var rows = dbc.BuscarEmpleado(filtro);

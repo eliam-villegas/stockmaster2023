@@ -269,6 +269,34 @@ public class DatabaseConnection {
             closeConnection(conn);
         }
     }
+    
+    public void EliminarProducto(String id) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String consulta = "UPDATE producto SET estado = ? WHERE id_producto = ?";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            
+            preparedStatement.setBoolean(1, false);
+            preparedStatement.setInt(2, Integer.parseInt(id));
+
+            preparedStatement.executeQuery();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
+    }
+    
 
     public void AgregarProducto(String id, String nombre, String stock, String precio, String tipo, String unidad) {
         Connection conn = null;
@@ -329,7 +357,44 @@ public class DatabaseConnection {
     }
 
     public List<Object[]> BuscarCliente(String nombre) {
-        return null;
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();
+        }
+
+        String consulta = "SELECT cliente.rut_cliente as rut, cliente.nombre AS nombre_cliente, " +
+                    "contacto.telefono AS numero_contacto, direcciones.direccion AS direccion_cliente " +
+                    "FROM cliente " +
+                    "LEFT JOIN contacto ON contacto.rut_cliente = cliente.rut_cliente " +
+                    "LEFT JOIN direcciones ON direcciones.rut_cliente = cliente.rut_cliente where cliente.nombre ILIKE ?";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            preparedStatement.setString(1, "%" + nombre + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object[]> rows = new ArrayList<>();
+
+            while (resultSet.next()) {
+                int valorColumna1 = resultSet.getInt("rut");
+                String valorColumna2 = resultSet.getString("nombre_cliente");
+                String valorColumna3 =resultSet.getString("numero_contacto");
+                String valorColumna4 = resultSet.getString("direccion_cliente");
+                Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4};
+                rows.add(row);
+            }
+
+            return rows;
+
+            // Ejecutar la consulta y procesar el resultado si es necesario
+            // ...
+        } catch (SQLException e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        } finally {
+            closeConnection(conn);
+        }
     }
 
     public void AgregarProveedor(String nombre, String rut, String telefono) {
