@@ -104,6 +104,9 @@ public class Reportes {
         return fechaActual.format(formatter);
     }
     
+    public void reportOrdenCompra(){
+        
+    }
     
 
 }
