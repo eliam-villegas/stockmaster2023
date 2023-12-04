@@ -38,11 +38,12 @@ public class Main {
             //InsertRandomOrden(conData,70);
             //InsertRandomProducto(conData,40);
             //InsertRandomRegistroAbastecimientoProducto(conData,10);
-            //InsertRandomRegistroVenta(conData,10);
+            InsertRandomRegistroVenta(conData,10);
             //InsertRandomRegistroDespacho(conData,10);
             //InsertRandomRegistroVentaDespacho(conData,10);
-            InsertRandomRegistroOrdenProducto(conData,10);
-            System.out.println("Se Inserto");
+            //InsertRandomRegistroOrdenProducto(conData,140);
+            actualizarMontosSubtotales(conData);
+            System.out.println("Flag");
             
         }catch(SQLException e) {
             e.printStackTrace();
@@ -61,10 +62,11 @@ public class Main {
                 int quantity = 1 + random.nextInt(20); // Cantidad entre 1 y 20
                 int prices = 100 + random.nextInt(999);
 
+            
                 // Verificar si el número de compra existe en la tabla registro_abastecimiento
                 // Verificar si la combinación de ID de producto y número de compra ya existe
                 while (checkDuplicateOrdenCompra(connection, productId, purchaseNumber)) {
-                    System.out.println("La combinación de ID de producto " + productId + " y id orden " + purchaseNumber + " ya existe. Saltando inserción.");
+                    System.out.println("La combinación de ID de producto " + productId + " y id orden" + purchaseNumber + " ya existe. Saltando inserción.");
                     purchaseNumber++; // Incrementar el número de compra para evitar duplicados
                     continue;  // Saltar a la próxima iteración del bucle
                 }
@@ -77,15 +79,23 @@ public class Main {
                 int rowsInserted = statement.executeUpdate();
     
                 if (rowsInserted > 0) {
-                    System.out.println("Registro de orden de compra de producto agregado: Num. Compra: " + purchaseNumber + ", ID Producto: " + productId + ", Cantidad: " + quantity);
+                    System.out.println("Registro de orden de compra de producto agregado: id orden: " + purchaseNumber + ", ID Producto: " + productId + ", Cantidad: " + quantity);
                 } else {
-                    System.out.println("No se pudo agregar el registro de orden de compra de producto");
+                    System.out.println("No se pudo agregar el registro de abastecimiento de producto");
                 }
             }
+        }catch(SQLException e){ 
+            System.out.println("Error de base de datos: " + e.getMessage());
+            InsertRandomRegistroOrdenProducto(connection,numRecords);
+
         }
     }
 
+   
+    
+
     private static void InsertRandomRegistroVentaDespacho(Connection conData, int i) {
+
     }
 
     public static void InsertRandomRegistroVenta(Connection connection, int numRecords) {
@@ -100,7 +110,11 @@ public class Main {
                 boolean estado = true;
     
                 // Obtener órdenes de compra existentes para el conjunto dado
-                List<Integer> orderIds = getUnsoldOrderIds(connection, nOrden);
+                String client = getRandomRutFromCliente(connection);
+                List<Integer> orderIds = getUnsoldOrderIds(connection, nOrden, client);
+                if(orderIds.isEmpty()){
+                    break;
+                }
     
                 // Generar un ID de venta único para cada conjunto
                 int saleId = generateUniqueSaleId(connection);
@@ -172,13 +186,15 @@ public class Main {
     }
 
 
-    public static List<Integer> getUnsoldOrderIds(Connection connection, int numOrders) {
+    public static List<Integer> getUnsoldOrderIds(Connection connection, int numOrders, String cliente) {
         List<Integer> unsoldOrderIds = new ArrayList<>();
-        String query = "SELECT id_orden FROM orden_de_compra WHERE id_venta IS NULL LIMIT ?"; // Limitar el número de órdenes
     
+        String query = "SELECT id_orden FROM orden_de_compra WHERE rut_cliente = ? AND id_venta IS NULL LIMIT ?";
+        
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-            statement.setInt(1, numOrders); // Establecer el límite de órdenes
-    
+            statement.setString(1, cliente); // Establecer el cliente como string
+            statement.setInt(2, numOrders); // Establecer el límite de órdenes
+            
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
                     unsoldOrderIds.add(resultSet.getInt("id_orden"));
@@ -186,7 +202,7 @@ public class Main {
             }
         } catch (SQLException e) {
             System.out.println("Error al recuperar órdenes de compra no vendidas: " + e.getMessage());
-            // Realizar acciones de recuperación o registro de errores según sea necesario
+            // Manejar la excepción según sea necesario
         }
     
         return unsoldOrderIds;
@@ -384,6 +400,7 @@ public class Main {
                 String employeeRut = getRandomRutFromEmpleado(connection); // RUT de empleado ficticio
                 String supplierRut = getRandomRutFromProveedor(connection); // RUT de proveedor ficticio
                 boolean estado = true;
+
     
                 // Verificar si el número de compra ya existe
                 while (checkNumCompraExistsInDatabase(connection, purchaseNumber)) {
@@ -429,7 +446,7 @@ public class Main {
             for (int i = 0; i < numOrders; i++) {
                 int orderId = getUniqueRandomIdOrden(connection);
                 Date date = Date.valueOf(LocalDate.now().minusDays(random.nextInt(90))); // Fecha aleatoria en los últimos 90 días
-                double subtotal = 100 + random.nextInt(10000); // Subtotal entre 100 y 10099
+                double subtotal = 0; // Subtotal entre 100 y 10099
                 String employeeRut = getRandomRutFromEmpleado(connection);
                 String clientRut = getRandomRutFromCliente(connection);
                 boolean estado = true;
@@ -569,14 +586,23 @@ public class Main {
         }
     }
     public static boolean checkDuplicateOrdenCompra(Connection connection, int idOrden, int idProducto) throws SQLException {
-        String query = "SELECT COUNT(*) AS count FROM orden_compra_contiene_producto WHERE id_orden = ? AND id_producto = ?";
+        String query = "SELECT CASE WHEN EXISTS (SELECT 1 FROM orden_compra_contiene_producto WHERE id_orden = ? AND id_producto = ?) THEN TRUE ELSE FALSE END AS exists_row";
+        
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, idOrden);
             statement.setInt(2, idProducto);
+            
             try (ResultSet resultSet = statement.executeQuery()) {
-                return resultSet.next() && resultSet.getInt("count") > 0;
+                if (resultSet.next()) {
+                    return resultSet.getBoolean("exists_row");
+                }
             }
+        } catch (SQLException e) {
+            System.out.println("Error al verificar la duplicidad de la orden de compra: " + e.getMessage());
+            throw e; // O maneja la excepción de acuerdo a tu lógica
         }
+        
+        return false;
     }
     
         
@@ -783,7 +809,7 @@ public static double calculateTotalFromOrders(Connection connection, List<Intege
         int attemptCount = 0;
     
         while (attemptCount < maxAttempts) {
-            int potentialIdOrden = 1 + random.nextInt(Integer.MAX_VALUE);  // Genera un ID aleatorio
+            int potentialIdOrden = 1 + random.nextInt(9999);  // Genera un ID aleatorio
     
             if (!checkIdOrdenExistsInDatabase(connection, potentialIdOrden)) {
                 // El ID generado no existe, es único
@@ -839,4 +865,24 @@ public static double calculateTotalFromOrders(Connection connection, List<Intege
     }
     return RandomId;   
     }    
+
+    public static void actualizarMontosSubtotales(Connection connection) throws SQLException {
+        String updateQuery = "UPDATE orden_de_compra AS o SET subtotal = " +
+                             "(SELECT SUM(precio * cantidad) FROM orden_compra_contiene_producto AS p " +
+                             "WHERE p.id_orden = o.id_orden)";
+    
+        try (PreparedStatement statement = connection.prepareStatement(updateQuery)) {
+            int rowsUpdated = statement.executeUpdate();
+    
+            if (rowsUpdated > 0) {
+                System.out.println("Montos subtotales actualizados para todas las órdenes de compra.");
+            } else {
+                System.out.println("No se actualizaron los montos subtotales.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar los montos subtotales: " + e.getMessage());
+            // Manejar la excepción según sea necesario
+        }
+    }
+    
 }      
