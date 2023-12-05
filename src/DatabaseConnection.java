@@ -19,6 +19,91 @@ public class DatabaseConnection {
     static String user = "sushi_dev";
     static String password = "5k4xFg6";
 
+    void EliminarEmpleado(String id) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String consulta = "UPDATE empleado SET activo = ? WHERE rut_empleado = ?";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            preparedStatement.setBoolean(1, false);
+            preparedStatement.setString(2, id);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
+    public void ModificarEmpleado(String id, String nuevoNombre, String nuevoCargo, String nuevaContrasena) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String consulta = "UPDATE empleado SET nombre = ?, cargo = ?, contrasenia = ? WHERE rut_empleado = ?";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            preparedStatement.setString(1, nuevoNombre);
+            preparedStatement.setString(2, nuevoCargo);
+            preparedStatement.setString(3, nuevaContrasena);
+            preparedStatement.setString(4, id);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
+    public void AgregarEmpleado(String id, String nombre, String cargo, String contrasena) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String consulta = "INSERT INTO empleado (rut_empleado, nombre, cargo, contrasenia, activo) VALUES (?, ?, ?, ?, true)";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            preparedStatement.setInt(1, Integer.parseInt(id));
+            preparedStatement.setString(2, nombre);
+            preparedStatement.setString(3, cargo);
+            preparedStatement.setString(4, contrasena);
+
+            preparedStatement.executeUpdate();  // Usar executeUpdate en lugar de executeQuery para operaciones de modificación (INSERT, UPDATE, DELETE)
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
     static enum VENTAS_POR {
         empleado {
             @Override
@@ -102,29 +187,26 @@ public class DatabaseConnection {
             return new ArrayList<>();
         }
 
-        String consulta = "SELECT * FROM producto WHERE nombre_producto ILIKE ?";
+        String consulta = "SELECT * FROM producto WHERE nombre_producto ILIKE ? and activo = true";
 
-        
-        
-        
         if (tipo != null && !tipo.isEmpty()) {
-            consulta+= " and producto.tipo = " +"'" +tipo +"'";
+            consulta += " and producto.tipo = " + "'" + tipo + "'";
         }
 
         if (stock != null) {
             if (stock.equals(CANT_STOCK.Alto)) {
-                consulta+= " and stock >= 30";
+                consulta += " and stock >= 30";
             } else if (stock.equals(CANT_STOCK.Bajo)) {
-                consulta+= " and stock < 30";
-            } else if (stock.equals(CANT_STOCK.Nada)){
-                consulta+= " and stock = 0";
+                consulta += " and stock < 30";
+            } else if (stock.equals(CANT_STOCK.Nada)) {
+                consulta += " and stock = 0";
             }
         }
 
         try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
 
-            preparedStatement.setString(1,"%" + textFieldContent + "%" );
-            
+            preparedStatement.setString(1, "%" + textFieldContent + "%");
+
             ResultSet resultSet = preparedStatement.executeQuery();
             List<Object[]> rows = new ArrayList<>();
 
@@ -259,7 +341,7 @@ public class DatabaseConnection {
             preparedStatement.setString(5, unidad);
             preparedStatement.setInt(6, Integer.parseInt(id));
 
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println(e);
@@ -269,7 +351,7 @@ public class DatabaseConnection {
             closeConnection(conn);
         }
     }
-    
+
     public void EliminarProducto(String id) {
         Connection conn = null;
         try {
@@ -279,14 +361,14 @@ public class DatabaseConnection {
             return;
         }
 
-        String consulta = "UPDATE producto SET estado = ? WHERE id_producto = ?";
+        String consulta = "UPDATE producto SET activo = ? WHERE id_producto = ?";
 
         try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-            
+
             preparedStatement.setBoolean(1, false);
             preparedStatement.setInt(2, Integer.parseInt(id));
 
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println(e);
@@ -296,7 +378,6 @@ public class DatabaseConnection {
             closeConnection(conn);
         }
     }
-    
 
     public void AgregarProducto(String id, String nombre, String stock, String precio, String tipo, String unidad) {
         Connection conn = null;
@@ -307,7 +388,7 @@ public class DatabaseConnection {
             return;
         }
 
-        String consulta = "INSERT INTO producto (id_producto, nombre_producto, stock,precio_unitario,tipo,unidad_de_medida) VALUES (?, ?, ?,?,?,?)";
+        String consulta = "INSERT INTO producto (id_producto, nombre_producto, stock,precio_unitario,tipo,unidad_de_medida,activo) VALUES (?, ?, ?,?,?,?,true)";
 
         try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
 
@@ -318,7 +399,7 @@ public class DatabaseConnection {
             preparedStatement.setString(5, tipo);
             preparedStatement.setString(6, unidad);
 
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println(e);
@@ -344,7 +425,7 @@ public class DatabaseConnection {
             preparedStatement.setString(1, nombre);
             preparedStatement.setString(2, rut);
 
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             // Manejo de la excepción y mostrar tu propio mensaje al usuario
@@ -365,11 +446,11 @@ public class DatabaseConnection {
             return new ArrayList<>();
         }
 
-        String consulta = "SELECT cliente.rut_cliente as rut, cliente.nombre AS nombre_cliente, " +
-                    "contacto.telefono AS numero_contacto, direcciones.direccion AS direccion_cliente " +
-                    "FROM cliente " +
-                    "LEFT JOIN contacto ON contacto.rut_cliente = cliente.rut_cliente " +
-                    "LEFT JOIN direcciones ON direcciones.rut_cliente = cliente.rut_cliente where cliente.nombre ILIKE ?";
+        String consulta = "SELECT cliente.rut_cliente as rut, cliente.nombre AS nombre_cliente, "
+                + "contacto.telefono AS numero_contacto, direcciones.direccion AS direccion_cliente "
+                + "FROM cliente "
+                + "LEFT JOIN contacto ON contacto.rut_cliente = cliente.rut_cliente "
+                + "LEFT JOIN direcciones ON direcciones.rut_cliente = cliente.rut_cliente where cliente.nombre ILIKE ?";
 
         try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
             preparedStatement.setString(1, "%" + nombre + "%");
@@ -379,7 +460,7 @@ public class DatabaseConnection {
             while (resultSet.next()) {
                 int valorColumna1 = resultSet.getInt("rut");
                 String valorColumna2 = resultSet.getString("nombre_cliente");
-                String valorColumna3 =resultSet.getString("numero_contacto");
+                String valorColumna3 = resultSet.getString("numero_contacto");
                 String valorColumna4 = resultSet.getString("direccion_cliente");
                 Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4};
                 rows.add(row);
@@ -413,7 +494,7 @@ public class DatabaseConnection {
             preparedStatement.setString(2, rut);
             preparedStatement.setString(3, telefono);
 
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             // Manejo de la excepción y mostrar tu propio mensaje al usuario
@@ -1042,7 +1123,7 @@ public class DatabaseConnection {
                 preparedStatement.setInt(4, Integer.parseInt(modelo_tabla.getValueAt(row, 3).toString()));
             }
 
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println(e);
@@ -1074,7 +1155,7 @@ public class DatabaseConnection {
             preparedStatement.setInt(4, Integer.parseInt(rut_empleado));
             preparedStatement.setString(5, rut_cliente);
 
-            preparedStatement.executeQuery();
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println(e);
@@ -1094,7 +1175,7 @@ public class DatabaseConnection {
             return new ArrayList<>();
         }
 
-        String consulta = "SELECT * FROM empleado WHERE nombre ILIKE ?";
+        String consulta = "SELECT * FROM empleado WHERE nombre ILIKE ? and activo = true";
 
         try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
             preparedStatement.setString(1, "%" + filtro + "%");

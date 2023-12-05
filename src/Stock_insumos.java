@@ -290,7 +290,7 @@ public class Stock_insumos extends JPanel{
         JLabel unidadMedidaLabel = new JLabel("Unidad de medida:");
         String[] unidadMedidaInsumo = {"Kilogramos", "Gramos", "Miligramos","Litros","Mililitros","Unidad","Lote"};
         JComboBox<String> unidadMedidaInsumoLista = new JComboBox<>(unidadMedidaInsumo);
-        unidadMedidaInsumoLista.setEditable(false);
+        unidadMedidaInsumoLista.setEnabled(false);
         
         JLabel precioUnitarioLabel = new JLabel("Precio c/u:");
         JTextField precioUnitarioTextField = new JTextField(10);
@@ -300,7 +300,7 @@ public class Stock_insumos extends JPanel{
         JLabel tipoLabel = new JLabel("Tipo de Insumo:");
         String[] tiposInsumo = {"Alimento Perecible", "Alimento no Perecible", "Salsa","Utensilios Plasticos","Congelado","Seco"};
         JComboBox<String> tipoComboBox = new JComboBox<>(tiposInsumo);
-        tipoComboBox.setEditable(false);
+        tipoComboBox.setEnabled(false);
         
         JButton boton_guardar = new JButton("Eliminar");
 

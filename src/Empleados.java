@@ -154,7 +154,7 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
                 try {
                     var dbc2 = new DatabaseConnection();
                     
-                    //dbc2.AgregarEmpleado(idTextField.getText(), nombreTextField.getText(), cargoTextField.getText(),contrasenaTextField.getText());
+                    dbc2.AgregarEmpleado(idTextField.getText(), nombreTextField.getText(), cargoTextField.getText(),contrasenaTextField.getText());
                     SearchbarEmpleado.Buscar("", modelo);
                     
             
@@ -182,6 +182,7 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
         idLabel.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField idTextField = new JTextField(20);
         ((AbstractDocument) idTextField.getDocument()).setDocumentFilter(new NumberFilter());
+        idTextField.setEditable(false);
 
         JLabel nombreLabel = new JLabel("Nombre:");
         //nombreLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -251,7 +252,7 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
                     JOptionPane.showMessageDialog(Empleados.this, "Seleccione elemento a modificar.");
                 }
                 else{
-                    //dbc.ModificarEmpleado(idTextField.getText(), nombreTextField.getText(), cargoTextField.getText(),contrasenaTextField.getText());
+                    dbc.ModificarEmpleado(idTextField.getText(), nombreTextField.getText(), cargoTextField.getText(),contrasenaTextField.getText());
                     SearchbarEmpleado.Buscar("", modelo);
                 }
             }
@@ -343,7 +344,7 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
                 }
                 else{
                     // se elimina el producto
-                    //dbc.EliminarEmpleado(idTextField.getText());
+                    dbc.EliminarEmpleado(idTextField.getText());
                     SearchbarEmpleado.Buscar("", modelo);
                 }
             }
