@@ -187,6 +187,152 @@ public class DatabaseConnection {
         }
     }
 
+    void AgregarRegistroAbastecimiento(String id_orden, LocalDate fechaActual, String subtotal, String rut_empleado, String rut_cliente) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        java.sql.Date fechaSQL = java.sql.Date.valueOf(fechaActual);
+
+        String consulta = "INSERT INTO registro_abastecimiento (num_compra, fecha_de_compra, total,rut_empleado,rut_proveedor) VALUES (?, ?, ?,?,?)";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            preparedStatement.setInt(1, Integer.parseInt(id_orden));
+            preparedStatement.setDate(2, fechaSQL);
+            preparedStatement.setInt(3, Integer.parseInt(subtotal));
+            preparedStatement.setInt(4, Integer.parseInt(rut_empleado));
+            preparedStatement.setString(5, rut_cliente);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
+    void AgregarProducto_a_registro_abastecimiento(DefaultTableModel modelo_tabla) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String consulta = "INSERT INTO registro_abastecimiento_contiene_producto (num_compra, id_producto, cantidad,precio) VALUES (?, ?, ?,?)";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            for (int row = 0; row < modelo_tabla.getRowCount(); row++) {
+                preparedStatement.setInt(1, Integer.parseInt(modelo_tabla.getValueAt(row, 0).toString()));
+                preparedStatement.setInt(2, Integer.parseInt(modelo_tabla.getValueAt(row, 1).toString()));
+                preparedStatement.setInt(3, Integer.parseInt(modelo_tabla.getValueAt(row, 2).toString()));
+                preparedStatement.setInt(4, Integer.parseInt(modelo_tabla.getValueAt(row, 3).toString()));
+            }
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
+    void AgregarProveedor(String id, String nombre, String telefono) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String consulta = "INSERT INTO proveedor (rut_proveedor, nombre, telefono, activo) VALUES (?, ?, ?, true)";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            preparedStatement.setInt(1, Integer.parseInt(id));
+            preparedStatement.setString(2, nombre);
+            preparedStatement.setInt(3, Integer.parseInt(telefono));
+
+            preparedStatement.executeUpdate();  // Usar executeUpdate en lugar de executeQuery para operaciones de modificación (INSERT, UPDATE, DELETE)
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
+    void ModificarProveedor(String id, String nombre, String telefono) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String consulta = "UPDATE proveedor SET nombre = ?, telefono = ? WHERE rut_proveedor = ?";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            preparedStatement.setString(1, nombre);
+            preparedStatement.setInt(2, Integer.parseInt(telefono));
+            preparedStatement.setString(3, id);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
+    void EliminarProveedor(String id) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String consulta = "UPDATE proveedor SET activo = ? WHERE rut_proveedor = ?";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            preparedStatement.setBoolean(1, false);
+            preparedStatement.setString(2, id);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
     static enum VENTAS_POR {
         empleado {
             @Override
@@ -544,7 +690,7 @@ public class DatabaseConnection {
                 closeConnection(conn);
             }
         }
-        
+
         conn = null;
         try {
             conn = Getconnection();
@@ -614,36 +760,42 @@ public class DatabaseConnection {
         }
     }
 
-    public void AgregarProveedor(String nombre, String rut, String telefono) {
+    
+
+    public List<Object[]> BuscarProveedor(String nombre) {
         Connection conn = null;
         try {
             conn = Getconnection();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-            return;
+            return new ArrayList<>();
         }
 
-        String consulta = "INSERT INTO proveedor (nombre, rut_proveedor,telefono) VALUES (?,?,?)";
+        String consulta = "SELECT * from proveedor where nombre ILIKE ? and activo = true ";
 
         try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
-            preparedStatement.setString(1, nombre);
-            preparedStatement.setString(2, rut);
-            preparedStatement.setString(3, telefono);
+            preparedStatement.setString(1, "%" + nombre + "%");
+            ResultSet resultSet = preparedStatement.executeQuery();
+            List<Object[]> rows = new ArrayList<>();
 
-            preparedStatement.executeUpdate();
-
-        } catch (SQLException e) {
-            // Manejo de la excepción y mostrar tu propio mensaje al usuario
-            if (e.getSQLState().equals("23505")) {
-                JOptionPane.showMessageDialog(null, "rut ya existe", "Error", JOptionPane.INFORMATION_MESSAGE);
+            while (resultSet.next()) {
+                int valorColumna1 = resultSet.getInt("rut_proveedor");
+                String valorColumna2 = resultSet.getString("nombre");
+                String valorColumna3 = resultSet.getString("telefono");
+                Object[] row = {valorColumna1, valorColumna2, valorColumna3};
+                rows.add(row);
             }
+
+            return rows;
+
+            // Ejecutar la consulta y procesar el resultado si es necesario
+            // ...
+        } catch (SQLException e) {
+            System.out.println(e);
+            return new ArrayList<>();
         } finally {
             closeConnection(conn);
         }
-    }
-
-    public List<Object[]> BuscarProveedor(String nombre) {
-        return null;
     }
 
     public List<Object[]> BuscarOrdenDeCompra(String nombre_cliente, String nombre_vendedor, Date fechaInicial, Date fechaFinal, String numOrden) {
@@ -752,6 +904,59 @@ public class DatabaseConnection {
 
                 while (resultSet.next()) {
                     int valorColumna1 = resultSet.getInt("id_orden");
+                    Date valorColumna2 = resultSet.getDate("fecha_de_compra");
+                    String valorColumna3 = resultSet.getString("nombre_empleado");
+                    String valorColumna4 = resultSet.getString("nombre_cliente");
+
+                    String valorColumna5 = resultSet.getString("nombre_producto");
+                    int valorColumna6 = resultSet.getInt("cantidad");
+                    int valorColumna7 = resultSet.getInt("precio");
+                    int valorColumna8 = resultSet.getInt("subtotal");
+
+                    Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4, valorColumna5, valorColumna6, valorColumna7, valorColumna8};
+                    rows.add(row);
+                    System.out.println(row[4]);
+                }
+
+                return rows;
+            }
+        } catch (SQLException e) {
+            System.out.println(e);
+            return new ArrayList<>();
+        } finally {
+            closeConnection(conn);
+        }
+
+    }
+
+    public List<Object[]> ObtenenRegistroAbastecimientoDetalles(String numOrden) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();
+        }
+
+        String sql = "SELECT registro_abastecimiento.num_compra,registro_abastecimiento.fecha_de_compra,empleado.nombre as nombre_empleado,proveedor.nombre as nombre_proveedor, producto.nombre_producto, registro_abastecimiento_contiene_producto.cantidad,registro_abastecimiento_contiene_producto.precio, registro_abastecimiento.subtotal "
+                + "FROM registro_abastecimiento "
+                + "JOIN registro_abastecimiento_contiene_producto ON registro_abastecimiento.num_compra = registro_abastecimiento_contiene_producto.num_compra "
+                + "JOIN producto ON registro_abastecimiento_contiene_producto.id_producto = producto.id_producto "
+                + "JOIN empleado ON empleado.rut_empleado = registro_abastecimiento.rut_empleado "
+                + "JOIN proveedor ON proveedor.rut_proveedor = registro_abastecimiento.rut_proveedor "
+                + "WHERE registro_abastecimiento.num_compra = ?";
+
+        // Preparar la declaración SQL
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+            // Establecer los parámetros según los filtros proporcionados
+            preparedStatement.setInt(1, Integer.parseInt(numOrden));
+
+            // Ejecutar la consulta
+            try ( ResultSet resultSet = preparedStatement.executeQuery()) {
+                List<Object[]> rows = new ArrayList<>();
+
+                while (resultSet.next()) {
+                    int valorColumna1 = resultSet.getInt("num_compra");
                     Date valorColumna2 = resultSet.getDate("fecha_de_compra");
                     String valorColumna3 = resultSet.getString("nombre_empleado");
                     String valorColumna4 = resultSet.getString("nombre_cliente");
@@ -933,7 +1138,7 @@ public class DatabaseConnection {
 
     }
 
-    public List<Object[]> ObtenenRegistroAbastecimientoDetalles(String numCompra) {
+    public List<Object[]> ObtenerRegistroAbastecimientoDetalles(String numCompra) {
         Connection conn = null;
         try {
             conn = Getconnection();
@@ -972,7 +1177,7 @@ public class DatabaseConnection {
 
                     Object[] row = {valorColumna1, valorColumna2, valorColumna3, valorColumna4, valorColumna5, valorColumna6, valorColumna7, valorColumna8};
                     rows.add(row);
-                    System.out.println(row[4]);
+
                 }
 
                 return rows;

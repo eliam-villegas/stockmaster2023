@@ -455,7 +455,12 @@ public class Inventory extends JFrame{
 
         Registro_venta ventas_tab = new Registro_venta();
         main_tab.add(ventas_tab,"opcion 4");
+        
+        Registro_abastecimiento abastecimiento_tab  = new Registro_abastecimiento();
+        main_tab.add(abastecimiento_tab,"opcion 10");
 
+        Proveedores proveedores_tab = new Proveedores();
+        main_tab.add(proveedores_tab,"opcion 5");
     }
 
     private GridBagConstraints constraints(int x,int y,int wx,int wy,int fill,int anchor){
