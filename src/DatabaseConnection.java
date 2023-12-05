@@ -104,6 +104,88 @@ public class DatabaseConnection {
         }
     }
 
+    public void ModificarCliente(String rut, String nombre, String contacto, String direccion) {
+        Connection conn = null;
+
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        // Modificar el nombre del cliente
+        if (nombre != null && !nombre.isEmpty()) {
+            String updateNombre = "UPDATE cliente SET nombre = ? WHERE rut_cliente = ?";
+
+            try ( PreparedStatement preparedStatement = conn.prepareStatement(updateNombre)) {
+                preparedStatement.setString(1, nombre);
+                preparedStatement.setString(2, rut);
+
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "No se pudo modificar el nombre del cliente", "Error", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+
+        // Modificar la dirección del cliente
+        if (direccion != null && !direccion.isEmpty()) {
+            String updateDireccion = "UPDATE direcciones SET direccion = ? WHERE rut_cliente = ?";
+
+            try ( PreparedStatement preparedStatement = conn.prepareStatement(updateDireccion)) {
+                preparedStatement.setString(1, direccion);
+                preparedStatement.setString(2, rut);
+
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "No se pudo modificar la dirección del cliente", "Error", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+
+        // Modificar el contacto del cliente
+        if (contacto != null && !contacto.isEmpty()) {
+            String updateContacto = "UPDATE contacto SET telefono = ? WHERE rut_cliente = ?";
+
+            try ( PreparedStatement preparedStatement = conn.prepareStatement(updateContacto)) {
+                preparedStatement.setString(1, contacto);
+                preparedStatement.setString(2, rut);
+
+                preparedStatement.executeUpdate();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "No se pudo modificar el contacto del cliente", "Error", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
+
+        closeConnection(conn);
+    }
+
+    void EliminarCliente(String rut) {
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        String consulta = "UPDATE cliente SET activo = ? WHERE rut_cliente = ?";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            preparedStatement.setBoolean(1, false);
+            preparedStatement.setString(2, rut);
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
+    }
+
     static enum VENTAS_POR {
         empleado {
             @Override
@@ -410,7 +492,7 @@ public class DatabaseConnection {
         }
     }
 
-    public void AgregarCliente(String nombre, String rut, String direccion, String contacto) {
+    public void AgregarCliente(String rut, String nombre, String contacto, String direccion) {
         Connection conn = null;
         try {
             conn = Getconnection();
@@ -435,6 +517,59 @@ public class DatabaseConnection {
         } finally {
             closeConnection(conn);
         }
+
+        conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        if (direccion != null && !direccion.isEmpty()) {
+            consulta = "INSERT INTO direcciones (direccion, rut_cliente,activo) VALUES (?,?,true)";
+
+            try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+                preparedStatement.setString(1, direccion);
+                preparedStatement.setString(2, rut);
+
+                preparedStatement.executeUpdate();
+
+            } catch (SQLException e) {
+                // Manejo de la excepción y mostrar tu propio mensaje al usuario
+                System.out.println(e);
+                JOptionPane.showMessageDialog(null, "no se pudo agregar la direccion", "Error", JOptionPane.INFORMATION_MESSAGE);
+            } finally {
+                closeConnection(conn);
+            }
+        }
+        
+        conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        if (contacto != null && !contacto.isEmpty()) {
+            consulta = "INSERT INTO contacto (telefono, rut_cliente,activo) VALUES (?,?,true)";
+
+            try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+                preparedStatement.setInt(1, Integer.parseInt(contacto));
+                preparedStatement.setString(2, rut);
+
+                preparedStatement.executeUpdate();
+
+            } catch (SQLException e) {
+                // Manejo de la excepción y mostrar tu propio mensaje al usuario
+                System.out.println(e);
+                JOptionPane.showMessageDialog(null, "no se pudo agregar el contacto", "Error", JOptionPane.INFORMATION_MESSAGE);
+            } finally {
+                closeConnection(conn);
+            }
+        }
+
     }
 
     public List<Object[]> BuscarCliente(String nombre) {
