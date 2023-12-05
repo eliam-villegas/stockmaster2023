@@ -1,4 +1,5 @@
 
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -1545,6 +1546,38 @@ public class DatabaseConnection {
         }
     }
 
+    public String ObtenerNombreEmpleado(String rut){
+        Connection conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+
+        String consulta = "SELECT nombre FROM empleado WHERE rut_empleado = ?";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+            preparedStatement.setString(1, rut);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            String valor = null;
+
+            while (resultSet.next()) {
+                valor = resultSet.getString("nombre");
+            }
+
+            return valor;
+
+            // Ejecutar la consulta y procesar el resultado si es necesario
+            // ...
+        } catch (SQLException e) {
+            System.out.println(e);
+            return null;
+        } finally {
+            closeConnection(conn);
+        }
+    }
+    
     private void closeConnection(Connection conn) {
         if (conn != null) {
             try {

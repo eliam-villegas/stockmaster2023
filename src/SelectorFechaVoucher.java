@@ -1,4 +1,3 @@
-
 import com.itextpdf.text.DocumentException;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -45,7 +44,7 @@ public class SelectorFechaVoucher extends JDialog {
         fechaSpinner1 = new JSpinner(new SpinnerDateModel());
         JSpinner.DateEditor dateEditor1 = new JSpinner.DateEditor(fechaSpinner1, "yyyy-MM-dd");
         fechaSpinner1.setEditor(dateEditor1);
-        
+
         if(parent.fechaInicial!=null)
             fechaSpinner1.setValue(parent.fechaInicial);
 
@@ -80,15 +79,15 @@ public class SelectorFechaVoucher extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 GetFechas();
                 dispose();
-                
+
                 try {
                     parent.reportVenta();   
                 } catch (FileNotFoundException | DocumentException  e1) {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 } 
-                
-                
+
+
             }
         });
         add(buscarButton, gbc);

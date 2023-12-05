@@ -13,6 +13,7 @@ import java.time.LocalDate;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -53,7 +54,7 @@ public class Orden_de_compra extends JPanel{
 
         JPanel ordenes_de_compra = new JPanel(new GridBagLayout());
         ordenes_de_compra.setBackground(Color.white);
-        ordenes_de_compra.setBorder(BorderFactory.createTitledBorder("Ordenes de compra"));
+        //ordenes_de_compra.setBorder(BorderFactory.createTitledBorder("Ordenes de compra"));
 
         String[] columnas = {"Id orden", "Fecha de compra","Empleado","Cliente"};
         modelo = new DefaultTableModel(null, columnas);
@@ -61,21 +62,36 @@ public class Orden_de_compra extends JPanel{
         SearchbarCompras searchbar_ord_compra = new SearchbarCompras(modelo);
         JScrollPane tabla_ordenes = create_table(modelo);
 
-        ordenes_de_compra.add(searchbar_ord_compra,gridBagConstraints(0, 0, 4, 1, 1, 0, GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
-        ordenes_de_compra.add(tabla_ordenes,gridBagConstraints(0, 1, 4, 1, 1, 3,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
+        ordenes_de_compra.add(searchbar_ord_compra,gridBagConstraints(0, 0, 4, 1, 1, 0, GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,5,5,0,5));
+        ordenes_de_compra.add(tabla_ordenes,gridBagConstraints(0, 1, 4, 1, 1, 3,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,0,5,5,5));
 
         JButton detalles_orden = new JButton("Detalles de orden");
-        ordenes_de_compra.add(detalles_orden,gridBagConstraints(0, 2, 1, 1, 0, 0,GridBagConstraints.BOTH,GridBagConstraints.WEST));
+        ordenes_de_compra.add(detalles_orden,gridBagConstraints(0, 2, 1, 1, 0, 0,GridBagConstraints.BOTH,GridBagConstraints.WEST,5,5,5,5));
         
-        
-        orden_de_compra.add(ordenes_de_compra,gridBagConstraints(1, 0, 1, 1, 10, 3,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
+        detalles_orden.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tabla = getTableFromScrollPane(tabla_ordenes);
+                int filaSeleccionada = tabla.getSelectedRow();
+                if(filaSeleccionada != -1){
+                    Detalles_orden detalles = new Detalles_orden(modelo.getValueAt(filaSeleccionada, 0).toString());
+                    detalles.setLocationRelativeTo(null);
+                    detalles.setVisible(true);
+                }
+                else{
+                    JOptionPane.showMessageDialog(Orden_de_compra.this, "No hay ninguna orden seleccionada.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+
+        orden_de_compra.add(ordenes_de_compra,gridBagConstraints(0, 0, 4, 1, 1, 3,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,5,5,5,5));
 
         
         
         
         //boton crear orden
         JButton crear_orden = new JButton("Crear Orden");
-        orden_de_compra.add(crear_orden,gridBagConstraints(1, 2, 1, 1, 0, 0, GridBagConstraints.BOTH,GridBagConstraints.WEST));
+        orden_de_compra.add(crear_orden,gridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.BOTH,GridBagConstraints.WEST,5,10,5,5));
         
         
         crear_orden.addActionListener(new ActionListener() {
@@ -86,7 +102,7 @@ public class Orden_de_compra extends JPanel{
         });
 
         JButton generar_boucher = new JButton("Generar boucher");
-        ordenes_de_compra.add(generar_boucher,gridBagConstraints(1, 2, 1, 1, 0, 0,GridBagConstraints.BOTH,GridBagConstraints.WEST));
+        ordenes_de_compra.add(generar_boucher,gridBagConstraints(1, 2, 1, 1, 0, 0,GridBagConstraints.BOTH,GridBagConstraints.WEST,5,5,5,5));
 
         generar_boucher.addActionListener(new ActionListener() {
             @Override
@@ -116,7 +132,7 @@ public class Orden_de_compra extends JPanel{
         card_panel.add(orden_de_compra,"opcion 1");
         cardLayout.show(card_panel, "opcion 1");
 
-        add(card_panel,gridBagConstraints(0, 0, 1, 1, 1, 12, GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
+        add(card_panel,gridBagConstraints(0, 0, 1, 1, 1, 12, GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,5,5,5,5));
 
     }
 
@@ -135,11 +151,11 @@ public class Orden_de_compra extends JPanel{
         obtener_clientes(modelo_cliente);
 
         //se añaden los botones y tablas al panel para cliente
-        vista_clientes.add(searchbar_clientes,gridBagConstraints(0, 0, 4, 1, 0, 0,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
-        vista_clientes.add(tabla_clientes,gridBagConstraints(0, 1, 4, 1, 1, 1,GridBagConstraints.BOTH,GridBagConstraints.CENTER));
+        vista_clientes.add(searchbar_clientes,gridBagConstraints(0, 0, 4, 1, 0, 0,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,5,5,0,5));
+        vista_clientes.add(tabla_clientes,gridBagConstraints(0, 1, 4, 1, 1, 1,GridBagConstraints.BOTH,GridBagConstraints.CENTER,0,5,5,5));
 
         JButton mostrar_orden = new JButton("Volver");
-        vista_clientes.add(mostrar_orden,gridBagConstraints(0, 2, 1, 1, 0, 0, GridBagConstraints.BOTH,GridBagConstraints.WEST));
+        vista_clientes.add(mostrar_orden,gridBagConstraints(0, 2, 1, 1, 0, 0, GridBagConstraints.BOTH,GridBagConstraints.WEST,5,5,5,5));
 
         mostrar_orden.addActionListener(new ActionListener() {
             @Override
@@ -150,7 +166,7 @@ public class Orden_de_compra extends JPanel{
         
         //boton siguiente
         JButton siguiente = new JButton("Siguiente");
-        vista_clientes.add(siguiente,gridBagConstraints(1, 2, 1, 1, 0, 0, GridBagConstraints.BOTH,GridBagConstraints.WEST));
+        vista_clientes.add(siguiente,gridBagConstraints(1, 2, 1, 1, 0, 0, GridBagConstraints.BOTH,GridBagConstraints.WEST,5,5,5,5));
 
         
         siguiente.addActionListener(new ActionListener() {
@@ -189,22 +205,22 @@ public class Orden_de_compra extends JPanel{
         JLabel id_cliente = new JLabel("Rut cliente:");
         id_cliente_text = new JTextField();
         id_cliente_text.setEditable(false);
-        panel_crear_orden.add(id_cliente,gridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        panel_crear_orden.add(id_cliente_text,gridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
+        panel_crear_orden.add(id_cliente,gridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_crear_orden.add(id_cliente_text,gridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
 
         JLabel nombre_cliente = new JLabel("Nombre cliente:");
         nombre_cliente_text = new JTextField();
         nombre_cliente_text.setEditable(false);
-        panel_crear_orden.add(nombre_cliente,gridBagConstraints(2, 0, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        panel_crear_orden.add(nombre_cliente_text,gridBagConstraints(3, 0, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
+        panel_crear_orden.add(nombre_cliente,gridBagConstraints(2, 0, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_crear_orden.add(nombre_cliente_text,gridBagConstraints(3, 0, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
 
         //informacion orden de compra a crear
         // id de la orden
         JLabel id_orden = new JLabel("Id orden:");
         JTextField id_orden_text = new JTextField(5);
         ((AbstractDocument) id_orden_text.getDocument()).setDocumentFilter(new NumberFilter());
-        panel_crear_orden.add(id_orden,gridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        panel_crear_orden.add(id_orden_text,gridBagConstraints(1, 1, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
+        panel_crear_orden.add(id_orden,gridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_crear_orden.add(id_orden_text,gridBagConstraints(1, 1, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
 
         //fecha de creacion de la orden
         JLabel fecha = new JLabel("Fecha de la orden:");
@@ -212,8 +228,8 @@ public class Orden_de_compra extends JPanel{
         fecha_text.setEditable(false);
         fechaActual = LocalDate.now();
         fecha_text.setText(fechaActual.toString());
-        panel_crear_orden.add(fecha,gridBagConstraints(2, 1, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        panel_crear_orden.add(fecha_text,gridBagConstraints(3, 1, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
+        panel_crear_orden.add(fecha,gridBagConstraints(2, 1, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_crear_orden.add(fecha_text,gridBagConstraints(3, 1, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
 
         //tablas de productos disponibles y ya ordenados
         JLabel seleccionar_productos = new JLabel("Seleccione los productos:");
@@ -231,10 +247,10 @@ public class Orden_de_compra extends JPanel{
         DefaultTableModel modelo_product_ord = new DefaultTableModel(null,columna_productos_ordenados);
         JScrollPane productos_ordenados = create_table(modelo_product_ord);
 
-        panel_crear_orden.add(seleccionar_productos,gridBagConstraints(0, 2, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        panel_crear_orden.add(seleccionar_ordenados,gridBagConstraints(2, 2, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        panel_crear_orden.add(productos_diponibles,gridBagConstraints(0, 3, 2, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
-        panel_crear_orden.add(productos_ordenados,gridBagConstraints(2, 3, 2, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
+        panel_crear_orden.add(seleccionar_productos,gridBagConstraints(0, 2, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_crear_orden.add(seleccionar_ordenados,gridBagConstraints(2, 2, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_crear_orden.add(productos_diponibles,gridBagConstraints(0, 3, 2, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_crear_orden.add(productos_ordenados,gridBagConstraints(2, 3, 2, 1, 1, 1, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST,5,5,5,5));
 
         //opcines cantidad y precio de la compra y boton de guardar
 
@@ -246,34 +262,43 @@ public class Orden_de_compra extends JPanel{
         JTextField precio_text = new JTextField(10);
         precio_text.setEditable(false);*/
 
-        panel_crear_orden.add(cantidad,gridBagConstraints(2, 4, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
+        panel_crear_orden.add(cantidad,gridBagConstraints(2, 4, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
         //panel_crear_orden.add(precio,gridBagConstraints(2, 4, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        panel_crear_orden.add(cantidad_text,gridBagConstraints(3, 4, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
+        panel_crear_orden.add(cantidad_text,gridBagConstraints(3, 4, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
        // panel_crear_orden.add(precio_text,gridBagConstraints(3, 4, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
 
         JButton guardar = new JButton("Agregar");
-        panel_crear_orden.add(guardar,gridBagConstraints(0, 4, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
+        panel_crear_orden.add(guardar,gridBagConstraints(0, 4, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST,5,5,5,5));
 
         JLabel precio_total = new JLabel("Total:");
         JTextField precio_total_text = new JTextField("0");
         precio_total_text.setEditable(false);
-        panel_crear_orden.add(precio_total,gridBagConstraints(0, 6, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
-        panel_crear_orden.add(precio_total_text,gridBagConstraints(1, 6, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST));
+        panel_crear_orden.add(precio_total,gridBagConstraints(0, 6, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_crear_orden.add(precio_total_text,gridBagConstraints(1, 6, 1, 1, 0, 0, GridBagConstraints.HORIZONTAL, GridBagConstraints.NORTHWEST,5,5,5,5));
 
         //empleado encargado de la orden
+        var rows_empleado = dbc.BuscarEmpleado("");
         JLabel encargado = new JLabel("Rut encargado:");
-        JTextField rut_encargado = new JTextField(5);
-        ((AbstractDocument) rut_encargado.getDocument()).setDocumentFilter(new NumberFilter());
+        JComboBox<String> combobox_empleado = new JComboBox<>();
+        for(Object[] row : rows_empleado){
+            combobox_empleado.addItem(row[0].toString());
+        }
+        JLabel nombre_encargado = new JLabel("Encargado:");
+        JTextField nombre_encargado_text = new JTextField(5);
+        nombre_encargado_text.setEditable(false);
+        nombre_encargado_text.setText(dbc.ObtenerNombreEmpleado(combobox_empleado.getSelectedItem().toString()));
 
-        panel_crear_orden.add(encargado,gridBagConstraints(0, 7, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
-        panel_crear_orden.add(rut_encargado,gridBagConstraints(1, 7, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
+        panel_crear_orden.add(encargado,gridBagConstraints(0, 7, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_crear_orden.add(combobox_empleado,gridBagConstraints(1, 7, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_crear_orden.add(nombre_encargado,gridBagConstraints(2, 7, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_crear_orden.add(nombre_encargado_text,gridBagConstraints(3, 7, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST,5,5,5,5));
 
         //botones de crear y cancelar
         JButton generar_orden = new JButton("Generar Orden");
         JButton cancelar = new JButton("Volver");
 
-        panel_crear_orden.add(generar_orden,gridBagConstraints(0, 8 ,1, 1, 0, 5, GridBagConstraints.NONE, GridBagConstraints.SOUTHWEST));
-        panel_crear_orden.add(cancelar,gridBagConstraints(2, 8, 1, 1, 0, 5, GridBagConstraints.NONE, GridBagConstraints.SOUTHWEST));
+        panel_crear_orden.add(generar_orden,gridBagConstraints(0, 8 ,1, 1, 0, 5, GridBagConstraints.NONE, GridBagConstraints.SOUTHWEST,5,5,5,5));
+        panel_crear_orden.add(cancelar,gridBagConstraints(2, 8, 1, 1, 0, 5, GridBagConstraints.NONE, GridBagConstraints.SOUTHWEST,5,5,5,5));
 
 
         //se añade el panel final con el contenido a las opciones de paneles a mostrar
@@ -325,13 +350,15 @@ public class Orden_de_compra extends JPanel{
 
                 //guardar cambios
                 JTable tabla_product_ord = getTableFromScrollPane(productos_ordenados);
-                if(tabla_product_ord.getRowCount() != 0 && id_orden_text.getText().isEmpty() == false && rut_encargado.getText().isEmpty() == false){
-                    if(dbc.VerificarRutEmpleadoExiste(rut_encargado.getText()) == true){
-                        JOptionPane.showMessageDialog(null, "ta weno.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                if(tabla_product_ord.getRowCount() != 0 && id_orden_text.getText().isEmpty() == false  /*&& rut_encargado.getText().isEmpty() == false*/){
+                    //if(dbc.VerificarRutEmpleadoExiste(rut_encargado.getText()) == true){
+                    if(dbc.VerificarRutEmpleadoExiste(combobox_empleado.getSelectedItem().toString()) == true){
+                        JOptionPane.showMessageDialog(null, "Orden generada correctamente.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
 
                         fechaActual = LocalDate.now();
 
-                        dbc.AgregarOrdenDeCompra(id_orden_text.getText(),fechaActual, precio_total_text.getText(), rut_encargado.getText(), id_cliente_text.getText());
+                        //dbc.AgregarOrdenDeCompra(id_orden_text.getText(),fechaActual, precio_total_text.getText(), rut_encargado.getText(), id_cliente_text.getText());
+                        dbc.AgregarOrdenDeCompra(id_orden_text.getText(),fechaActual, precio_total_text.getText(), combobox_empleado.getSelectedItem().toString(), id_cliente_text.getText());
                         dbc.AgregarProducto_a_orden_de_compra(modelo_product_ord);
                         SearchbarCompras.Buscar(null,null,null,null,"",modelo);
 
@@ -341,7 +368,8 @@ public class Orden_de_compra extends JPanel{
                         precio_total_text.setText("0");
                         cantidad_text.setText("1");
 
-                        rut_encargado.setText("");
+                       // rut_encargado.setText("");
+                        nombre_encargado_text.setText(dbc.ObtenerNombreEmpleado(combobox_empleado.getSelectedItem().toString()));
 
                         modelo_product_ord.setRowCount(0);
 
@@ -366,7 +394,8 @@ public class Orden_de_compra extends JPanel{
 
                 precio_total_text.setText("0");
 
-                rut_encargado.setText("");
+                // rut_encargado.setText("");
+                nombre_encargado_text.setText(dbc.ObtenerNombreEmpleado(combobox_empleado.getSelectedItem().toString()));
                 cantidad_text.setText("1");
 
                 modelo_product_ord.setRowCount(0);
@@ -389,15 +418,23 @@ public class Orden_de_compra extends JPanel{
             }
         });
 
+        combobox_empleado.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Manejar el evento de selección aquí
+                nombre_encargado_text.setText(dbc.ObtenerNombreEmpleado(combobox_empleado.getSelectedItem().toString()));
+            }
+        });
+
     }
 
-    private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh,int wx,int wy,int fill,int anchor){
+    private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh,int wx,int wy,int fill,int anchor,int top,int left,int bottom,int right){
         GridBagConstraints constraintsElements = new GridBagConstraints();
         constraintsElements.fill = fill;
         constraintsElements.anchor = anchor;
         constraintsElements.weightx = wx;
         constraintsElements.weighty = wy;
-        constraintsElements.insets = new Insets(5, 5, 5, 5);
+        constraintsElements.insets = new Insets(top, left, bottom, right);
         constraintsElements.gridx = x;
         constraintsElements.gridy = y;
         constraintsElements.gridwidth = gw;
