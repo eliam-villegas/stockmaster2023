@@ -1,4 +1,3 @@
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -8,7 +7,6 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -28,12 +26,12 @@ import javax.swing.text.AbstractDocument;
 
 public class Stock_insumos extends JPanel{
 
-    private CardLayout cardLayout = new CardLayout();
+    //private CardLayout cardLayout = new CardLayout();
     public DefaultTableModel modelo;
     public JScrollPane tabla;
     public JTable tabla_real;
 
-    private JPanel cardPanel= new JPanel(cardLayout);;
+    //private JPanel cardPanel= new JPanel(cardLayout);;
     private JTabbedPane pestanas = new JTabbedPane();
     
     public Stock_insumos(){
@@ -55,11 +53,11 @@ public class Stock_insumos extends JPanel{
         crear_panel_eliminar(tabla);
         
         //pestanas.add(cardPanel);
-        add(pestanas,gridBagConstraints(0,0,3,1));
+        add(pestanas,gridBagConstraints(0,0,3,1,1,1,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,5,5,5,5));
         
         
-        add(searchbar,gridBagConstraints(0, 1,3,1));
-        add(tabla,gridBagConstraints(0, 2,3,1));
+        add(searchbar,gridBagConstraints(0, 1,3,1,0,0,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,5,5,0,5));
+        add(tabla,gridBagConstraints(0, 2,3,1,1,1,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,0,5,5,5));
 
 
         
@@ -84,7 +82,7 @@ public class Stock_insumos extends JPanel{
     private void crear_panel_agregar(){
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(Color.white);
-        container.setBorder(BorderFactory.createTitledBorder("Agregar"));
+        //container.setBorder(BorderFactory.createTitledBorder("Agregar"));
 
         JLabel idLabel = new JLabel("ID producto:");
         //idLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -115,25 +113,25 @@ public class Stock_insumos extends JPanel{
 
         JButton boton_ingresar = new JButton("Ingresar");
 
-        container.add(idLabel,gridBagConstraints(0,0,1,1));
-        container.add(idTextField,gridBagConstraints(1,0,1,1));
+        container.add(idLabel,gridBagConstraints(0,0,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(idTextField,gridBagConstraints(1,0,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(nombreLabel,gridBagConstraints(2,0,1,1));
-        container.add(nombreTextField,gridBagConstraints(3,0,1,1));
+        container.add(nombreLabel,gridBagConstraints(2,0,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(nombreTextField,gridBagConstraints(3,0,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(stockLabel,gridBagConstraints(0,1,1,1));
-        container.add(stockTextField,gridBagConstraints(1,1,1,1));
+        container.add(stockLabel,gridBagConstraints(0,1,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(stockTextField,gridBagConstraints(1,1,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(precioUnitarioLabel,gridBagConstraints(2,1,1,1));
-        container.add(precioUnitarioTextField,gridBagConstraints(3,1,1,1));
+        container.add(precioUnitarioLabel,gridBagConstraints(2,1,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(precioUnitarioTextField,gridBagConstraints(3,1,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(tipoLabel,gridBagConstraints(0,2,1,1));
-        container.add(tipoComboBox,gridBagConstraints(1,2,1,1));
+        container.add(tipoLabel,gridBagConstraints(0,2,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(tipoComboBox,gridBagConstraints(1,2,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(unidadMedidaLabel,gridBagConstraints(2,2,1,1));
-        container.add(unidadMedidaInsumoLista,gridBagConstraints(3,2,1,1));
+        container.add(unidadMedidaLabel,gridBagConstraints(2,2,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(unidadMedidaInsumoLista,gridBagConstraints(3,2,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(boton_ingresar,gridBagConstraints(0,4,1,1));
+        container.add(boton_ingresar,gridBagConstraints(0,4,1,1,0,0,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
 
         pestanas.addTab("Agregar", container);
         
@@ -166,7 +164,7 @@ public class Stock_insumos extends JPanel{
     private void crear_panel_modificar(JScrollPane tabla){
         JPanel panel_modificar = new JPanel(new GridBagLayout());
         panel_modificar.setBackground(Color.white);
-        panel_modificar.setBorder(BorderFactory.createTitledBorder("Modificar"));
+        //panel_modificar.setBorder(BorderFactory.createTitledBorder("Modificar"));
         panel_modificar.setName("panel_modificar");
 
         JLabel idLabel = new JLabel("ID producto:");
@@ -197,25 +195,25 @@ public class Stock_insumos extends JPanel{
 
         JButton boton_guardar = new JButton("Guardar");
 
-        panel_modificar.add(idLabel,gridBagConstraints(0,0,1,1));
-        panel_modificar.add(idTextField,gridBagConstraints(1,0,1,1));
+        panel_modificar.add(idLabel,gridBagConstraints(0,0,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_modificar.add(idTextField,gridBagConstraints(1,0,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        panel_modificar.add(nombreLabel,gridBagConstraints(2,0,1,1));
-        panel_modificar.add(nombreTextField,gridBagConstraints(3,0,1,1));
+        panel_modificar.add(nombreLabel,gridBagConstraints(2,0,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_modificar.add(nombreTextField,gridBagConstraints(3,0,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        panel_modificar.add(stockLabel,gridBagConstraints(0,1,1,1));
-        panel_modificar.add(stockTextField,gridBagConstraints(1,1,1,1));
+        panel_modificar.add(stockLabel,gridBagConstraints(0,1,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_modificar.add(stockTextField,gridBagConstraints(1,1,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        panel_modificar.add(precioUnitarioLabel,gridBagConstraints(2,1,1,1));
-        panel_modificar.add(precioUnitarioTextField,gridBagConstraints(3,1,1,1));
+        panel_modificar.add(precioUnitarioLabel,gridBagConstraints(2,1,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_modificar.add(precioUnitarioTextField,gridBagConstraints(3,1,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        panel_modificar.add(tipoLabel,gridBagConstraints(0,2,1,1));
-        panel_modificar.add(tipoComboBox,gridBagConstraints(1,2,1,1));
+        panel_modificar.add(tipoLabel,gridBagConstraints(0,2,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_modificar.add(tipoComboBox,gridBagConstraints(1,2,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        panel_modificar.add(unidadMedidaLabel,gridBagConstraints(2,2,1,1));
-        panel_modificar.add(unidadMedidaInsumoLista,gridBagConstraints(3,2,1,1));
+        panel_modificar.add(unidadMedidaLabel,gridBagConstraints(2,2,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_modificar.add(unidadMedidaInsumoLista,gridBagConstraints(3,2,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        panel_modificar.add(boton_guardar,gridBagConstraints(0,4,1,1));
+        panel_modificar.add(boton_guardar,gridBagConstraints(0,4,1,1,0,0,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
 
         pestanas.addTab("Modificar", panel_modificar);
 
@@ -266,10 +264,10 @@ public class Stock_insumos extends JPanel{
     }
 
     private void crear_panel_eliminar(JScrollPane tabla){
-        JPanel panel_modificar = new JPanel(new GridBagLayout());
-        panel_modificar.setBackground(Color.white);
-        panel_modificar.setBorder(BorderFactory.createTitledBorder("Eliminar"));
-        panel_modificar.setName("panel_eliminar");
+
+        JPanel panel_eliminar = new JPanel(new GridBagLayout());
+        panel_eliminar.setBackground(Color.white);
+        panel_eliminar.setName("panel_eliminar");
 
         JLabel idLabel = new JLabel("ID producto:");
         idLabel.setFont(new Font("Arial", Font.BOLD, 12));
@@ -304,30 +302,29 @@ public class Stock_insumos extends JPanel{
         
         JButton boton_guardar = new JButton("Eliminar");
 
-        panel_modificar.add(idLabel,gridBagConstraints(0,0,1,1));
-        panel_modificar.add(idTextField,gridBagConstraints(1,0,1,1));
+        panel_eliminar.add(idLabel,gridBagConstraints(0,0,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_eliminar.add(idTextField,gridBagConstraints(1,0,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        panel_modificar.add(nombreLabel,gridBagConstraints(2,0,1,1));
-        panel_modificar.add(nombreTextField,gridBagConstraints(3,0,1,1));
+        panel_eliminar.add(nombreLabel,gridBagConstraints(2,0,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_eliminar.add(nombreTextField,gridBagConstraints(3,0,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        panel_modificar.add(stockLabel,gridBagConstraints(0,1,1,1));
-        panel_modificar.add(stockTextField,gridBagConstraints(1,1,1,1));
+        panel_eliminar.add(stockLabel,gridBagConstraints(0,1,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_eliminar.add(stockTextField,gridBagConstraints(1,1,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        panel_modificar.add(precioUnitarioLabel,gridBagConstraints(2,1,1,1));
-        panel_modificar.add(precioUnitarioTextField,gridBagConstraints(3,1,1,1));
+        panel_eliminar.add(precioUnitarioLabel,gridBagConstraints(2,1,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_eliminar.add(precioUnitarioTextField,gridBagConstraints(3,1,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        panel_modificar.add(tipoLabel,gridBagConstraints(0,2,1,1));
-        panel_modificar.add(tipoComboBox,gridBagConstraints(1,2,1,1));
+        panel_eliminar.add(tipoLabel,gridBagConstraints(0,2,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_eliminar.add(tipoComboBox,gridBagConstraints(1,2,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        panel_modificar.add(unidadMedidaLabel,gridBagConstraints(2,2,1,1));
-        panel_modificar.add(unidadMedidaInsumoLista,gridBagConstraints(3,2,1,1));
+        panel_eliminar.add(unidadMedidaLabel,gridBagConstraints(2,2,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        panel_eliminar.add(unidadMedidaInsumoLista,gridBagConstraints(3,2,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        panel_modificar.add(boton_guardar,gridBagConstraints(0,4,1,1));
-
-        pestanas.addTab("Eliminar", panel_modificar);
+        panel_eliminar.add(boton_guardar,gridBagConstraints(0,4,1,1,0,0,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
 
         JTable tabla_1 = getTableFromScrollPane(tabla);
 
+        pestanas.addTab("Eliminar", panel_eliminar);
         ListSelectionModel selectionModel = tabla_1.getSelectionModel();
         selectionModel.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -375,12 +372,13 @@ public class Stock_insumos extends JPanel{
     
     
     
-    private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
+    private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh,int wx,int wy,int fill,int anchor,int top,int left,int bottom,int right){
         GridBagConstraints constraintsElements = new GridBagConstraints();
-        constraintsElements.fill = GridBagConstraints.BOTH;
-        constraintsElements.anchor = GridBagConstraints.NORTHWEST;
-        constraintsElements.weightx = 1;
-        constraintsElements.insets = new Insets(5, 10, 10, 5);
+        constraintsElements.fill = fill;
+        constraintsElements.anchor = anchor;
+        constraintsElements.weightx = wx;
+        constraintsElements.weighty = wy;
+        constraintsElements.insets = new Insets(top, left, bottom, right);
         constraintsElements.gridx = x;
         constraintsElements.gridy = y;
         constraintsElements.gridwidth = gw;

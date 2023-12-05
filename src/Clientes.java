@@ -1,5 +1,3 @@
-
-import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -8,12 +6,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -51,10 +44,10 @@ public class Clientes extends JPanel {
         crear_panel_eliminar(tabla);
 
         //pestanas.add(cardPanel);
-        add(pestanas, gridBagConstraints(0, 0, 3, 1));
+        add(pestanas, gridBagConstraints(0, 0, 3, 1,1,1,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        add(searchbar, gridBagConstraints(0, 1, 3, 1));
-        add(tabla, gridBagConstraints(0, 2, 3, 1));
+        add(searchbar, gridBagConstraints(0, 1, 3, 1,0,0,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,5,5,0,5));
+        add(tabla, gridBagConstraints(0, 2, 3, 1,1,1,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,0,5,5,5));
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.BOTH;
@@ -68,12 +61,13 @@ public class Clientes extends JPanel {
         setVisible(true);
     }
 
-    private GridBagConstraints gridBagConstraints(int x, int y, int gw, int gh) {
+    private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh,int wx,int wy,int fill,int anchor,int top,int left,int bottom,int right){
         GridBagConstraints constraintsElements = new GridBagConstraints();
-        constraintsElements.fill = GridBagConstraints.BOTH;
-        constraintsElements.anchor = GridBagConstraints.NORTHWEST;
-        constraintsElements.weightx = 1;
-        constraintsElements.insets = new Insets(5, 10, 10, 5);
+        constraintsElements.fill = fill;
+        constraintsElements.anchor = anchor;
+        constraintsElements.weightx = wx;
+        constraintsElements.weighty = wy;
+        constraintsElements.insets = new Insets(top, left, bottom, right);
         constraintsElements.gridx = x;
         constraintsElements.gridy = y;
         constraintsElements.gridwidth = gw;
@@ -104,41 +98,37 @@ public class Clientes extends JPanel {
     private void crear_panel_agregar() {
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(Color.white);
-        container.setBorder(BorderFactory.createTitledBorder("Agregar"));
 
         JLabel idLabel = new JLabel("Rut:");
-        //idLabel.setHorizontalAlignment(SwingConstants.CENTER);
         idLabel.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField idTextField = new JTextField(10);
         ((AbstractDocument) idTextField.getDocument()).setDocumentFilter(new NumberFilter());
 
         JLabel nombreLabel = new JLabel("Nombre:");
-        //nombreLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nombreLabel.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField nombreTextField = new JTextField(20);
 
         JLabel cargoLabel = new JLabel("Numero Contacto:");
         JTextField cargoTextField = new JTextField(10);
-        //((AbstractDocument) cargoTextField.getDocument()).setDocumentFilter(new NumberFilter());
 
         JLabel contrasenaLabel = new JLabel("Direccion:");
         JTextField contrasenaTextField = new JTextField(30);
 
         JButton boton_ingresar = new JButton("Ingresar");
 
-        container.add(idLabel, gridBagConstraints(0, 0, 1, 1));
-        container.add(idTextField, gridBagConstraints(1, 0, 1, 1));
+        container.add(idLabel, gridBagConstraints(0, 0, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(idTextField, gridBagConstraints(1, 0, 1, 1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(nombreLabel, gridBagConstraints(2, 0, 1, 1));
-        container.add(nombreTextField, gridBagConstraints(3, 0, 1, 1));
+        container.add(nombreLabel, gridBagConstraints(2, 0, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(nombreTextField, gridBagConstraints(3, 0, 1, 1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(cargoLabel, gridBagConstraints(0, 1, 1, 1));
-        container.add(cargoTextField, gridBagConstraints(1, 1, 1, 1));
+        container.add(cargoLabel, gridBagConstraints(0, 1, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(cargoTextField, gridBagConstraints(1, 1, 1, 1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(contrasenaLabel, gridBagConstraints(2, 1, 1, 1));
-        container.add(contrasenaTextField, gridBagConstraints(3, 1, 1, 1));
+        container.add(contrasenaLabel, gridBagConstraints(2, 1, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(contrasenaTextField, gridBagConstraints(3, 1, 1, 1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(boton_ingresar, gridBagConstraints(0, 4, 1, 1));
+        container.add(boton_ingresar, gridBagConstraints(0, 4, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHWEST,5,5,5,5));
 
         pestanas.addTab("Agregar", container);
 
@@ -160,6 +150,7 @@ public class Clientes extends JPanel {
 
     }
 
+
     /*
         Crea el panel con las opcines para modificar un producto de la tabla
             -el boton guardar cambia los datos en la tabla y la base de datos
@@ -168,42 +159,38 @@ public class Clientes extends JPanel {
     private void crear_panel_modificar(JScrollPane tabla) {
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(Color.white);
-        container.setBorder(BorderFactory.createTitledBorder("Agregar"));
 
         JLabel idLabel = new JLabel("Rut:");
-        //idLabel.setHorizontalAlignment(SwingConstants.CENTER);
         idLabel.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField idTextField = new JTextField(20);
         ((AbstractDocument) idTextField.getDocument()).setDocumentFilter(new NumberFilter());
         idTextField.setEditable(false);
 
         JLabel nombreLabel = new JLabel("Nombre:");
-        //nombreLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nombreLabel.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField nombreTextField = new JTextField(20);
 
         JLabel cargoLabel = new JLabel("Numero Contacto:");
         JTextField cargoTextField = new JTextField(10);
-        //((AbstractDocument) cargoTextField.getDocument()).setDocumentFilter(new NumberFilter());
 
         JLabel contrasenaLabel = new JLabel("Direccion:");
         JTextField contrasenaTextField = new JTextField(30);
 
         JButton boton_guardar = new JButton("Guardar");
 
-        container.add(idLabel, gridBagConstraints(0, 0, 1, 1));
-        container.add(idTextField, gridBagConstraints(1, 0, 1, 1));
+        container.add(idLabel, gridBagConstraints(0, 0, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(idTextField, gridBagConstraints(1, 0, 1, 1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(nombreLabel, gridBagConstraints(2, 0, 1, 1));
-        container.add(nombreTextField, gridBagConstraints(3, 0, 1, 1));
+        container.add(nombreLabel, gridBagConstraints(2, 0, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(nombreTextField, gridBagConstraints(3, 0, 1, 1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(cargoLabel, gridBagConstraints(0, 1, 1, 1));
-        container.add(cargoTextField, gridBagConstraints(1, 1, 1, 1));
+        container.add(cargoLabel, gridBagConstraints(0, 1, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(cargoTextField, gridBagConstraints(1, 1, 1, 1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(contrasenaLabel, gridBagConstraints(2, 1, 1, 1));
-        container.add(contrasenaTextField, gridBagConstraints(3, 1, 1, 1));
+        container.add(contrasenaLabel, gridBagConstraints(2, 1, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(contrasenaTextField, gridBagConstraints(3, 1, 1, 1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(boton_guardar, gridBagConstraints(0, 4, 1, 1));
+        container.add(boton_guardar, gridBagConstraints(0, 4, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHWEST,5,5,5,5));
 
         pestanas.addTab("Modificar", container);
 
@@ -252,45 +239,41 @@ public class Clientes extends JPanel {
     private void crear_panel_eliminar(JScrollPane tabla) {
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(Color.white);
-        container.setBorder(BorderFactory.createTitledBorder("Agregar"));
 
         JLabel idLabel = new JLabel("Rut:");
-        //idLabel.setHorizontalAlignment(SwingConstants.CENTER);
         idLabel.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField idTextField = new JTextField(20);
         idTextField.setEditable(false);
         ((AbstractDocument) idTextField.getDocument()).setDocumentFilter(new NumberFilter());
 
         JLabel nombreLabel = new JLabel("Nombre:");
-        //nombreLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nombreLabel.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField nombreTextField = new JTextField(20);
         nombreTextField.setEditable(false);
 
         JLabel cargoLabel = new JLabel("Numero Contacto:");
         JTextField cargoTextField = new JTextField(10);
-        //((AbstractDocument) cargoTextField.getDocument()).setDocumentFilter(new NumberFilter());
         cargoTextField.setEditable(false);
 
         JLabel contrasenaLabel = new JLabel("Direccion:");
         JTextField contrasenaTextField = new JTextField(30);
         contrasenaTextField.setEditable(false);
 
-        JButton boton_guardar = new JButton("Eliminar");
+        JButton boton_eliminar = new JButton("Eliminar");
 
-        container.add(idLabel, gridBagConstraints(0, 0, 1, 1));
-        container.add(idTextField, gridBagConstraints(1, 0, 1, 1));
+        container.add(idLabel, gridBagConstraints(0, 0, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(idTextField, gridBagConstraints(1, 0, 1, 1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(nombreLabel, gridBagConstraints(2, 0, 1, 1));
-        container.add(nombreTextField, gridBagConstraints(3, 0, 1, 1));
+        container.add(nombreLabel, gridBagConstraints(2, 0, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(nombreTextField, gridBagConstraints(3, 0, 1, 1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(cargoLabel, gridBagConstraints(0, 1, 1, 1));
-        container.add(cargoTextField, gridBagConstraints(1, 1, 1, 1));
+        container.add(cargoLabel, gridBagConstraints(0, 1, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(cargoTextField, gridBagConstraints(1, 1, 1, 1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(contrasenaLabel, gridBagConstraints(2, 1, 1, 1));
-        container.add(contrasenaTextField, gridBagConstraints(3, 1, 1, 1));
+        container.add(contrasenaLabel, gridBagConstraints(2, 1, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(contrasenaTextField, gridBagConstraints(3, 1, 1, 1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(boton_guardar, gridBagConstraints(0, 4, 1, 1));
+        container.add(boton_eliminar, gridBagConstraints(0, 4, 1, 1,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHWEST,5,5,5,5));
 
         pestanas.addTab("Eliminar", container);
 
@@ -320,7 +303,7 @@ public class Clientes extends JPanel {
             }
         });
 
-        boton_guardar.addActionListener(new ActionListener() {
+        boton_eliminar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String idtext = idTextField.getText();

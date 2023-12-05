@@ -7,9 +7,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -21,7 +19,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
 
 public class Empleados extends JPanel{
@@ -49,34 +46,22 @@ public class Empleados extends JPanel{
         crear_panel_eliminar(tabla);
         
         //pestanas.add(cardPanel);
-        add(pestanas,gridBagConstraints(0,0,3,1));
+        add(pestanas,gridBagConstraints(0,0,3,1,1,1,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,5,5,5,5));
         
         
-        add(searchbar,gridBagConstraints(0, 1,3,1));
-        add(tabla,gridBagConstraints(0, 2,3,1));
-
-
-        
-
-        GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.anchor = GridBagConstraints.WEST;
-        constraints.insets = new Insets(5, 5, 5, 5);
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.gridwidth = 1;
-        constraints.gridheight = 1;
-
+        add(searchbar,gridBagConstraints(0, 1,3,1,0,0,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,5,5,0,5));
+        add(tabla,gridBagConstraints(0, 2,3,1,1,1,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST,0,5,5,5));
 
         setVisible(true);
     }
 
-private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
+    private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh,int wx,int wy,int fill,int anchor,int top,int left,int bottom,int right){
         GridBagConstraints constraintsElements = new GridBagConstraints();
-        constraintsElements.fill = GridBagConstraints.BOTH;
-        constraintsElements.anchor = GridBagConstraints.NORTHWEST;
-        constraintsElements.weightx = 1;
-        constraintsElements.insets = new Insets(5, 10, 10, 5);
+        constraintsElements.fill = fill;
+        constraintsElements.anchor = anchor;
+        constraintsElements.weightx = wx;
+        constraintsElements.weighty = wy;
+        constraintsElements.insets = new Insets(top, left, bottom, right);
         constraintsElements.gridx = x;
         constraintsElements.gridy = y;
         constraintsElements.gridwidth = gw;
@@ -107,22 +92,18 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
     private void crear_panel_agregar(){
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(Color.white);
-        container.setBorder(BorderFactory.createTitledBorder("Agregar"));
 
         JLabel idLabel = new JLabel("Rut:");
-        //idLabel.setHorizontalAlignment(SwingConstants.CENTER);
         idLabel.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField idTextField = new JTextField(20);
         ((AbstractDocument) idTextField.getDocument()).setDocumentFilter(new NumberFilter());
 
         JLabel nombreLabel = new JLabel("Nombre:");
-        //nombreLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nombreLabel.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField nombreTextField = new JTextField(20);
 
         JLabel cargoLabel = new JLabel("Cargo:");
         JTextField cargoTextField = new JTextField(10);
-        //((AbstractDocument) cargoTextField.getDocument()).setDocumentFilter(new NumberFilter());
         
         JLabel contrasenaLabel = new JLabel("Contraseña:");
         JTextField contrasenaTextField = new JTextField(10);
@@ -131,19 +112,19 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
 
         JButton boton_ingresar = new JButton("Ingresar");
 
-        container.add(idLabel,gridBagConstraints(0,0,1,1));
-        container.add(idTextField,gridBagConstraints(1,0,1,1));
+        container.add(idLabel,gridBagConstraints(0,0,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(idTextField,gridBagConstraints(1,0,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(nombreLabel,gridBagConstraints(2,0,1,1));
-        container.add(nombreTextField,gridBagConstraints(3,0,1,1));
+        container.add(nombreLabel,gridBagConstraints(2,0,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(nombreTextField,gridBagConstraints(3,0,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(cargoLabel,gridBagConstraints(0,1,1,1));
-        container.add(cargoTextField,gridBagConstraints(1,1,1,1));
+        container.add(cargoLabel,gridBagConstraints(0,1,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(cargoTextField,gridBagConstraints(1,1,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(contrasenaLabel,gridBagConstraints(2,1,1,1));
-        container.add(contrasenaTextField,gridBagConstraints(3,1,1,1));
+        container.add(contrasenaLabel,gridBagConstraints(2,1,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(contrasenaTextField,gridBagConstraints(3,1,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(boton_ingresar,gridBagConstraints(0,4,1,1));
+        container.add(boton_ingresar,gridBagConstraints(0,4,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHWEST,5,5,5,5));
 
         pestanas.addTab("Agregar", container);
         
@@ -175,7 +156,6 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
     private void crear_panel_modificar(JScrollPane tabla){
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(Color.white);
-        container.setBorder(BorderFactory.createTitledBorder("Agregar"));
 
         JLabel idLabel = new JLabel("Rut:");
         //idLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -184,10 +164,12 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
         ((AbstractDocument) idTextField.getDocument()).setDocumentFilter(new NumberFilter());
         idTextField.setEditable(false);
 
+
         JLabel nombreLabel = new JLabel("Nombre:");
         //nombreLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nombreLabel.setFont(new Font("Arial", Font.BOLD, 12));
         JTextField nombreTextField = new JTextField(20);
+        
 
         JLabel cargoLabel = new JLabel("Cargo:");
         JTextField cargoTextField = new JTextField(10);
@@ -200,19 +182,19 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
 
         JButton boton_guardar = new JButton("Guardar");
 
-        container.add(idLabel,gridBagConstraints(0,0,1,1));
-        container.add(idTextField,gridBagConstraints(1,0,1,1));
+        container.add(idLabel,gridBagConstraints(0,0,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(idTextField,gridBagConstraints(1,0,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(nombreLabel,gridBagConstraints(2,0,1,1));
-        container.add(nombreTextField,gridBagConstraints(3,0,1,1));
+        container.add(nombreLabel,gridBagConstraints(2,0,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(nombreTextField,gridBagConstraints(3,0,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(cargoLabel,gridBagConstraints(0,1,1,1));
-        container.add(cargoTextField,gridBagConstraints(1,1,1,1));
+        container.add(cargoLabel,gridBagConstraints(0,1,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(cargoTextField,gridBagConstraints(1,1,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(contrasenaLabel,gridBagConstraints(2,1,1,1));
-        container.add(contrasenaTextField,gridBagConstraints(3,1,1,1));
+        container.add(contrasenaLabel,gridBagConstraints(2,1,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(contrasenaTextField,gridBagConstraints(3,1,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(boton_guardar,gridBagConstraints(0,4,1,1));
+        container.add(boton_guardar,gridBagConstraints(0,4,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHWEST,5,5,5,5));
 
         pestanas.addTab("Modificar", container);
 
@@ -246,12 +228,11 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
             @Override
             public void actionPerformed(ActionEvent e) {
                 String idtext = idTextField.getText();
-                
-                var dbc = new DatabaseConnection();
                 if(idtext.isEmpty()){
                     JOptionPane.showMessageDialog(Empleados.this, "Seleccione elemento a modificar.");
                 }
                 else{
+                    var dbc = new DatabaseConnection();
                     dbc.ModificarEmpleado(idTextField.getText(), nombreTextField.getText(), cargoTextField.getText(),contrasenaTextField.getText());
                     SearchbarEmpleado.Buscar("", modelo);
                 }
@@ -262,7 +243,6 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
     private void crear_panel_eliminar(JScrollPane tabla){
         JPanel container = new JPanel(new GridBagLayout());
         container.setBackground(Color.white);
-        container.setBorder(BorderFactory.createTitledBorder("Agregar"));
 
         JLabel idLabel = new JLabel("Rut:");
         //idLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -288,21 +268,21 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
         contrasenaTextField.setEditable(false);
         
 
-        JButton boton_guardar = new JButton("Eliminar");
+        JButton boton_eliminar = new JButton("Eliminar");
 
-        container.add(idLabel,gridBagConstraints(0,0,1,1));
-        container.add(idTextField,gridBagConstraints(1,0,1,1));
+        container.add(idLabel,gridBagConstraints(0,0,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(idTextField,gridBagConstraints(1,0,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(nombreLabel,gridBagConstraints(2,0,1,1));
-        container.add(nombreTextField,gridBagConstraints(3,0,1,1));
+        container.add(nombreLabel,gridBagConstraints(2,0,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(nombreTextField,gridBagConstraints(3,0,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(cargoLabel,gridBagConstraints(0,1,1,1));
-        container.add(cargoTextField,gridBagConstraints(1,1,1,1));
+        container.add(cargoLabel,gridBagConstraints(0,1,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(cargoTextField,gridBagConstraints(1,1,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(contrasenaLabel,gridBagConstraints(2,1,1,1));
-        container.add(contrasenaTextField,gridBagConstraints(3,1,1,1));
+        container.add(contrasenaLabel,gridBagConstraints(2,1,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.NORTHWEST,5,5,5,5));
+        container.add(contrasenaTextField,gridBagConstraints(3,1,1,1,1,1,GridBagConstraints.HORIZONTAL,GridBagConstraints.NORTHWEST,5,5,5,5));
 
-        container.add(boton_guardar,gridBagConstraints(0,4,1,1));
+        container.add(boton_eliminar,gridBagConstraints(0,4,1,1,1,1,GridBagConstraints.NONE,GridBagConstraints.SOUTHWEST,5,5,5,5));
 
         pestanas.addTab("Eliminar", container);
 
@@ -333,17 +313,16 @@ private GridBagConstraints gridBagConstraints(int x,int y,int gw,int gh){
             }
         });
         
-        boton_guardar.addActionListener(new ActionListener() {
+        boton_eliminar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String idtext = idTextField.getText();
-                
-                var dbc = new DatabaseConnection();
                 if(idtext.isEmpty()){
                     JOptionPane.showMessageDialog(Empleados.this, "Seleccione elemento a eliminar.");
                 }
                 else{
                     // se elimina el producto
+                    var dbc = new DatabaseConnection();
                     dbc.EliminarEmpleado(idTextField.getText());
                     SearchbarEmpleado.Buscar("", modelo);
                 }
