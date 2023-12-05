@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -100,7 +101,7 @@ public class Reportes {
     }
 
     private String generarFecha() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH.mm.ss");
         LocalDateTime fechaActual = LocalDateTime.now();
         return fechaActual.format(formatter);
     }
@@ -118,14 +119,50 @@ public class Reportes {
         Document doc = new Document();
         PdfWriter.getInstance(doc, new FileOutputStream(rutaCompleta));
         doc.open();
+
          try {
+            Connection cn = DatabaseConnection.Getconnection();
             
-            Font fontTitulo = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
-            Paragraph titulo = new Paragraph("Váucher Orden De Compra Num " + id_orden + generarFecha(), fontTitulo);
-            titulo.setAlignment(Element.ALIGN_CENTER);
+            //LABEL DATOS DE LA EMPRESA
+            Font fontEmpresa = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.NORMAL);
+            Paragraph nombreEmpresa = new Paragraph("Distribuidora Claudio Olivares\n RUT 123456789\n Giro Comercial\n FONO +56 912345678\n distribuidoraclaudioolivares@gmail.com ", fontEmpresa);
+            nombreEmpresa.setAlignment(Element.ALIGN_TOP);
+            doc.add(nombreEmpresa);
+            
+            //LABEL TITULO
+            Font fontTitulo = new Font(Font.FontFamily.HELVETICA, 18, Font.UNDERLINE);
+            Paragraph titulo = new Paragraph("Voucher Orden De Compra Num " + id_orden, fontTitulo);
+            titulo.setAlignment(Element.TITLE);
             doc.add(titulo);
             doc.add(new Paragraph(20f, " "));
             
+            //LABEL FECHA DE EMISION
+            Font fontfecha = new Font(Font.FontFamily.COURIER, 8, Font.BOLD);
+            Paragraph fecha = new Paragraph("Fecha de Emision: " + generarFecha(), fontfecha);
+            titulo.setAlignment(Element.SUBJECT);
+            doc.add(fecha);
+            doc.add(new Paragraph(2f, " "));
+
+            //LABEL FECHA DE ORDEN DE COMPRA
+            Date fechaOrden = null;
+
+            String consulta = "SELECT fecha_de_compra " +
+                                "FROM orden_de_compra " +                                
+                                "WHERE id_orden = ?";
+
+            PreparedStatement stat = cn.prepareStatement(consulta);
+            stat.setInt(1, id_orden);
+            ResultSet result = stat.executeQuery();
+               if (result.next()) {
+                    fechaOrden = result.getDate("fecha_de_compra");
+                }
+            
+            Font fontfechacompra = new Font(Font.FontFamily.COURIER, 8, Font.BOLD);
+            Paragraph fechacompra = new Paragraph("Fecha de Orden de Compra: " + fechaOrden, fontfechacompra);
+            titulo.setAlignment(Element.ALIGN_CENTER);
+            doc.add(fechacompra);
+            doc.add(new Paragraph(10f, " "));
+
             PdfPTable tabla = new PdfPTable(7);
             
             tabla.addCell("Id Producto");
@@ -137,11 +174,9 @@ public class Reportes {
             tabla.addCell("Total");
 
             try {
-                Connection cn = DatabaseConnection.Getconnection();
-             
                 String query = "SELECT opc.id_producto, p.nombre_producto, opc.precio, opc.cantidad, (opc.precio * opc.cantidad) AS subtotal, (opc.precio * opc.cantidad) * 0.19 AS IVA, (opc.precio * opc.cantidad) * 1.19 AS total " +
                                     "FROM orden_compra_contiene_producto opc " +
-                                    "INNER JOIN producto p ON opc.id_producto = p.id_producto " +
+                                    "INNER JOIN producto p ON opc.id_producto = p.id_producto " +                                   
                                     "WHERE opc.id_orden = ?";
 
                 PreparedStatement statement = cn.prepareStatement(query);
@@ -162,9 +197,32 @@ public class Reportes {
 
                     doc.add(tabla);
                 }
+
+            // LABEL TOTAL IVA 
+            String consulta2 = "SELECT subtotal " +
+                                "FROM orden_de_compra " +                                
+                                "WHERE id_orden = ?";
+
+            PreparedStatement state = cn.prepareStatement(consulta2);
+            state.setInt(1, id_orden);
+            ResultSet result2 = state.executeQuery();
+            int montosubtotal = 0;
+               if (result2.next()) {
+                    montosubtotal = result2.getInt("subtotal");
+                }
+            double iva = montosubtotal * 0.19;
+            double total = montosubtotal + iva;
+            
+            doc.add(new Paragraph(10f, " "));
+            Font fontTotal = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+            Paragraph pgTotal = new Paragraph("Subtotal: " + montosubtotal + "\n IVA: " + iva + "\n Total: " + total, fontTotal);
+            titulo.setAlignment(Element.ANNOTATION);
+            doc.add(pgTotal);
+       
+            
                 
-                doc.close();
-                JOptionPane.showMessageDialog(null, "PDF generado correctamente.");
+            doc.close();
+            JOptionPane.showMessageDialog(null, "PDF generado correctamente.");
             } catch (DocumentException | SQLException e) {
                 System.out.println(e);
             }
