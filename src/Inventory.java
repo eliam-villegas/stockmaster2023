@@ -2,6 +2,9 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -11,7 +14,8 @@ public class Inventory extends JFrame{
 
     private JPanel main_tab;
     private JPanel dashBoard_tab;
-
+     private Color colorNormal = Color.BLACK;
+    private Color colorSeleccionado = Color.RED;
     private CardLayout cardLayout = new CardLayout();
 
     public Inventory(){
@@ -198,6 +202,17 @@ public class Inventory extends JFrame{
                 botonProducto.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
             }
         });
+        botonProducto.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                actualizarEstilo(botonProducto);
+            }
+        
+            @Override
+            public void focusLost(FocusEvent e) {
+                actualizarEstilo(botonProducto);
+            }
+        });
 
         menu.add(botonProducto,constraints(0, 2, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
 
@@ -241,6 +256,7 @@ public class Inventory extends JFrame{
             @Override
             public void mouseClicked(MouseEvent e) {
                 cardLayout.show(main_tab,"opcion 3");
+         
             }
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -252,6 +268,20 @@ public class Inventory extends JFrame{
                 botonOrdenCompra.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
             }
         });
+
+        
+        botonOrdenCompra.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                actualizarEstilo(botonOrdenCompra);
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                actualizarEstilo(botonOrdenCompra);
+            }
+        });
+
         menu.add(botonOrdenCompra,constraints(0, 4, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
 
         ImageIcon icon_ventas = new ImageIcon("imagenes/ventas.png");
@@ -438,4 +468,12 @@ public class Inventory extends JFrame{
         constraintsContent.anchor = anchor;
         return constraintsContent;
     }
+    private void actualizarEstilo(JLabel label) {
+        if (label.hasFocus()) {
+            label.setForeground(colorSeleccionado);
+        } else {
+            label.setForeground(colorNormal);
+        }
+    }
+
 }

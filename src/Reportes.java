@@ -166,7 +166,7 @@ public class Reportes {
             PdfPTable tabla = new PdfPTable(7);
             
             tabla.addCell("Id Producto");
-            tabla.addCell("Nombre Del Producto");
+            tabla.addCell("Nombre del Producto");
             tabla.addCell("Precio unitario neto");
             tabla.addCell("Cantidad");
             tabla.addCell("Subtotal");
