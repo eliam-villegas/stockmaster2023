@@ -42,7 +42,7 @@ public class Inventory extends JFrame{
         constraintsTitleBar.gridx = 0;
         constraintsTitleBar.gridy = 0;
         constraintsTitleBar.weightx = 1;
-        constraintsTitleBar.weighty = 2;
+        constraintsTitleBar.weighty = 10;
         constraintsTitleBar.fill = GridBagConstraints.BOTH;
         constraintsTitleBar.anchor = GridBagConstraints.NORTHWEST;
         background.add(titlebar,constraintsTitleBar);
@@ -217,7 +217,7 @@ public class Inventory extends JFrame{
         menu.add(botonProducto,constraints(0, 2, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
 
         ImageIcon icon_compra = new ImageIcon("imagenes/compras.png");
-        JLabel botonCompra = new JLabel(" Compras", icon_compra, JLabel.LEFT);
+        JLabel botonCompra = new JLabel(" Reposicion", icon_compra, JLabel.LEFT);
         botonCompra.setBorder(new EmptyBorder(0, 10, 0, 0));
         botonCompra.setOpaque(true);
         botonCompra.setBackground(new Color(51,51,51));
