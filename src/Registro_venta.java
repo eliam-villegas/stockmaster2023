@@ -68,14 +68,11 @@ public class Registro_venta extends JPanel{
         generar_reporte.addActionListener(new ActionListener() {
             
             public void actionPerformed(ActionEvent e) {
-
-                try {
                     Reportes report = new Reportes();
-                    report.reportVenta();
-                } catch (FileNotFoundException | DocumentException  e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                } 
+
+                    SelectorFechaVoucher selectorFecha = new SelectorFechaVoucher(report);
+                    selectorFecha.setVisible(true);
+
             }
 
         });

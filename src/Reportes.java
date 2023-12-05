@@ -23,6 +23,8 @@ public class Reportes {
 
 
     private final String ruta;
+    public java.util.Date fechaInicial;  //para usar la fecha en una query se pone asi new java.sql.Date(fechaInicial.getTime())
+    public java.util.Date fechaFinal; // new java.sql.Date(fechaFinal.getTime())
 
     public Reportes() {
         ruta = System.getProperty("user.home") + "/Desktop/";
