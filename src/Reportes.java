@@ -210,8 +210,8 @@ public class Reportes {
                if (result2.next()) {
                     montosubtotal = result2.getInt("subtotal");
                 }
-            double iva = montosubtotal * 0.19;
-            double total = montosubtotal + iva;
+            double iva = Math.round(montosubtotal * 0.19);
+            double total = Math.round(montosubtotal + iva);
             
             doc.add(new Paragraph(10f, " "));
             Font fontTotal = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
