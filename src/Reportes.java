@@ -26,6 +26,8 @@ public class Reportes {
     public java.util.Date fechaInicial;  //para usar la fecha en una query se pone asi new java.sql.Date(fechaInicial.getTime())
     public java.util.Date fechaFinal; // new java.sql.Date(fechaFinal.getTime())
 
+
+
     public Reportes() {
         ruta = System.getProperty("user.home") + "/Desktop/";
     }
@@ -44,7 +46,12 @@ public class Reportes {
         PdfWriter.getInstance(doc, new FileOutputStream(rutaCompleta));
         doc.open();
          try {
-            
+             //LABEL DATOS DE LA EMPRESA
+            Font fontEmpresa = new Font(Font.FontFamily.COURIER, 12, Font.NORMAL);
+            Paragraph nombreEmpresa = new Paragraph("Distribuidora Claudio Olivares\n RUT 123456789", fontEmpresa);
+            nombreEmpresa.setAlignment(Element.ALIGN_TOP);
+            doc.add(nombreEmpresa);
+
             Font fontTitulo = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
             Paragraph titulo = new Paragraph("Informe Registro de Ventas " + generarFecha(), fontTitulo);
             titulo.setAlignment(Element.ALIGN_CENTER);
@@ -63,12 +70,15 @@ public class Reportes {
 
             try {
                 Connection cn = DatabaseConnection.Getconnection();
-                Statement statement = cn.createStatement(); 
                 String query = "SELECT DISTINCT rv.id_venta, rv.total, rv.fecha_pago, rv.iva, rv.neto, oc.rut_cliente, c.nombre FROM registro_de_venta rv " +
                                 "JOIN orden_de_compra oc ON rv.id_venta = oc.id_venta " + 
                                 "JOIN cliente c ON oc.rut_cliente = c.rut_cliente " + 
-                                "WHERE rv.activo = true";
-                ResultSet rs = statement.executeQuery(query);
+                                "WHERE rv.activo = true AND rv.fecha_pago BETWEEN ? AND ? " + 
+                                "ORDER BY rv.fecha_pago";
+                PreparedStatement statement = cn.prepareStatement(query);
+                statement.setDate(1, new java.sql.Date(fechaInicial.getTime()));
+                statement.setDate(2, new java.sql.Date(fechaFinal.getTime()));
+                ResultSet rs = statement.executeQuery();
 
                 if(rs.next()){
 
