@@ -109,7 +109,7 @@ public class Clientes extends JPanel {
         JLabel idLabel = new JLabel("Rut:");
         //idLabel.setHorizontalAlignment(SwingConstants.CENTER);
         idLabel.setFont(new Font("Arial", Font.BOLD, 12));
-        JTextField idTextField = new JTextField(20);
+        JTextField idTextField = new JTextField(10);
         ((AbstractDocument) idTextField.getDocument()).setDocumentFilter(new NumberFilter());
 
         JLabel nombreLabel = new JLabel("Nombre:");
@@ -160,7 +160,6 @@ public class Clientes extends JPanel {
 
     }
 
-
     /*
         Crea el panel con las opcines para modificar un producto de la tabla
             -el boton guardar cambia los datos en la tabla y la base de datos
@@ -189,7 +188,6 @@ public class Clientes extends JPanel {
 
         JLabel contrasenaLabel = new JLabel("Direccion:");
         JTextField contrasenaTextField = new JTextField(30);
-        ((AbstractDocument) contrasenaTextField.getDocument()).setDocumentFilter(new NumberFilter());
 
         JButton boton_guardar = new JButton("Guardar");
 
@@ -276,7 +274,6 @@ public class Clientes extends JPanel {
 
         JLabel contrasenaLabel = new JLabel("Direccion:");
         JTextField contrasenaTextField = new JTextField(30);
-        ((AbstractDocument) contrasenaTextField.getDocument()).setDocumentFilter(new NumberFilter());
         contrasenaTextField.setEditable(false);
 
         JButton boton_guardar = new JButton("Eliminar");

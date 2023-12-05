@@ -115,7 +115,7 @@ public class DatabaseConnection {
         }
 
         // Modificar el nombre del cliente
-        if (nombre != null && !nombre.isEmpty()) {
+        if (nombre != null) {
             String updateNombre = "UPDATE cliente SET nombre = ? WHERE rut_cliente = ?";
 
             try ( PreparedStatement preparedStatement = conn.prepareStatement(updateNombre)) {
@@ -129,7 +129,7 @@ public class DatabaseConnection {
         }
 
         // Modificar la dirección del cliente
-        if (direccion != null && !direccion.isEmpty()) {
+        if (direccion != null) {
             String updateDireccion = "UPDATE direcciones SET direccion = ? WHERE rut_cliente = ?";
 
             try ( PreparedStatement preparedStatement = conn.prepareStatement(updateDireccion)) {
@@ -143,15 +143,16 @@ public class DatabaseConnection {
         }
 
         // Modificar el contacto del cliente
-        if (contacto != null && !contacto.isEmpty()) {
+        if (contacto != null) {
             String updateContacto = "UPDATE contacto SET telefono = ? WHERE rut_cliente = ?";
 
             try ( PreparedStatement preparedStatement = conn.prepareStatement(updateContacto)) {
-                preparedStatement.setString(1, contacto);
+                preparedStatement.setInt(1, Integer.parseInt(contacto));
                 preparedStatement.setString(2, rut);
 
                 preparedStatement.executeUpdate();
             } catch (SQLException e) {
+                System.out.println(e);
                 JOptionPane.showMessageDialog(null, "No se pudo modificar el contacto del cliente", "Error", JOptionPane.INFORMATION_MESSAGE);
             }
         }
@@ -501,7 +502,7 @@ public class DatabaseConnection {
             return;
         }
 
-        String consulta = "INSERT INTO cliente (nombre, rut_cliente) VALUES (?,?)";
+        String consulta = "INSERT INTO cliente (nombre, rut_cliente,activo) VALUES (?,?,true)";
 
         try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
             preparedStatement.setString(1, nombre);
@@ -585,7 +586,7 @@ public class DatabaseConnection {
                 + "contacto.telefono AS numero_contacto, direcciones.direccion AS direccion_cliente "
                 + "FROM cliente "
                 + "LEFT JOIN contacto ON contacto.rut_cliente = cliente.rut_cliente "
-                + "LEFT JOIN direcciones ON direcciones.rut_cliente = cliente.rut_cliente where cliente.nombre ILIKE ?";
+                + "LEFT JOIN direcciones ON direcciones.rut_cliente = cliente.rut_cliente where cliente.nombre ILIKE ? and cliente.activo = true";
 
         try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
             preparedStatement.setString(1, "%" + nombre + "%");
