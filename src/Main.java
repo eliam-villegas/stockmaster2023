@@ -35,7 +35,7 @@ public class Main {
             //InsertRandomDireccionContacto(conData,2);
             //InsertRandomProveedor(conData,15);
             //InsertRandomAbastecimiento(conData,50);
-            //InsertRandomOrden(conData,70);
+            //InsertRandomOrden(conData,150);
             //InsertRandomProducto(conData,40);
             //InsertRandomRegistroAbastecimientoProducto(conData,10);
             InsertRandomRegistroVenta(conData,10);
@@ -43,6 +43,7 @@ public class Main {
             //InsertRandomRegistroVentaDespacho(conData,10);
             //InsertRandomRegistroOrdenProducto(conData,140);
             actualizarMontosSubtotales(conData);
+            actualizarMontosTotales(conData);
             System.out.println("Flag");
             
         }catch(SQLException e) {
@@ -871,6 +872,28 @@ public static double calculateTotalFromOrders(Connection connection, List<Intege
                              "(SELECT SUM(precio * cantidad) FROM orden_compra_contiene_producto AS p " +
                              "WHERE p.id_orden = o.id_orden)";
     
+        try (PreparedStatement statement = connection.prepareStatement(updateQuery)) {
+            int rowsUpdated = statement.executeUpdate();
+    
+            if (rowsUpdated > 0) {
+                System.out.println("Montos subtotales actualizados para todas las órdenes de compra.");
+            } else {
+                System.out.println("No se actualizaron los montos subtotales.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar los montos subtotales: " + e.getMessage());
+            // Manejar la excepción según sea necesario
+        }
+    }
+    public static void actualizarMontosTotales(Connection connection) throws SQLException {
+        String updateQuery = "UPDATE registro_de_venta AS rv " +
+                                "SET neto = (" +
+                                "    SELECT SUM(subtotal) " +
+                                "    FROM orden_de_compra AS oc " +
+                                "    WHERE oc.id_venta = rv.id_venta" +
+                                "), " +
+                                "iva = (neto * 0.19), " + // Aquí se asume un IVA del 16% (modifica el valor según sea necesario)
+                                "total = (neto * 1.19)"; 
         try (PreparedStatement statement = connection.prepareStatement(updateQuery)) {
             int rowsUpdated = statement.executeUpdate();
     
