@@ -38,7 +38,7 @@ public class Inventory extends JFrame{
         constraintsTitleBar.gridx = 0;
         constraintsTitleBar.gridy = 0;
         constraintsTitleBar.weightx = 1;
-        constraintsTitleBar.weighty = 15;
+        constraintsTitleBar.weighty = 2;
         constraintsTitleBar.fill = GridBagConstraints.BOTH;
         constraintsTitleBar.anchor = GridBagConstraints.NORTHWEST;
         background.add(titlebar,constraintsTitleBar);

@@ -70,3 +70,4 @@ public class SearchbarCompras extends JPanel{
     }
     
 }
+

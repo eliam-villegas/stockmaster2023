@@ -3,6 +3,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -31,15 +32,15 @@ public class SearchbarVentas extends JPanel{
         
     }
 
-    /*public static void Buscar(String texto, DefaultTableModel modelo){
+    public static void Buscar(String texto, DefaultTableModel modelo){
         modelo.setRowCount(0);
         var dbc = new DatabaseConnection();
-        var rows = dbc.BuscarProducto(texto);   
+        var rows = dbc.BuscarProducto(texto,null,null);   
         for(Object[] row : rows){
             modelo.addRow(row);
         }
         if(modelo.getRowCount() == 0){
             JOptionPane.showMessageDialog(null, "No se han encontrado productos", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
         }
-    }*/
+    }
 }

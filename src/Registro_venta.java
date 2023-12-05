@@ -2,15 +2,19 @@ import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+
+import com.itextpdf.text.DocumentException;
 
 public class Registro_venta extends JPanel{
 
@@ -18,7 +22,7 @@ public class Registro_venta extends JPanel{
     
     public Registro_venta(){
 
-        String[] columnas = {"Id", "Fecha de pago","Precio Neto","IVA","Precio total"};
+        String[] columnas = {"Id", "Id de orden", "Fecha de pago","Precio Neto","IVA","Precio total"};
         modelo = new DefaultTableModel(null, columnas);
         
         setLayout(new GridBagLayout());
@@ -32,15 +36,6 @@ public class Registro_venta extends JPanel{
         principal.add(searchbar_ventas,gridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
 
         JScrollPane tabla = create_table();
-
-        var dbc = new DatabaseConnection();
-        var rows = dbc.ObtenerRegistroVentas();
-        for(Object[] row : rows){
-            modelo.addRow(row);
-        }
-        if(modelo.getRowCount() == 0){
-            JOptionPane.showMessageDialog(null, "No se han encontrado Registros", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
-        }
         principal.add(tabla,gridBagConstraints(0, 1, 1, 1,1,3,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
 
         add(principal,gridBagConstraints(0, 0, 1, 1, 1,10,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
@@ -68,10 +63,22 @@ public class Registro_venta extends JPanel{
         JButton generar_registro = new JButton("Generar Registro");
         panel.add(generar_registro,gridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST));
 
-        JButton generar_reporte = new JButton("Generar Reporte");
+         JButton generar_reporte = new JButton("Generar Reporte");
         panel.add(generar_reporte,gridBagConstraints(2, 0, 1, 1, 0, 0, GridBagConstraints.BOTH, GridBagConstraints.WEST));
+        generar_reporte.addActionListener(new ActionListener() {
+            
+            public void actionPerformed(ActionEvent e) {
 
-        
+                try {
+                    Reportes report = new Reportes();
+                    report.reportVenta();
+                } catch (FileNotFoundException | DocumentException  e1) {
+                    // TODO Auto-generated catch block
+                    e1.printStackTrace();
+                } 
+            }
+
+        });
     }
 
     private void contenido_vista_ventas(JPanel panel){

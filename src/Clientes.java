@@ -6,6 +6,10 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -69,15 +73,15 @@ public class Clientes extends JPanel{
         cardPanel.add(container1,"opcion 2");
         cardPanel.add(container2,"opcion 3");
 
-
+        
 
         add(cardPanel,gridBagConstraints(0,0,3,1));
-
+        
         add(create_table(),gridBagConstraints(0, 2,3,1));
 
         SearchbarClient searchbar = new SearchbarClient(modelo);
         add(searchbar,gridBagConstraints(0, 1,3,1));
-
+        
         JPanel opciones = new JPanel(new GridBagLayout());
         opciones.setBackground(Color.white);
         opciones.setBorder(BorderFactory.createTitledBorder("Opciones"));
@@ -147,9 +151,9 @@ public class Clientes extends JPanel{
     private JScrollPane create_table() {
         String[] columnas = {"Rut", "Nombre Cliente", "Número Contacto", "Dirección"};
         modelo = new DefaultTableModel(null, columnas);
-
+        
         SearchbarClient.Buscar("", modelo);
-
+        
         JTable tabla = new JTable(modelo);
         tabla.setDefaultEditor(Object.class, null);
         JScrollPane tablaClientes = new JScrollPane(tabla);

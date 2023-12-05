@@ -63,23 +63,7 @@ public class Orden_de_compra extends JPanel{
 
         JButton detalles_orden = new JButton("Detalles de orden");
         ordenes_de_compra.add(detalles_orden,gridBagConstraints(0, 2, 1, 1, 0, 0,GridBagConstraints.BOTH,GridBagConstraints.WEST));
-
-        JButton generar_boucher = new JButton("Generar boucher");
-        ordenes_de_compra.add(generar_boucher,gridBagConstraints(1, 2, 1, 1, 0, 0,GridBagConstraints.BOTH,GridBagConstraints.WEST));
         
-        generar_boucher.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JTable tabla_real = getTableFromScrollPane(tabla_ordenes);
-                int selectedRow = tabla_real.getSelectedRow();
-                if(selectedRow != -1){
-                    int id_rescatado = Integer.parseInt(modelo.getValueAt(selectedRow, 0).toString());
-                }
-                else{
-
-                }
-            }
-        });
         
         orden_de_compra.add(ordenes_de_compra,gridBagConstraints(1, 0, 1, 1, 10, 3,GridBagConstraints.BOTH,GridBagConstraints.NORTHWEST));
 
