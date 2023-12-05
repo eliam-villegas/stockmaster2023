@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 
 import javax.swing.BorderFactory;
@@ -21,6 +22,8 @@ import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
+
+import com.itextpdf.text.DocumentException;
 
 public class Orden_de_compra extends JPanel{
 
@@ -79,6 +82,29 @@ public class Orden_de_compra extends JPanel{
             @Override
             public void actionPerformed(ActionEvent e) {
                 cardLayout.show(card_panel, "opcion 2");
+            }
+        });
+
+        JButton generar_boucher = new JButton("Generar boucher");
+        ordenes_de_compra.add(generar_boucher,gridBagConstraints(1, 2, 1, 1, 0, 0,GridBagConstraints.BOTH,GridBagConstraints.WEST));
+
+        generar_boucher.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JTable tabla_real = getTableFromScrollPane(tabla_ordenes);
+                int selectedRow = tabla_real.getSelectedRow();
+                if(selectedRow != -1){
+                    int id_rescatado = Integer.parseInt(modelo.getValueAt(selectedRow, 0).toString());
+                    try {
+                        Reportes report = new Reportes();
+                        report.reportOrdenCompra(id_rescatado);
+                    } catch (FileNotFoundException | DocumentException  e1) {
+                        e1.printStackTrace();
+                    } 
+                }
+                else{
+                    JOptionPane.showMessageDialog(Orden_de_compra.this, "No hay ninguna orden seleccionada.", "Información", JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         });
         
@@ -142,6 +168,7 @@ public class Orden_de_compra extends JPanel{
                 }
             }
         });
+        
         
         
         

@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -104,7 +105,73 @@ public class Reportes {
         return fechaActual.format(formatter);
     }
     
-    public void reportOrdenCompra(){
+    public void reportOrdenCompra(int id_orden) throws FileNotFoundException, DocumentException{
+          
+        String nombreArchivo = "OrdenCompra_Num"+ id_orden + generarFecha() + ".pdf";
+        String rutaCompleta = ruta + nombreArchivo;
+
+        if (archivoExiste(rutaCompleta)) {
+            JOptionPane.showMessageDialog(null, "El archivo ya existe. Cambie el nombre o elimine el archivo existente antes de generar uno nuevo.");
+            return;
+        }
+        
+        Document doc = new Document();
+        PdfWriter.getInstance(doc, new FileOutputStream(rutaCompleta));
+        doc.open();
+         try {
+            
+            Font fontTitulo = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+            Paragraph titulo = new Paragraph("Váucher Orden De Compra Num " + id_orden + generarFecha(), fontTitulo);
+            titulo.setAlignment(Element.ALIGN_CENTER);
+            doc.add(titulo);
+            doc.add(new Paragraph(20f, " "));
+            
+            PdfPTable tabla = new PdfPTable(7);
+            
+            tabla.addCell("Id Producto");
+            tabla.addCell("Nombre Del Producto");
+            tabla.addCell("Precio unitario neto");
+            tabla.addCell("Cantidad");
+            tabla.addCell("Subtotal");
+            tabla.addCell("IVA");
+            tabla.addCell("Total");
+
+            try {
+                Connection cn = DatabaseConnection.Getconnection();
+             
+                String query = "SELECT opc.id_producto, p.nombre_producto, opc.precio, opc.cantidad, (opc.precio * opc.cantidad) AS subtotal, (opc.precio * opc.cantidad) * 0.19 AS IVA, (opc.precio * opc.cantidad) * 1.19 AS total " +
+                                    "FROM orden_compra_contiene_producto opc " +
+                                    "INNER JOIN producto p ON opc.id_producto = p.id_producto " +
+                                    "WHERE opc.id_orden = ?";
+
+                PreparedStatement statement = cn.prepareStatement(query);
+                statement.setInt(1, id_orden);
+               ResultSet rs = statement.executeQuery();
+
+                if(rs.next()){
+
+                    do{
+                        tabla.addCell(rs.getString(1));
+                        tabla.addCell(rs.getString(2));
+                        tabla.addCell(rs.getString(3));
+                        tabla.addCell(rs.getString(4));
+                        tabla.addCell(rs.getString(5));
+                        tabla.addCell(rs.getString(6));
+                        tabla.addCell(rs.getString(7));
+                    }while(rs.next());
+
+                    doc.add(tabla);
+                }
+                
+                doc.close();
+                JOptionPane.showMessageDialog(null, "PDF generado correctamente.");
+            } catch (DocumentException | SQLException e) {
+                System.out.println(e);
+            }
+
+        }catch (Exception e){
+            System.out.println(e);
+        }
         
     }
     
