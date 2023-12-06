@@ -37,13 +37,14 @@ public class Main {
             //InsertRandomAbastecimiento(conData,50);
             //InsertRandomOrden(conData,150);
             //InsertRandomProducto(conData,40);
-            //InsertRandomRegistroAbastecimientoProducto(conData,10);
+            InsertRandomRegistroAbastecimientoProducto(conData,10);
             InsertRandomRegistroVenta(conData,10);
             //InsertRandomRegistroDespacho(conData,10);
             //InsertRandomRegistroVentaDespacho(conData,10);
             //InsertRandomRegistroOrdenProducto(conData,140);
             actualizarMontosSubtotales(conData);
             actualizarMontosTotales(conData);
+            actualizarMontosAbastecimiento(conData);
             System.out.println("Flag");
             
         }catch(SQLException e) {
@@ -906,6 +907,27 @@ public static double calculateTotalFromOrders(Connection connection, List<Intege
             System.out.println("Error al actualizar los montos subtotales: " + e.getMessage());
             // Manejar la excepción según sea necesario
         }
+        
+    }
+    public static void actualizarMontosAbastecimiento(Connection connection) throws SQLException {
+        String updateQuery = "UPDATE registro_abastecimiento AS ra " +
+                                "SET total = (" +
+                                "    SELECT SUM(precio * cantidad) " +
+                                "    FROM registro_abastecimiento_contiene_producto AS rcp " +
+                                "    WHERE ra.num_compra = rcp.num_compra)"; 
+        try (PreparedStatement statement = connection.prepareStatement(updateQuery)) {
+            int rowsUpdated = statement.executeUpdate();
+    
+            if (rowsUpdated > 0) {
+                System.out.println("Montos subtotales actualizados para todas las órdenes de compra.");
+            } else {
+                System.out.println("No se actualizaron los montos subtotales.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar los montos subtotales: " + e.getMessage());
+            // Manejar la excepción según sea necesario
+        }
+        
     }
     
 }      
