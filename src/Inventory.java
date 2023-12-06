@@ -462,7 +462,7 @@ public class Inventory extends JFrame{
 
         cardLayout.show(main_tab,"opcion 1");
 
-        /*JPanel panel = Graficos.createVentasPorClienteChart();
+        JPanel panel = Graficos.createVentasPorClienteChart();
         JPanel panel2 = Graficos.graficoTorta();
         JPanel panel3 = Graficos.tablaStock();
         JPanel panel4 = Graficos.createChartPanel();
@@ -472,7 +472,7 @@ public class Inventory extends JFrame{
         dashBoard_tab.add(panel);
         dashBoard_tab.add(panel2);
         dashBoard_tab.add(panel3);
-        dashBoard_tab.add(panel4);*/
+        dashBoard_tab.add(panel4);
 
     }
 
