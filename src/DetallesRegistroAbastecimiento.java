@@ -1,4 +1,3 @@
-
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -73,14 +72,14 @@ public class DetallesRegistroAbastecimiento extends JPanel {
         // Botón Volver
         gbc.gridy = 6;
         add(btnVolver, gbc);
-        
+
         btnVolver.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 parent.cardLayout.show(parent.card_panel, "opcion 1");
             }
         });
-        
+
     }
 
     // Método para agregar productos a la tabla
@@ -112,5 +111,5 @@ public class DetallesRegistroAbastecimiento extends JPanel {
     public void actualizarFecha(String fecha) {
         lblFecha.setText("Fecha: " + fecha);
     }
-    
+
 }

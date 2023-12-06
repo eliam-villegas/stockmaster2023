@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.FileNotFoundException;
 import java.time.LocalDate;
 
 import javax.swing.BorderFactory;
@@ -24,9 +23,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
 
-import com.itextpdf.text.DocumentException;
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 public class Registro_abastecimiento extends JPanel {
 

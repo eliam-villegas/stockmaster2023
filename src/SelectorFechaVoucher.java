@@ -10,7 +10,6 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 
 /*
@@ -23,8 +22,8 @@ import javax.swing.SpinnerDateModel;
  * @author marti
  */
 public class SelectorFechaVoucher extends JDialog {
-    private JTextField clienteField;
-    private JTextField empleadoField;
+    //private JTextField clienteField;
+    //private JTextField empleadoField;
     private JSpinner fechaSpinner1;
     private JSpinner fechaSpinner2;
 

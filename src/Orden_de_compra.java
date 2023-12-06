@@ -37,6 +37,8 @@ public class Orden_de_compra extends JPanel{
     private JTextField nombre_cliente_text;
     private JTextField id_cliente_text;
 
+    private DefaultTableModel modelo_product_disp;
+
     private CardLayout cardLayout = new CardLayout();
     private JTable tabla;
     JTable tabla_productos;
@@ -54,7 +56,6 @@ public class Orden_de_compra extends JPanel{
 
         JPanel ordenes_de_compra = new JPanel(new GridBagLayout());
         ordenes_de_compra.setBackground(Color.white);
-        //ordenes_de_compra.setBorder(BorderFactory.createTitledBorder("Ordenes de compra"));
 
         String[] columnas = {"Id orden", "Fecha de compra","Empleado","Cliente"};
         modelo = new DefaultTableModel(null, columnas);
@@ -234,8 +235,8 @@ public class Orden_de_compra extends JPanel{
         //tablas de productos disponibles y ya ordenados
         JLabel seleccionar_productos = new JLabel("Seleccione los productos:");
         JLabel seleccionar_ordenados = new JLabel("Productos ordenados:");
-        String[] columna_productos = {"Id","Producto","Precio","Stock"};
-        DefaultTableModel modelo_product_disp = new DefaultTableModel(null,columna_productos);
+        String[] columna_productos = {"Id","Producto","Stock","Precio"};
+        modelo_product_disp = new DefaultTableModel(null,columna_productos);
         var rows = dbc.ObtenerProducto_para_orden();
         for(Object[] row : rows){modelo_product_disp.addRow(row);}
         if(modelo_product_disp.getRowCount() == 0){
@@ -315,26 +316,45 @@ public class Orden_de_compra extends JPanel{
                 }
                 else{
                     if(dbc.VerificarIDUnico_orden_de_compra(Integer.parseInt(id_orden_text.getText())) == true){
-                        int fila_seleccionada = tabla_productos.getSelectedRow();
-                        if(fila_seleccionada != -1){
+                        JTable tabla = getTableFromScrollPane(productos_diponibles);
+                        int selectedRow = tabla.getSelectedRow();
+                        if(Integer.parseInt(cantidad_text.getText()) <= Integer.parseInt(modelo_product_disp.getValueAt(selectedRow, 2).toString())){
+                            int fila_seleccionada = tabla_productos.getSelectedRow();
+                            if(fila_seleccionada != -1){
 
-                            id_orden_text.setEditable(false);
-                            int num_cantidad = Integer.parseInt(cantidad_text.getText());
-                            int num_precio_producto = Integer.parseInt(tabla_productos.getValueAt(fila_seleccionada, 3).toString());
+                                id_orden_text.setEditable(false);
+                                int num_cantidad = Integer.parseInt(cantidad_text.getText());
+                                int num_precio_producto = Integer.parseInt(tabla_productos.getValueAt(fila_seleccionada, 3).toString());
 
-                            Object[] nuevaFila = {
-                                Integer.parseInt(id_orden_text.getText()), 
-                                tabla_productos.getValueAt(fila_seleccionada, 0),
-                                num_cantidad,
-                                (num_precio_producto * num_cantidad),
-                            };
+                                Object[] nuevaFila = {
+                                    Integer.parseInt(id_orden_text.getText()), 
+                                    tabla_productos.getValueAt(fila_seleccionada, 0),
+                                    num_cantidad,
+                                    (num_precio_producto * num_cantidad),
+                                };
 
-                            modelo_product_ord.addRow(nuevaFila);
-                            precio_total_text.setText(Integer.toString(Integer.parseInt(precio_total_text.getText()) + (num_precio_producto * num_cantidad)));
+                                int resta_stock = Integer.parseInt(modelo_product_disp.getValueAt(fila_seleccionada, 2).toString()) - Integer.parseInt(cantidad_text.getText().toString());
+                                modelo_product_disp.setValueAt(resta_stock, fila_seleccionada, 2);
+                                tabla.setValueAt(resta_stock, fila_seleccionada, 2);
+                                
+
+                                modelo_product_ord.addRow(nuevaFila);
+                                precio_total_text.setText(Integer.toString(Integer.parseInt(precio_total_text.getText()) + (num_precio_producto * num_cantidad)));
+
+                                /*modelo_product_disp.setRowCount(0);
+                                var rows = dbc.ObtenerProducto_para_orden();
+                                for(Object[] row : rows){
+                                    modelo_product_disp.addRow(row);
+                                }*/
+
+                            }
+                            else{
+                                JOptionPane.showMessageDialog(null, "Seleccione un producto.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                            }
                             
                         }
                         else{
-                            JOptionPane.showMessageDialog(null, "Seleccione un producto.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(null, "Stock insuficiente.", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
                         }
                     }
                     else{
@@ -361,6 +381,16 @@ public class Orden_de_compra extends JPanel{
                         dbc.AgregarOrdenDeCompra(id_orden_text.getText(),fechaActual, precio_total_text.getText(), combobox_empleado.getSelectedItem().toString(), id_cliente_text.getText());
                         dbc.AgregarProducto_a_orden_de_compra(modelo_product_ord);
                         SearchbarCompras.Buscar(null,null,null,null,"",modelo);
+
+                        Object[] id_row = new Object[modelo_product_ord.getRowCount()];
+                        Object[] stock_row = new Object[modelo_product_ord.getRowCount()];
+                        int rowcount = modelo_product_ord.getRowCount();
+
+                        for(int i = 0; i < rowcount; i++){
+                            id_row[i] = Integer.parseInt(modelo_product_ord.getValueAt(i, 1).toString());
+                            stock_row[i] = Integer.parseInt(modelo_product_ord.getValueAt(i, 2).toString());
+                        }
+                        dbc.RestarStock(id_row, stock_row);
 
                         id_orden_text.setEditable(true);
                         id_orden_text.setText("");

@@ -73,15 +73,15 @@ public class Detalles_orden extends JFrame{
         if(!rows.isEmpty()){
             Object[] firts_row = rows.get(0);
 
-            nombre_cliente = (String) firts_row[4];
-            nombre_encargado = (String) firts_row[3];
-            rut_cliente = String.valueOf(firts_row[0]);
-            rut_empleado = String.valueOf(firts_row[1]);
-            total_orden = String.valueOf(firts_row[9]);
-            fecha = formato.format(firts_row[2]);
+            nombre_cliente = (String) firts_row[3];
+            nombre_encargado = (String) firts_row[2];
+            rut_cliente = String.valueOf(firts_row[8]);
+            rut_empleado = String.valueOf(firts_row[9]);
+            total_orden = String.valueOf(firts_row[0]);
+            fecha = formato.format(firts_row[1]);
 
             for(Object[] row : rows){
-                Object[] seleccionados = {row[5],row[6],row[7],row[8]};
+                Object[] seleccionados = {row[4],row[5],row[6],row[7]};
                 modelo_tabla.addRow(seleccionados);
             }
         }

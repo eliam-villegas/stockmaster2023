@@ -4,7 +4,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -217,7 +216,7 @@ public class Inventory extends JFrame{
         menu.add(botonProducto,constraints(0, 2, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
 
         ImageIcon icon_compra = new ImageIcon("imagenes/compras.png");
-        JLabel botonCompra = new JLabel(" Reposicion", icon_compra, JLabel.LEFT);
+        JLabel botonCompra = new JLabel(" Reposición", icon_compra, JLabel.LEFT);
         botonCompra.setBorder(new EmptyBorder(0, 10, 0, 0));
         botonCompra.setOpaque(true);
         botonCompra.setBackground(new Color(51,51,51));
@@ -308,7 +307,7 @@ public class Inventory extends JFrame{
                 botonVentas.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
             }
         });
-        menu.add(botonVentas,constraints(0, 5, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
+        menu.add(botonVentas,constraints(0, 6, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
         
 
         ImageIcon icon_proveedor = new ImageIcon("imagenes/proveedores.png");
@@ -335,7 +334,7 @@ public class Inventory extends JFrame{
                 botonproveedor.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
             }
         });
-        menu.add(botonproveedor,constraints(0, 6, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
+        menu.add(botonproveedor,constraints(0, 7, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
 
 
         ImageIcon icon_clientes = new ImageIcon("imagenes/clientes.png");
@@ -362,6 +361,7 @@ public class Inventory extends JFrame{
                 botoncliente.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
             }
         });
+        menu.add(botoncliente,constraints(0, 8, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
 
         ImageIcon icon_empleados = new ImageIcon("imagenes/empleados.png");
         JLabel botonempleados = new JLabel("Empleados", icon_empleados, JLabel.LEFT);
@@ -387,10 +387,10 @@ public class Inventory extends JFrame{
                 botonempleados.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
             }
         });
-        menu.add(botonempleados,constraints(0, 7, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
+        menu.add(botonempleados,constraints(0, 9, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
 
 
-        JLabel botonreportes = new JLabel("Reportes");
+        /*JLabel botonreportes = new JLabel("Reportes");
         botonreportes.setOpaque(true);
         botonreportes.setBackground(new Color(51,51,51));
         botonreportes.setForeground(Color.white);
@@ -411,14 +411,38 @@ public class Inventory extends JFrame{
             public void mouseExited(MouseEvent e) {
                 botoncliente.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
             }
+        });*/
+
+        /*ImageIcon icon_despacho = new ImageIcon("imagenes/despacho.png");
+        JLabel botondespacho = new JLabel("Despacho", icon_despacho, JLabel.LEFT);
+        botondespacho.setBorder(new EmptyBorder(0, 10, 0, 0));
+        botondespacho.setOpaque(true);
+        botondespacho.setBackground(new Color(51,51,51));
+        botondespacho.setForeground(Color.white);
+        botondespacho.setHorizontalAlignment(SwingConstants.LEFT);
+        botondespacho.setFont(new Font("Arial", Font.BOLD, 12));
+        botondespacho.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        botondespacho.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                cardLayout.show(main_tab,"opcion 5");
+            }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                botondespacho.setBackground(Color.darkGray); // Cambia el color cuando el mouse entra
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                botondespacho.setBackground(new Color(51,51,51)); // Restablece el color cuando el mouse sale
+            }
         });
-        menu.add(botoncliente,constraints(0, 8, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
-
-
+        menu.add(botondespacho,constraints(0, 5, 1, 1,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));*/
+        
 
         JPanel espacio = new JPanel();
         espacio.setBackground(new Color(51,51,51));
-        menu.add(espacio,constraints(0, 9, 1, 10,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
+        menu.add(espacio,constraints(0, 10, 1, 10,GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
         
 
         main_tab = new JPanel(cardLayout);
@@ -431,15 +455,14 @@ public class Inventory extends JFrame{
         content.add(main_tab,constraints(1, 0, 10, 60, GridBagConstraints.BOTH, GridBagConstraints.NORTHWEST));
     }
 
-    private void insertMainTab(JPanel main_tab, GridBagConstraints constraintsTab) {
-        // Espacio en blanco que se muestra en el boton DashBoard
+    private void insertMainTab(JPanel main_tab,GridBagConstraints constraintsTab){
         dashBoard_tab = new JPanel();
         dashBoard_tab.setBackground(Color.white);
-        main_tab.add(dashBoard_tab, "opcion 1");
+        main_tab.add(dashBoard_tab,"opcion 1");
 
-        cardLayout.show(main_tab, "opcion 1");
+        cardLayout.show(main_tab,"opcion 1");
 
-        JPanel panel = Graficos.createVentasPorClienteChart();
+        /*JPanel panel = Graficos.createVentasPorClienteChart();
         JPanel panel2 = Graficos.graficoTorta();
         JPanel panel3 = Graficos.tablaStock();
         JPanel panel4 = Graficos.createChartPanel();
@@ -449,7 +472,8 @@ public class Inventory extends JFrame{
         dashBoard_tab.add(panel);
         dashBoard_tab.add(panel2);
         dashBoard_tab.add(panel3);
-        dashBoard_tab.add(panel4);
+        dashBoard_tab.add(panel4);*/
+
     }
 
     private void insertAddTab(JPanel main_tab,GridBagConstraints constraintsTab){
@@ -459,6 +483,9 @@ public class Inventory extends JFrame{
         Orden_de_compra orden_compra_tab = new Orden_de_compra();
         main_tab.add(orden_compra_tab,"opcion 3");
 
+        /*Despacho despacho_tab = new Despacho();
+        main_tab.add(despacho_tab,"opcion 5");*/
+
         Clientes client_tab = new Clientes();
         main_tab.add(client_tab,"opcion 6");
 
@@ -467,12 +494,13 @@ public class Inventory extends JFrame{
 
         Registro_venta ventas_tab = new Registro_venta();
         main_tab.add(ventas_tab,"opcion 4");
-        
+
         Registro_abastecimiento abastecimiento_tab  = new Registro_abastecimiento();
         main_tab.add(abastecimiento_tab,"opcion 10");
 
         Proveedores proveedores_tab = new Proveedores();
         main_tab.add(proveedores_tab,"opcion 5");
+
     }
 
     private GridBagConstraints constraints(int x,int y,int wx,int wy,int fill,int anchor){

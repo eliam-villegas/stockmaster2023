@@ -2,10 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import javax.swing.table.DefaultTableModel;
 
 public class FiltrosAbastecimiento extends JDialog {
     private JTextField clienteField;
@@ -28,7 +25,7 @@ public class FiltrosAbastecimiento extends JDialog {
         clienteField = new JTextField(10);
         if(parent.proveedor != null)
             clienteField.setText(parent.proveedor);
-        
+
         empleadoField = new JTextField(10);
         if(parent.empleado != null)
             empleadoField.setText(parent.empleado);
@@ -36,7 +33,7 @@ public class FiltrosAbastecimiento extends JDialog {
         fechaSpinner1 = new JSpinner(new SpinnerDateModel());
         JSpinner.DateEditor dateEditor1 = new JSpinner.DateEditor(fechaSpinner1, "yyyy-MM-dd");
         fechaSpinner1.setEditor(dateEditor1);
-        
+
         if(parent.fechaInicial!=null)
             fechaSpinner1.setValue(parent.fechaInicial);
 
