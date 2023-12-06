@@ -1,5 +1,4 @@
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -218,9 +217,10 @@ public class DatabaseConnection {
         } finally {
             closeConnection(conn);
         }
+
     }
 
-    void AgregarProducto_a_registro_abastecimiento(DefaultTableModel modelo_tabla) {
+    void AgregarProducto_a_registro_abastecimiento(List<Object[]> lista) {
         Connection conn = null;
         try {
             conn = Getconnection();
@@ -233,14 +233,13 @@ public class DatabaseConnection {
 
         try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
 
-            for (int row = 0; row < modelo_tabla.getRowCount(); row++) {
-                preparedStatement.setInt(1, Integer.parseInt(modelo_tabla.getValueAt(row, 0).toString()));
-                preparedStatement.setInt(2, Integer.parseInt(modelo_tabla.getValueAt(row, 1).toString()));
-                preparedStatement.setInt(3, Integer.parseInt(modelo_tabla.getValueAt(row, 2).toString()));
-                preparedStatement.setInt(4, Integer.parseInt(modelo_tabla.getValueAt(row, 3).toString()));
+            for (var row : lista) {
+                preparedStatement.setInt(1, Integer.parseInt(row[0].toString()));
+                preparedStatement.setInt(2, Integer.parseInt(row[3].toString()));
+                preparedStatement.setInt(3, Integer.parseInt(row[2].toString()));
+                preparedStatement.setInt(4, Integer.parseInt(row[1].toString()));
+                preparedStatement.executeUpdate();
             }
-
-            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println(e);
@@ -249,6 +248,33 @@ public class DatabaseConnection {
         } finally {
             closeConnection(conn);
         }
+
+        conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        consulta = "UPDATE producto set stock = stock + ? where id_producto = ?";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            for (var row : lista) {
+                preparedStatement.setInt(1, Integer.parseInt(row[2].toString()));
+                preparedStatement.setInt(2, Integer.parseInt(row[3].toString()));
+                preparedStatement.executeUpdate();
+            }
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
+
     }
 
     void AgregarProveedor(String id, String nombre, String telefono) {
@@ -760,8 +786,6 @@ public class DatabaseConnection {
             closeConnection(conn);
         }
     }
-
-    
 
     public List<Object[]> BuscarProveedor(String nombre) {
         Connection conn = null;
@@ -1342,7 +1366,7 @@ public class DatabaseConnection {
             return new ArrayList<>();
         }
 
-        String consulta = "SELECT id_producto,nombre_producto,precio_unitario,stock FROM producto";
+        String consulta = "SELECT id_producto,nombre_producto,precio_unitario,stock FROM producto where activo = true";
 
         try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -1474,6 +1498,36 @@ public class DatabaseConnection {
         } finally {
             closeConnection(conn);
         }
+
+        conn = null;
+        try {
+            conn = Getconnection();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
+        consulta = "UPDATE producto  set stock = ?";
+
+        try ( PreparedStatement preparedStatement = conn.prepareStatement(consulta)) {
+
+            for (int row = 0; row < modelo_tabla.getRowCount(); row++) {
+                preparedStatement.setInt(1, Integer.parseInt(modelo_tabla.getValueAt(row, 0).toString()));
+                preparedStatement.setInt(2, Integer.parseInt(modelo_tabla.getValueAt(row, 1).toString()));
+                preparedStatement.setInt(3, Integer.parseInt(modelo_tabla.getValueAt(row, 2).toString()));
+                preparedStatement.setInt(4, Integer.parseInt(modelo_tabla.getValueAt(row, 3).toString()));
+            }
+
+            preparedStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e);
+            closeConnection(conn);
+            // Manejar la excepción según tus necesidades
+        } finally {
+            closeConnection(conn);
+        }
+
     }
 
     public void AgregarOrdenDeCompra(String id_orden, LocalDate fecha_actual, String subtotal, String rut_empleado, String rut_cliente) {
@@ -1546,7 +1600,7 @@ public class DatabaseConnection {
         }
     }
 
-    public String ObtenerNombreEmpleado(String rut){
+    public String ObtenerNombreEmpleado(String rut) {
         Connection conn = null;
         try {
             conn = Getconnection();
@@ -1577,7 +1631,7 @@ public class DatabaseConnection {
             closeConnection(conn);
         }
     }
-    
+
     private void closeConnection(Connection conn) {
         if (conn != null) {
             try {

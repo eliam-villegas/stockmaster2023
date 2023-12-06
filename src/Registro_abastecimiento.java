@@ -25,6 +25,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
 
 import com.itextpdf.text.DocumentException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Registro_abastecimiento extends JPanel {
 
@@ -43,6 +45,8 @@ public class Registro_abastecimiento extends JPanel {
     public JPanel card_panel;
     DetallesRegistroAbastecimiento panelDetalles = new DetallesRegistroAbastecimiento(this);
     JScrollPane tabla_ordenes;
+    
+    public List<Object[]> listaProductosAAgregar;
     
     public Registro_abastecimiento() {
 
@@ -158,6 +162,7 @@ public class Registro_abastecimiento extends JPanel {
                 if (filaSeleccionada != -1) {
                     id_cliente_text.setText(modelo_cliente.getValueAt(tabla.getSelectedRow(), 0).toString());
                     nombre_cliente_text.setText(modelo_cliente.getValueAt(tabla.getSelectedRow(), 1).toString());
+                    listaProductosAAgregar = new ArrayList<Object[]>();
                     cardLayout.show(card_panel, "opcion 3");
                 } else {
                     JOptionPane.showMessageDialog(Registro_abastecimiento.this, "No hay ningun proveedor seleccionado.", "Información", JOptionPane.INFORMATION_MESSAGE);
@@ -216,11 +221,11 @@ public class Registro_abastecimiento extends JPanel {
             modelo_product_disp.addRow(row);
         }
         if (modelo_product_disp.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(null, "No se han encontrado proveedores asociados", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No se han encontrado Productos", "Mensaje", JOptionPane.INFORMATION_MESSAGE);
         }
         JScrollPane productos_diponibles = create_table(modelo_product_disp);
 
-        String[] columna_productos_ordenados = {"Numero compra", "Id Producto", "precio", "Cantidad"};
+        String[] columna_productos_ordenados = {"Producto", "precio", "Cantidad","Total"};
         DefaultTableModel modelo_product_ord = new DefaultTableModel(null, columna_productos_ordenados);
         JScrollPane productos_ordenados = create_table(modelo_product_ord);
 
@@ -291,11 +296,20 @@ public class Registro_abastecimiento extends JPanel {
                             int num_precio_producto = Integer.parseInt(precio_text.getText());
 
                             Object[] nuevaFila = {
-                                Integer.parseInt(id_orden_text.getText()),
-                                tabla_productos.getValueAt(fila_seleccionada, 0),
+                                tabla_productos.getValueAt(fila_seleccionada, 1),
+                                num_precio_producto,
                                 num_cantidad,
                                 (num_precio_producto * num_cantidad),};
 
+                            Object[] datosParaBaseDeDatos = {
+                                id_orden_text.getText(),
+                                num_precio_producto,
+                                num_cantidad,
+                                tabla_productos.getValueAt(fila_seleccionada, 0).toString()
+                                };
+                            
+                            listaProductosAAgregar.add(datosParaBaseDeDatos);
+                            
                             modelo_product_ord.addRow(nuevaFila);
                             precio_total_text.setText(Integer.toString(Integer.parseInt(precio_total_text.getText()) + (num_precio_producto * num_cantidad)));
 
@@ -322,7 +336,7 @@ public class Registro_abastecimiento extends JPanel {
                         fechaActual = LocalDate.now();
 //
                         dbc.AgregarRegistroAbastecimiento(id_orden_text.getText(), fechaActual, precio_total_text.getText(), rut_encargado.getText(), id_cliente_text.getText());
-                        dbc.AgregarProducto_a_registro_abastecimiento(modelo_product_ord);
+                        dbc.AgregarProducto_a_registro_abastecimiento(listaProductosAAgregar);
                         SearchbarAbastecimiento.Buscar(null, null, null, null, "", modelo);
 
                         id_orden_text.setEditable(true);
